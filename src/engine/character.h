@@ -26,7 +26,10 @@ public:
 	virtual void processMove(action * m);
 	virtual void sortMove(action *, string);
 	virtual void prepHooks(status&, deque<int>, vector<int>, bool);
-	virtual action * hook(status&, deque<int>, int, int, vector<int>);
+	virtual void checkReversal(status&, bool);
+	virtual void getReversal(status &, deque<int>, vector<int>);
+	virtual void executeBuffer(status &, bool);
+	virtual action * hook(status&, deque<int>, vector<int>);
 	virtual bool death(status&) { return 0; }
 	virtual int takeHit(status&, hStat&, int, int&) { return 0; }
 	virtual void getName(string, string);
@@ -70,7 +73,7 @@ public:
 	virtual void land(status&);
 	virtual void sortMove(action *, string);
 	virtual int takeHit(status&, hStat&, int, int&);
-	virtual action * hook(status&, deque<int>, int, int, vector<int>);
+	virtual action * hook(status&, deque<int>, vector<int>);
 
 	action * dead;
 	action * airNeutral;

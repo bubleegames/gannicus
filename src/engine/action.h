@@ -12,6 +12,7 @@
 using std::string;
 using std::vector;
 using std::ifstream;
+class actionTrie;
 struct animation{
 	int frames;	//Number of frames.
 	virtual void draw(int) = 0;
@@ -154,6 +155,7 @@ public:
 
 	action * next;
 	vector<action *> onConnect;
+	actionTrie * followup;
 	action * onHold;
 	action * attempt;
 	action * riposte;
@@ -164,10 +166,12 @@ public:
 
 	attractor * distortion;
 	int distortSpawn;
+	span<int> followupSpan;
 	span<int> attemptSpan;
 	int displaceX, displaceY, displaceFrame;
 
 	string tempNext;
+	vector<string> tempFollowup;
 	vector<string> tempOnConnect;
 	string tempAttempt;
 	string tempRiposte;

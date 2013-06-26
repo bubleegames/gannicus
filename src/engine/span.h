@@ -10,6 +10,12 @@ struct span {
 		end = 0;
 	}
 
+	span(T a)
+	{
+		start = a;
+		end = start;
+	}
+
 	span(T a, T b)
 	{
 		start = a;

@@ -40,9 +40,8 @@ character::~character()
 	}
 }
 
-void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> buttons, bool dryrun)
+void avatar::checkReversal(status &current, bool dryrun)
 {
-	action * t = nullptr;
 	if(current.move && current.reversal){
 		if(*current.reversal > current){
 			if(!dryrun) current.reversal->execute(current);
@@ -55,8 +54,47 @@ void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> butt
 		}
 	}
 	else if(!current.move) current.move = neutralize(current);
-	t = hook(current, inputBuffer, 0, -1, buttons);
-	if(t == nullptr){
+}
+
+void avatar::getReversal(status &current, deque<int> inputBuffer, vector<int> buttons)
+{
+	status temp = current;
+	temp.move = neutralize(temp);
+	temp.reversalFlag = current.reversalFlag;
+	temp.connect = 0;
+	temp.hit = 0;
+	if (!current.reversal && (current.move->linkable || current.frame > 4 || current.counter < 0)){
+		current.reversal = hook(temp, inputBuffer, buttons);
+		if(current.reversal){
+			if(current.reversal->state[0].b.neutral){
+				current.reversal = nullptr;
+				current.reversalTimer = 0;
+			}
+		}
+		if(current.move->linkable) {
+			current.reversalTimer = -1;
+		} else {
+			bool b = false;
+			for(int i:buttons) if(i) b = true;
+			current.reversalTimer = 5 + b*6;
+		}
+	}
+}
+
+void avatar::executeBuffer(status &current, bool dryrun)
+{
+	if(!dryrun) current.bufferedMove->execute(current);
+	current.move = current.bufferedMove;
+	if(!dryrun) current.bufferedMove = nullptr;
+}
+
+void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> buttons, bool dryrun)
+{
+	checkReversal(current, dryrun);
+	action * t = nullptr;
+	t = hook(current, inputBuffer, buttons);
+	if(!t){
+		if(current.move->followupSpan.end && current.move->followupSpan == current.frame) cout << current.frame << "\n";
 		if(current.move->window(current.frame)){
 			if(current.move->attempt->check(current)){
 				t = current.move->attempt;
@@ -67,37 +105,10 @@ void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> butt
 				t = current.move->onHold;
 			}
 		}
-		if (current.bufferedMove != nullptr && current.freeze <= 0) {
-			if(!dryrun){
-				current.bufferedMove->execute(current);
-			}
-			current.move = current.bufferedMove;
-			if(!dryrun) current.bufferedMove = nullptr;
-		} else {
-			status temp = current;
-			temp.move = neutralize(temp);
-			temp.reversalFlag = current.reversalFlag;
-			temp.connect = 0;
-			temp.hit = 0;
-			if (!current.reversal && (current.move->linkable || current.frame > 4 || current.counter < 0)){
-				current.reversal = hook(temp, inputBuffer, 0, -1, buttons);
-				if(current.reversal){
-					if(current.reversal->state[0].b.neutral){
-						current.reversal = nullptr;
-						current.reversalTimer = 0;
-					}
-				}
-				if(current.move->linkable) {
-					current.reversalTimer = -1;
-				} else {
-					bool b = false;
-					for(int i:buttons) if(i) b = true;
-					current.reversalTimer = 5 + b*6;
-				}
-			}
-		}
+		if (current.bufferedMove && current.freeze <= 0) executeBuffer(current, dryrun);
+		else getReversal(current, inputBuffer, buttons);
 	}
-	if(t != nullptr) {
+	if(t){
 		current.reversalFlag = false;
 		if(current.freeze > 0){
 			if(current.bufferedMove == nullptr){ 
@@ -110,15 +121,15 @@ void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> butt
 	}
 }
 
-action * avatar::hook(status &current, deque<int> inputBuffer, int i, int f, vector<int> buttons)
+action * avatar::hook(status &current, deque<int> inputBuffer, vector<int> buttons)
 {
 	return head->actionHook(current, inputBuffer, 0, -1, buttons);
 }
 
-action * character::hook(status &current, deque<int> inputBuffer, int i, int f, vector<int> buttons)
+action * character::hook(status &current, deque<int> inputBuffer, vector<int> buttons)
 {
 	if(current.aerial) return airHead->actionHook(current, inputBuffer, 0, -1, buttons);
-	else return avatar::hook(current, inputBuffer, 0, -1, buttons);
+	else return avatar::hook(current, inputBuffer, buttons);
 }
 
 action * avatar::moveSignal(int)

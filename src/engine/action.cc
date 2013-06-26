@@ -32,6 +32,7 @@ void action::zero()
 	hitreg.clear();
 	delta.clear();
 	tempNext.clear();
+	tempFollowup.clear();
 	tempOnConnect.clear();
 	tempAttempt.clear();
 	tempPayload.clear();
@@ -455,6 +456,10 @@ bool action::setParameter(string buffer)
 	} else if (t.current() == "BearStun") { //RARRRRRR
 		stunMin = stoi(t("\t: \n-"));
 		stunMax = stoi(t());
+		return true;
+	} else if (t.current() == "Followup") {
+		followupSpan = span<int> (totalStartup[hits-1] + active[hits-1], frames);
+		tempFollowup.push_back(t("\n:"));
 		return true;
 	} else if (t.current() == "GuardType") {
 		guardType = stoi(t("\t: \n"));

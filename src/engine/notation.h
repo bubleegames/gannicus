@@ -20,8 +20,8 @@ typedef array <chromatic, DiatonicDegrees> scale;
 struct note
 {
 	accidental a;
-    diatonic d;
-    size_t octave; //Octave is between like, 0 and 5
+	diatonic d;
+	size_t octave; //Octave is between like, 0 and 5
 	size_t dynamic; //I think we should use a narrow range of "dynamics" that get applied to overall volume at a different step, e.g. dynamic is probably between like, 0 and 5
 	size_t duration; //In frames
 };
