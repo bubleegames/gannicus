@@ -12,6 +12,8 @@ using std::vector;
 #ifndef OPERA_INCLUDED
 #define OPERA_INCLUDED
 
+const int sampleRate = 8040;
+
 class sample {
 public:
 	ALuint buffer;
@@ -21,22 +23,28 @@ public:
 	sample(string);
 };
 
-class voice {
-    sample attack, sustain, decay; //Attack == 1*f, Sustain = n*f length
-public: 
-    voice(sample, sample, sample); //attack, sustain, decay
-    void play(int, int); //Attack, then begin sustain and keep sustaining as long as necessary, then decay.
-                         //Arguments are volume and sustain duration
-    void stop(); //Stop even if still decaying.
-    ~voice();
+class fragment : public sample //Class corresponding to a frame of audio.
+{
+public:
+    fragment(array<unsigned int, sampleRate / 60>);
+    fragment(const sample&); //Should cut off everything past sampleRate/60 samples.
 };
 
-typedef array<voice, ChromaticOctave> vocalRegister;
-//A vocal register is all of the samples for chroma within an octave
+class vocalization {
+    vector<fragment> attack, sustain, decay;
+public: 
+    vocalization(array<vector<fragment>, 3>); //Attack, sustain, and decay fragments, each of which may be n fragments long.
+    void play(int, int); //Attack, then loop sustain for duration - S, then decay.
+                         //Arguments are volume and duration
+    void stop(); //Stop even if still decaying.
+    ~vocalization();
+};
 
-class vocalFont : vector<vocalRegister>
-//A vocalFont is all of the samples for an instrument for various octaves. 
-{};
+class voice : vector<array<vocalization, ChromaticOctave>>
+{
+    //A voice spans some number of complete octaves.
+    //It is roughly analogous to a soundfont, albeit simpler.
+};
   
 class soundScape {
 public:
