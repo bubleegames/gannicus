@@ -27,7 +27,23 @@ struct note
 };
 
 template <size_t L> class phrase : array<note, L> {};
-
+//methods: mode (output in different mode), modulate (output with root transposed), key (output in different Key), scale, etc
 template <size_t S, size_t L> class rhythm : array<bitset<S>, L> {};
+//static_assert: number of 1s = index of bitset in the array
 
+template <size_t S, size_t L> class expression : phrase<S> {};
+expression(phrase<L>, rhythm<S, L>
+//use rhythm of size_t S
+    //construct by passing in a rhythm and a phrase.
+    //get a phrase that is in the right number of frames per measure, etc
+
+class key {}; //is this useful?
+
+//waaaay too tired to syntax but yeah, i'm thinkin that phrases get played in a Key, which is a Scale + a Mode + a Modulation. Accidentals can still occur on a note-by-note basis if necessary but this should be avoided. 
+//a character might have more than one scale. 
+//however scales probably still need to be essentially diatonic in basic structure... so that phrases can be translated among keys
+//
+//
+//
+//
 #endif
