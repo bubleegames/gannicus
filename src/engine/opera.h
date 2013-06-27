@@ -9,6 +9,7 @@
 using std::array;
 using std::string;
 using std::vector;
+
 #ifndef OPERA_INCLUDED
 #define OPERA_INCLUDED
 
@@ -30,10 +31,10 @@ public:
     fragment(const sample&); //Should cut off everything past sampleRate/60 samples.
 };
 
-class vocalization {
-    vector<fragment> attack, sustain, decay;
+class vocalization : array<vector<fragment>, 3>
+{
 public: 
-    vocalization(array<vector<fragment>, 3>); //Attack, sustain, and decay fragments, each of which may be n fragments long.
+    vocalization(vector<fragment>, vector<fragment>, vector<fragment>); //Attack, sustain, and decay fragments, each of which may be n fragments long.
     void play(int, int); //Attack, then loop sustain for duration - S, then decay.
                          //Arguments are volume and duration
     void stop(); //Stop even if still decaying.
@@ -42,8 +43,10 @@ public:
 
 class voice : vector<array<vocalization, ChromaticOctave>>
 {
-    //A voice spans some number of complete octaves.
-    //It is roughly analogous to a soundfont, albeit simpler.
+    pitch root;
+public:
+    voice(pitch, vector<array<vocalization, ChromaticOctave>>);//Pitch argument is root pitch for the voice
+    void vocalize(note); //Playback the mapped note if a vocalization exists for it
 };
   
 class soundScape {
