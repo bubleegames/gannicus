@@ -18,13 +18,35 @@ enum accidental {DoubleFlat=-2, Flat, Neutral, Sharp, DoubleSharp};
 enum dynamic {mute, piano, mezzopiano, mezzoforte, forte};
 
 typedef array<chromatic, DiatonicDegrees> scale;
-typedef tuple<chromatic, octave> pitch;
-typedef tuple<diatonic, accidental, octave, dynamic, size_t> note;
+
+struct pitch
+{
+    chromatic c;
+    octave o;
+    pitch();
+    pitch(size_t);
+    pitch(chromatic, octave);
+    size_t p();
+    pitch add(size_t);
+    pitch add(chromatic, octave);
+    pitch subtract(size_t);
+    pitch subtract(chromatic, octave);
+};
+
+struct note
+{
+    diatonic d;
+    accidental a;
+    octave o;
+    dynamic v;
+    size_t duration;
+};
+
 typedef vector<note> phrase;
 
 class key
 {
-    scale s;
+    scale basis;
     pitch root;
 public:
     key(scale, pitch);
