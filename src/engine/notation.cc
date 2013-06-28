@@ -68,11 +68,7 @@ expression<size_t FrameLength>::expression(phrase p, rhythm<FrameLength> r, key 
 {
     int j = 0;
     for (int i = 0; i < FrameLength; i++)
-    {
         if r[i] != 0
-        {
             at(i) = note{k.p(p[j]), r[i]};
-        }
-    }
 }
 
