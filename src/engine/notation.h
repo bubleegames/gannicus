@@ -33,16 +33,20 @@ struct pitch
     pitch subtract(chromatic, octave);
 };
 
-struct note
+struct degree
 {
     diatonic d;
     accidental a;
     octave o;
-    dynamic v;
+};
+
+struct note
+{
+    pitch p;
     size_t duration;
 };
 
-typedef vector<note> phrase;
+typedef vector<degree> phrase;
 
 class key
 {
@@ -52,7 +56,7 @@ public:
     key(scale, pitch);
     key translate(pitch);
     key transform(scale);
-    chromatic p(diatonic);
+    pitch p(degree);
 };
 
 template <size_t FrameLength>

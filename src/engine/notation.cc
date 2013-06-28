@@ -59,8 +59,20 @@ key key::transform(scale s)
     return key(s, root);
 }
 
-chromatic key::p(diatonic d)
+pitch key::p(degree d)
 {
-    return basis[d];
-
+    return root.add(basis[d.d] + d.a + d.o * DiatonicDegrees);
 }
+
+expression<size_t FrameLength>::expression(phrase p, rhythm<FrameLength> r, key k)
+{
+    int j = 0;
+    for (int i = 0; i < FrameLength; i++)
+    {
+        if r[i] != 0
+        {
+            at(i) = note{k.p(p[j]), r[i]};
+        }
+    }
+}
+
