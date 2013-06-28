@@ -2,13 +2,16 @@
 
 #ifndef SCALES_DEFINED
 #define SCALES_DEFINED
+
 /*
 scale Black = {};
 scale Orange = {};
 scale Red = {};
 scale Yellow = {};
 */
-/*
+
+namespace scales
+{
 //Real heptatonic scales
 scale Aeolian       ={Cr0, Cr2, Cr3, Cr5, Cr7, Cr8, Cr10};
 scale Harmonic      ={Cr0, Cr2, Cr3, Cr5, Cr7, Cr8, Cr11};
@@ -23,6 +26,7 @@ scale Freygish      ={Cr0, Cr1, Cr3, Cr5, Cr6, Cr9, Cr10};
 
 //Scales constrained to be more heptatonic
 scale Blues         ={Cr0, Cr3, Cr5, Cr6, Cr7, Cr10, Cr11};
+};
 
-*/
 #endif
+

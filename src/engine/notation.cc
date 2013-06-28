@@ -14,13 +14,13 @@ pitch::pitch(chromatic cp, octave oct)
 
 pitch::pitch(size_t p)
 {
-    c = static_cast<chromatic>(p % 12);
-    o = static_cast<octave>(p / 12);
+    c = static_cast<chromatic>(p % ChromaticOctave);
+    o = static_cast<octave>(p / ChromaticOctave);
 }
 
 size_t pitch::p()
 {
-    return static_cast<int>(c) + static_cast<int>(o) * 12;
+    return c + o * ChromaticOctave;
 }
 
 pitch pitch::add(size_t delta)
@@ -59,8 +59,8 @@ key key::transform(scale s)
     return key(s, root);
 }
 
-pitch key::p(note n, diatonic mode)
+chromatic key::p(diatonic d)
 {
-    return root.add(basis[n.d], n.o);
-}
+    return basis[d];
 
+}

@@ -52,7 +52,7 @@ public:
     key(scale, pitch);
     key translate(pitch);
     key transform(scale);
-    pitch p(note, diatonic=Tonic);
+    chromatic p(diatonic);
 };
 
 template <size_t FrameLength>
