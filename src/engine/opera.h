@@ -49,7 +49,8 @@ public:
     ~vocalization();
 };
 
-class voice : vector<array<vocalization, ChromaticOctave>>
+template <typename SampleType> //e.g. sample, fragment, vocalization, synth. anything with an operator() designed to play samples
+class voice : vector<array<SampleType, ChromaticOctave>>
 {
     pitch root;
 public:
