@@ -65,7 +65,14 @@ using rhythm = array<array<size_t, FrameLength>, FrameLength>;
 template <size_t FrameLength>
 class expression : array<note, FrameLength>
 {
-    expression(phrase, rhythm<FrameLength>, key, diatonic=Tonic);
+    expression(phrase p, rhythm<FrameLength> r, key k)
+    {   
+        int j = 0;
+        for (int i = 0; i < FrameLength; i++)
+            if (r[i] != 0)
+                this[i] = note{k.p(p[j]), r[i]};
+    }
 };
+
 
 #endif
