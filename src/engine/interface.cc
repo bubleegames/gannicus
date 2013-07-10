@@ -769,6 +769,7 @@ void interface::processInput(SDL_Event &event)
 				if(configMenu[i] > 1 && configMenu[i] < 7){
 					p[i]->swapKey(1 << (configMenu[i]+2), event);
 					configMenu[i]++;
+					counter[i] = 10;
 				}
 			}
 		}

@@ -5,7 +5,6 @@
 #include <vector>
 #include <array>
 #include "notation.h"
-
 using std::array;
 using std::string;
 using std::vector;
