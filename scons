@@ -1,3 +1,0 @@
-#!/bin/bash
-
-python .scons/scons.py $@
