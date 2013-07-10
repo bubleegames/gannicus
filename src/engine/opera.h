@@ -26,8 +26,17 @@ public:
 class fragment : public sample //Class corresponding to a frame of audio.
 {
 public:
-    fragment(array<unsigned int, sampleRate / 60>);
+    fragment(array<unsigned int, sampleRate / 60>);//For testing purposes
     fragment(const sample&); //Should cut off everything past sampleRate/60 samples.
+    fragment() {}
+    fragment(string);
+};
+
+template <typename T_func>
+class synth : public sample
+{
+    ALuint operator()(); //Generate one frame worth of music according to a mathematical rule. T is evaluated "once per sample rate" (but untimed) to populate the ALuint with one frame of sound
+
 };
 
 class vocalization : array<vector<fragment>, 3>
@@ -55,5 +64,5 @@ public:
 	virtual void init();
 	virtual ~soundScape();
 };
-  
+
 #endif
