@@ -12,7 +12,7 @@ using std::vector;
 #ifndef OPERA_INCLUDED
 #define OPERA_INCLUDED
 
-const int sampleRate = 8040;
+const int sampleRate = 60 * 128; //Hella numerical simplicity. I am experimenting to see if we really need more samples than this, but I am not finding things that degrade in a bad/non-interesting way yet.
 
 class sample {
 public:
