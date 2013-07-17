@@ -165,8 +165,10 @@ void interface::drawConfigMenu(int ID)
 					break;
 			}
 		}
-		if(a == 0) glColor4f(1.0, 0.0, 0.0, 0.4 + (float)(configMenu[ID] == i)*0.4);
-		else glColor4f(1.0, 1.0, 0.0, 0.4 + (float)(configMenu[ID] == i)*0.4);
+		if(!a){ 
+			sprintf(buffer, "Not Set");
+			glColor4f(1.0, 0.0, 0.0, 0.4 + (float)(configMenu[ID] == i)*0.4);
+		} else glColor4f(1.0, 1.0, 0.0, 0.4 + (float)(configMenu[ID] == i)*0.4);
 		drawGlyph(buffer, 70 + 1230*ID, 300, 310+40*(i-1), 40, 0);
 	}
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(configMenu[ID] == 7)*0.4);
@@ -232,18 +234,18 @@ void interface::drawHint(int i)
 		if(blockFail[i] & 1){
 			if(!(blockFail[i] & 2)){
 				glColor4f(0.0, 1.0, 0.0, 0.7);
-				drawGlyph("low", 100+1000*i, 400, 300, 55, 2*i);
+				drawGlyph("low", 0, 400, 300, 55, 2*i);
 			}
 		} else if(blockFail[i] & 2){
 			glColor4f(1.0, 0.6, 0.6, 0.7);
-			drawGlyph("high", 100+1000*i, 400, 300, 55, 2*i);
+			drawGlyph("high", 0, 400, 300, 55, 2*i);
 		} else if(blockFail[i] & 4){
 			if(blockFail[i] & 8) glColor4f(1.0, 0.0, 0.0, 0.7);
 			else glColor4f(0.0, 0.0, 1.0, 0.7);
-			drawGlyph("air", 100+1000*i, 400, 300, 55, 2*i);
+			drawGlyph("air", 0, 400, 300, 55, 2*i);
 		} else if(blockFail[i] & 8){
 			glColor4f(1.0, 0.0, 0.0, 0.7);
-			drawGlyph("unblock", 100+1000*i, 300, 500, 55, 2*i);
+			drawGlyph("unblock", 0, 300, 500, 55, 2*i);
 		}
 	}
 }
@@ -263,7 +265,19 @@ void interface::drawHUD()
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(P[i]->name.size()) drawGlyph(P[i]->name, 100+800*i, 600, 30, 40, 0+2*i);
 		else drawGlyph(things[i]->pick()->name, 100+800*i, 600, 30, 40, 0+2*i);
-		drawHint(i);
+		if(P[i]->reversalPossible()){
+			glDisable( GL_TEXTURE_2D );
+			glPushMatrix();
+				glTranslatef(50+i*1470, 860, 0);
+				glColor4f(0.0, 1.0, 0.0, 1.0);
+				glRectf(0.0, 0.0, 30.0, 30.0);
+			glPopMatrix();
+			glEnable( GL_TEXTURE_2D );
+		}
+		glPushMatrix();
+			glTranslatef(100+i*1000, 0, 0);
+			drawHint(i);
+		glPopMatrix();
 		if(counterHit[i] > 0){
 			glColor4f(1.0, 1.0, 0.5, 0.7);
 			drawGlyph("Counter", 100+1000*i, 400, 200, 55, 2*i);
@@ -347,13 +361,13 @@ void interface::drawHUD()
 	}
 	glDisable( GL_TEXTURE_2D );
 	for(unsigned int i = 0; i < P.size(); i++){
-		glColor4f(1.0*(P[i]->current.mode == 1), 0.0f, 1.0*(P[i]->current.mode == 2), 1.0f);
+/*		glColor4f(1.0*(P[i]->current.mode == 1), 0.0f, 1.0*(P[i]->current.mode == 2), 1.0f);
 		string grv("");
 		grv += 'A' - 1 + P[i]->current.mode;
 		glEnable( GL_TEXTURE_2D );
 		drawGlyph(grv, 1550*i, 50, 850, 50, 2*i);
 		glDisable( GL_TEXTURE_2D );
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+*/		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		P[i]->drawMeters(numRounds);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	}
@@ -438,13 +452,15 @@ void character::drawMeters(int ID, int hidden, status &current)
 	G = (m.w == 600) ? 255 : ((m.w / 150) % 2);
 	if(m.w < 300) R = 191;
 	else if(m.w < 600) B = 255;
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glColor4f(0.0f, 0.0f, 0.0f, 0.4f);
+	glRectf((GLfloat)(ID == 1 ? 100 : 900), (GLfloat)(h.y), (GLfloat)(ID == 1 ? 700 : 1500), (GLfloat)(h.y + h.h));
 	glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 	glRectf((GLfloat)(h.x), (GLfloat)(h.y), (GLfloat)(h.x + h.w), (GLfloat)(h.y + h.h));
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glColor4f(0.0f, 0.0f, 0.0f, 0.4f);
+	glRectf((GLfloat)(ID == 1 ? 100 : 900), (GLfloat)(m.y), (GLfloat)(ID == 1 ? 700 : 1500), (GLfloat)(m.y + m.h));
 	glColor4f((float)R, (float)G, (float)B, 1.0f);
 	glRectf((GLfloat)(m.x), (GLfloat)(m.y), (GLfloat)(m.x + m.w), (GLfloat)(m.y + m.h));
-	glColor4f((float)R, (float)G, (float)B, 0.4f);
+	glColor4f((float)R, (float)G, (float)B, 0.6f);
 	glRectf((GLfloat)(g.x), (GLfloat)(g.y), (GLfloat)(g.x + g.w), (GLfloat)(g.y + g.h));
 }
 

@@ -94,7 +94,7 @@ void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> butt
 	action * t = nullptr;
 	t = hook(current, inputBuffer, buttons);
 	if(!t){
-		if(current.move->followupSpan.end && current.move->followupSpan == current.frame) cout << current.frame << "\n";
+		if(current.move->followupSpan.end && current.move->followupSpan == current.frame);
 		if(current.move->window(current.frame)){
 			if(current.move->attempt->check(current)){
 				t = current.move->attempt;

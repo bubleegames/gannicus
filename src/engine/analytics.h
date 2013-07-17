@@ -45,12 +45,12 @@ public:
 	script(string);
 	void init(int);
 	void init(vector<int>);
-	void push(int i, frame);
-	void push(frame);
-	vector<vector<frame> > command;
+	void push(int i, inputs);
+	void push(inputs);
+	vector<vector<inputs> > command;
 	vector<int> selection;
 	bool test();
-	bool genEvent(int, int, frame&);
+	bool genEvent(int, int, inputs&);
 	virtual void load(string);
 	virtual void write(string);
 	virtual void write();

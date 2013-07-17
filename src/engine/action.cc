@@ -656,27 +656,12 @@ void action::pollRects(int f, int cFlag, SDL_Rect &c, vector<SDL_Rect> &r, vecto
 	if(modifier && basis.move) basis.move->pollRects(basis.frame, basis.connect, c, r, b);
 	else {
 		if(f >= frames) f = frames-1;
-
-		c.x = collision[f].x; c.w = collision[f].w;
-		c.y = collision[f].y; c.h = collision[f].h;
-
+		c = collision[f];
 		r.clear();
-		for(unsigned int i = 0; i < hitreg[f].size(); i++){
-			SDL_Rect reg;
-			reg.x = hitreg[f][i].x; reg.w = hitreg[f][i].w;
-			reg.y = hitreg[f][i].y; reg.h = hitreg[f][i].h;
-			r.push_back(reg);
-		}
+		r = hitreg[f];
 		b.clear();
-		for(unsigned int i = 0; i < hitbox[f].size(); i++){
-			if(cFlag > calcCurrentHit(f)) {
-				i = hitbox[f].size();
-			} else {
-				SDL_Rect hit;
-				hit.x = hitbox[f][i].x; hit.w = hitbox[f][i].w;
-				hit.y = hitbox[f][i].y; hit.h = hitbox[f][i].h;
-				b.push_back(hit);
-			}
+		if(cFlag <= calcCurrentHit(f)) {
+			b = hitbox[f];
 		}
 	}
 }

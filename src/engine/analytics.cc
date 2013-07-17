@@ -10,7 +10,7 @@ void script::init(int players)
 {
 	for(int i = 0; i < players; i++){
 		selection.push_back(-1);
-		vector<frame> tvec;
+		vector<inputs> tvec;
 		command.push_back(tvec);
 	}
 }
@@ -19,40 +19,35 @@ void script::init(vector<int> s)
 {
 	for(unsigned int i = 0; i < s.size(); i++){
 		selection.push_back(s[i]);
-		vector<frame> tvec;
+		vector<inputs> tvec;
 		command.push_back(tvec);
 	}
 }
 
 bool script::test()
 {
-	frame l;
-	for(int i = 0; i < 4; i++)
-		l.axis.push_back(0);
-	for(int i = 4; i < 6; i++){
-		l.buttons.push_back(0);
-	}
-	l.n.i = 0;
-	l.n.raw.dir = 5;
+	inputs l;
+	l.i = 0;
+	l.raw.dir = 5;
 	return genEvent(0, 0, l);
 }
 
-bool script::genEvent(int p, int f, frame &t)
+bool script::genEvent(int p, int f, inputs &t)
 {
 	if(command.empty() || (unsigned int)p >= command.size()) return 0;
 	if(command[p].empty() || (unsigned int)f >= command[p].size()) return 0;
 
-	//printf("%i: %i\n", p, command[p][f].n.i);
-	t.n.i = command[p][f].n.i;
+	//printf("%i: %i\n", p, command[p][f].i);
+	t.i = command[p][f].i;
 	return 1;
 }
 
-void script::push(frame t)
+void script::push(inputs t)
 {
 	push(0, t);
 }
 
-void script::push(int p, frame t)
+void script::push(int p, inputs t)
 {
 	command[p].push_back(t);
 }
@@ -76,13 +71,13 @@ void script::load(string filename)
 		selection.push_back(s);
 	}
 	for(int i = 0; i < players; i++){
-		vector<frame> t;
+		vector<inputs> t;
 		command.push_back(t);
 	}
 	while(!read.eof()){
 		for(int i = 0; i < players; i++){
-			frame temp;
-			read >> temp.n.i;
+			inputs temp;
+			read >> temp.i;
 			command[i].push_back(temp);
 		}
 	}
@@ -106,7 +101,7 @@ void script::write(string name)
 		scribe.close();
 		return;
 	}
-	scribe << selection.size() << " " << command[0][0].buttons.size() << '\n';
+	scribe << selection.size() << " " << 6 << '\n';
 	for(unsigned int i = 0; i < selection.size(); i++){
 		scribe << selection[i];
 		if(i == 0) scribe << " ";
@@ -114,7 +109,7 @@ void script::write(string name)
 	scribe << '\n';
 	for(unsigned int i = 0; i < command[0].size(); i++){
 		for(unsigned int j = 0; j < command.size(); j++){
-			scribe << command[j][i].n.i;
+			scribe << command[j][i].i;
 		}
 		scribe << '\n';
 	}

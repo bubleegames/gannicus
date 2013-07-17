@@ -324,6 +324,18 @@ void controller::writeConfig(int ID)
 	write.close();
 }
 
+bool player::reversalPossible()
+{
+	if(current.move->state[current.connect].i & 1) return false;
+	if(current.move->linkable) return true;
+	if(current.counter < 0 && current.counter > -11) return true;
+	int f = current.move->frames;
+	if(current.move->next) f += current.move->next->frames;
+	if(current.frame + 10 < f) return false;
+	if(current.frame < 4) return false;
+	return true;
+}
+
 void player::characterSelect(int i)
 {
 	v = nullptr;

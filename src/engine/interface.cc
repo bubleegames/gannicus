@@ -58,7 +58,10 @@ interface::interface()
 void interface::handleArgs(vector<string> args)
 {
 	for(string i:args) {
-		if(i == "eleven") killTimer = true;
+		if(i == "eleven"){
+			killTimer = true;
+			pauseEnabled = true;
+		}
 	}
 }
 
@@ -480,11 +483,11 @@ void interface::resolveInputs()
 			else if(timer == 106 * 60 - 3) things[i]->inputBuffer[0] = selection[(i+1)%2] % 10;
 			else if(timer == 106 * 60 - 4) things[i]->inputBuffer[0] = 0;
 			else(things[i]->inputBuffer[0] = 5);
-			if(currentFrame[i].buttons[1] == 1 && !counter[i]){
+/*			if(currentFrame[i].buttons[1] == 1 && !counter[i]){
 				P[i]->current.mode = P[i]->current.mode == 1 ? 2 : 1;
 				counter[i] = 10;
 			}
-			for(int j:currentFrame[i].buttons) j = 0;
+*/			for(int j:currentFrame[i].buttons) j = 0;
 		}
 	} else {
 		int flop[2] = {0, 0};
@@ -515,9 +518,9 @@ void interface::resolveInputs()
 	}
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(analytics)
-			replay->push(i, currentFrame[i]);
+			replay->push(i, currentFrame[i].n);
 		if(P[i]->record)
-			P[i]->record->push(currentFrame[i]);
+			P[i]->record->push(currentFrame[i].n);
 	}
 }
 
@@ -730,7 +733,7 @@ void gameInstance::genInput()
 {
 	if(oldReplay){
 		for(unsigned int i = 0; i < p.size(); i++)
-			oldReplay->genEvent(i, replayIterator, currentFrame[i]);
+			oldReplay->genEvent(i, replayIterator, currentFrame[i].n);
 		replayIterator++;
 		if(replayIterator > oldReplay->command[0].size()){
 			delete oldReplay;
@@ -741,7 +744,7 @@ void gameInstance::genInput()
 		if(!pauseEnabled){
 			for(unsigned int i = 0; i < P.size(); i++){
 				if(P[i]->currentMacro){
-					if(!P[i]->currentMacro->genEvent(0, P[i]->iterator, currentFrame[i])){
+					if(!P[i]->currentMacro->genEvent(0, P[i]->iterator, currentFrame[i].n)){
 						P[i]->currentMacro = nullptr;
 					} else {
 						if(P[i]->current.facing == -1){
@@ -908,7 +911,7 @@ void interface::cSelectMenu()
 		SDL_GL_SwapBuffers();
 		for(unsigned int i = 0; i < P.size(); i++){
 			P[i]->characterSelect(selection[i]);
-			P[i]->current.mode = groove[i];
+//			P[i]->current.mode = groove[i];
 		}
 		loadAssets();
 		if(analytics){
@@ -1201,7 +1204,7 @@ void interface::resolveCollision()
 		temp.back().x -= dx.back();
 	}
 
-	unsigned int localMaximum = min(temp[0].w, temp[1].w) / 5 - 1;
+	unsigned int localMaximum = min(temp[0].w, temp[1].w) / 6 - 1;
 	unsigned int j[2] = {0, 0};
 	while(j[0] < abs(dx[0]) || j[1] < abs(dx[1])){
 		if(aux::checkCollision(temp[0], temp[1])){
@@ -1361,7 +1364,7 @@ void interface::resolveHits()
 				}
 				if(things[i]->particleType == -2){
 					hStat ths;
-					ths.damage = s[hitBy[i]].chip ? s[hitBy[i]].chip : 1;
+					ths.damage = s[hitBy[i]].chip ? s[hitBy[i]].chip : s[hitBy[i]].damage/5;
 					ths.ghostHit = true;
 					ths.stun = 0;
 					ths.push = s[hitBy[i]].push;

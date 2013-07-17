@@ -83,6 +83,7 @@ public:
 	virtual int takeHit(int, hStat&, SDL_Rect&);
 //	virtual void connect(int, hStat&);
 	virtual int CHState();
+	virtual bool reversalPossible();
 
 	void setKey(int);
 	bool setKey(int, SDL_Event);
