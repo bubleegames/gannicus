@@ -47,6 +47,7 @@ Well, okay, I have an idea of it. Let's formalize that.
         * The file being read, before they're referenced
         * A general file to be included, with the names of diatonic pitches and such
 
+        *The structure file is read in last. It will name sections which are expected to be defined in every .s file.
 
 * Collections:
     * Collections are any number of identifiers, separated by commas and enclosed in the appropriate brace.
@@ -54,8 +55,10 @@ Well, okay, I have an idea of it. Let's formalize that.
         * Shorthand for binary (I1 | I2 | I3).
         * Effectively forms a bitstring that is the notes to play in the chord.
         * Not really a collection except as syntax. Length is 1.
+    * Strum: s[I1, I2, I3]
+        * chord, but play each note offset by one 
     * Phrase: {I1, I2, I3}
-        * Identifiers can be notes or collections. Length is total length of those collections.
+        * Identifiers can be notes.
 
 * Special:
     * ++: The last thing, but every note gets an accidental sharp added as it is instantiated.
