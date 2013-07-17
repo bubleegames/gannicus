@@ -1,0 +1,62 @@
+files to make or consider:
+    * scale - list of ints between 0 and 12 of length 6 representing an addend to the tonic (length 6 cause the first note in the scale is 1 + 0 = tonic in all scales).
+    * envelope.s - list of (lists of volumes of length equal to the basis length)
+    * counterpoint.s - lead part to play against opponent's lead
+    * comping.s - chord part to play against opponent
+
+architecture considerations:
+*I'm increasingly thinking that if the basis set by a character is too small for a phrase contributed by the other character, truncation is actually sane. it creates interesting rhythms. so just ignore indices in the x component of the matrix that are past the basis length.
+
+* notation: should the octave start at C? should we even use diatonic notes? until I find an alternative that is easier to remember, yes.
+
+* chords are probably necessary, don't know why I was thinking monophony would be good for non-drum instruments. 
+
+to still fit phrases on one (reasonably long) line, maybe prior definitions of chords would be useful? (this gets lengthy in songs with a lot of unique chords but even then it avoids repetition if any would otherwise occur).
+
+so e.g.
+Em = [E1, B1, G2]
+...
+Am Em G1 CM
+
+* I was thinking a syntax for looping lines a few times would be nice too,
+maybe similar to chords, like
+
+Body: {E1, B1, Em, Em}
+...
+Main: {Body, Body, Body, Body, Bridge, Bridge, Body, Body}.
+
+In fact, there should be one structure file, and the other files just need to name sections.
+
+But those sections could be made up of subsections?
+
+So this needs more syntax.
+
+
+
+THE ACTUAL SYNTAX (For .s files, e.g. not the scale or basis specification)
+
+Well, okay, I have an idea of it. Let's formalize that.
+
+* Identifier: Any string on the left hand side of a colon. 
+    * Unique, can only occur on the left hand side of a colon once.
+    * Defines a name as being either an integer that is a power of 2 or a collection.
+    * A single note is an integer that is a power of 2.
+
+    * Identifiers should be included from:
+        * The file being read, before they're referenced
+        * The appropriate character's scale file
+            (contains all diatonic identifiers, e.g. E1) 
+
+* Collections:
+    * Collections are any number of identifiers, separated by commas and enclosed in the appropriate brace.
+    * Chord: [I1,I2,I3]
+        * Shorthand for binary (I1 | I2 | I3).
+        * Effectively forms a bitstring that is the notes to play in the chord.
+        * Not really a collection except as syntax. Length is 1.
+    * Phrase: {I1, I2, I3}
+        * Identifiers can be notes or collections. Length is total length of those collections.
+
+* Special:
+    * ++: The last thing, but every note gets an accidental sharp added as it is instantiated.
+    * --: The last thing, but every note gets an accidental flat added as it is instantiated.
+    * 0 or []: A rest, no note plays.
