@@ -44,8 +44,8 @@ Well, okay, I have an idea of it. Let's formalize that.
 
     * Identifiers should be included from:
         * The file being read, before they're referenced
-        * The appropriate character's scale file
-            (contains all diatonic identifiers, e.g. E1) 
+        * A general file to be included, with the names of diatonic pitches and such
+
 
 * Collections:
     * Collections are any number of identifiers, separated by commas and enclosed in the appropriate brace.
