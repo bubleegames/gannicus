@@ -40,8 +40,9 @@ Well, okay, I have an idea of it. Let's formalize that.
 * Identifier: Any string on the left hand side of a colon. 
     * Unique, can only occur on the left hand side of a colon once.
     * Defines a name as being either an integer that is a power of 2 or a collection.
-    * A single note is an integer that is a power of 2.
-
+    * A single note is an integer that is a power of 2. Multiple notes are any other integer (see chord, below).
+        * A note name (e.g. C1) could be used, or just a literal. 
+        For drums, literals make more sense (they're just indices)
     * Identifiers should be included from:
         * The file being read, before they're referenced
         * A general file to be included, with the names of diatonic pitches and such
