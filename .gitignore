@@ -1,9 +1,4 @@
 *.swp
-.sconsign.dblite
-.build/
-gufg*
-bmpout*
-replay*
+bin/
 .data/
 .config/
-.scons/*{,/*{,/*{,/*}}}.pyc
