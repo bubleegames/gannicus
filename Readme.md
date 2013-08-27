@@ -1,15 +1,15 @@
-#Ground Up Fighting Game 
+#Gannicus 
 
-GUFG is an open-source,
+Gannicus is an open-source,
            gameplay-focused,
            deterministic,
            2D fighting game engine
         developed from the ground up and
         built using C++, SDL, and OpenGL.
 
-##Building and testing GUFG on Linux and Mac OS X
+##Building and testing gannicus on Linux and Mac OS X
 
-The current version of GUFG can be built using Boost.Build.
+The current version of gannicus can be built using Boost.Build.
 
 1. Install the dependencies:
 
@@ -33,7 +33,7 @@ The current version of GUFG can be built using Boost.Build.
   e) Boost.Build
 
 2. Clone this repository
-  (`git clone git@github.com:Advael/GUFG.git`) and `cd` to it.
+  (`git clone git@github.com:h-forrest-alexander/gannicus.git`) and `cd` to it.
 
 
 3. Run `bjam` or `b2` to build the game.
