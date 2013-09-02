@@ -1,6 +1,9 @@
 #include "window.h"
 #include "gl-compat.h"
+#include "shader.h"
+#include "auxil.h"
 #include <SDL/SDL_opengl.h>
+#include <iostream>
 
 window::window()
 {
@@ -8,12 +11,15 @@ window::window()
 	h = 450, w = 800;
 }
 
+void window::initShaders()
+{
+}
+
 bool window::screenInit()
 {
 	/*Initialize SDL*/
-	if(SDL_Init(SDL_INIT_EVERYTHING) < 0){  
+	if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
 		return false;
-
 	}
 	/*WM stuff*/
 	SDL_WM_SetCaption("downtop", "downtop");
@@ -33,8 +39,8 @@ bool window::screenInit()
 
 	glHint (GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
-	glClearColor(1, 1, 1, 0);
-	glShadeModel (GL_SMOOTH);
+	glClearColor(0, 0, 0, 1);
+	//glShadeModel (GL_SMOOTH);
 	glClearDepth(1.0f);
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
@@ -42,7 +48,9 @@ bool window::screenInit()
 	glOrtho(0, w, h, 0, 1, -1);
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glMatrixMode(GL_MODELVIEW);
+	std::cout << "GLSL:" << glGetString (GL_SHADING_LANGUAGE_VERSION) << "\n";
 	glLoadIdentity();
+	initShaders();
 	return true;
 }
 

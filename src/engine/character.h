@@ -18,7 +18,7 @@ public:
 	virtual void init(status&) = 0;
 	virtual action * moveSignal(int);
 	bool spriteCheck(action *&, int);
-	virtual void draw(action *&, int);
+	virtual void draw(action *&, int, GLint);
 	virtual action * createMove(string);
 	virtual action * dealWithMove(string);
 	virtual action * mandateMove(string);
@@ -33,7 +33,7 @@ public:
 	virtual bool death(status&) { return 0; }
 	virtual int takeHit(status&, hStat&, int, int&) { return 0; }
 	virtual void getName(string, string);
-	virtual void loadAssets();
+	virtual void loadAssets(int);
 	virtual void connect(status&);
 	virtual hStat pollStats(status&);
 	virtual void pollRects(status&, SDL_Rect&, vector<SDL_Rect>&, vector<SDL_Rect>&);
@@ -44,8 +44,10 @@ public:
 	virtual action * neutralize(status&);
 	virtual bool turn(int&) { return 0; }
 	string name;
+	string dir;
 	actionTrie * head;
 	int lifespan;
+	GLuint palette;
 
 	action * die;
 	action * neutral;

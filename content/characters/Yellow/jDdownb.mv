@@ -4,7 +4,6 @@ Hits: 0
 Frames: 5 : 5
 Check: 8193
 Next: flashending
-FlashCost: 25
 Landing: -NL
 State: 0
 Gain: 0
@@ -15,19 +14,19 @@ Properties: sS
 $C	0 30 0 297
 $R	0 300 0 0
 $D	-56 -56 0 0
-#0
+#1
 $C	0 30 0 297
 $R	0 300 0 0
 $D	0 6 0 0
-#0
+#2
 $C	0 30 0 297
 $R	0 300 0 0
 $D	0 6 0 0
-#0
+#3
 $C	0 0 0 330
 $R	0 300 0 0
 $D	0 6 0 0
-#0
+#4
 $C	0 30 0 297
 $R	0 236 0 70
 $D	56 62 0 0

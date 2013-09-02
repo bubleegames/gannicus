@@ -217,6 +217,7 @@ void avatar::build(string directory, string file)
 	bool commentFlag;
 	ifstream read;
 	read.open("content/characters/"+directory+"/"+file+".ch");
+	dir = directory;
 
 	if(read.fail()){ 
 		cout << directory << "/" << file << " Character definition not found\n";
@@ -248,10 +249,12 @@ void avatar::sortMove(action * m, string key)
 	}
 }
 
-void avatar::loadAssets()
+void avatar::loadAssets(int pal)
 {
-	for(action *i:moveList){ 
-		if(i->payload) i->payload->loadAssets();
+	string p = "content/characters/"+dir+"/palette" + std::to_string(pal) + ".png";
+	palette = aux::load_texture(p);
+	for(action *i:moveList){
+		if(i->payload) i->payload->loadAssets(pal);
 		i->loadMisc(name);
 	}
 }
@@ -541,7 +544,10 @@ int character::takeHit(status &current, hStat & s, int blockType, int &hitType)
 		current.move = die;
 		current.aerial = true;
 	} else if(hitType == 1) {
-		if(s.launch) current.aerial = true;
+		if(s.launch){
+			if(!current.aerial) s.untech += s.initialLaunch;
+			current.aerial = true;
+		}
 		if(s.stun != 0){
 			current.frame = 0;
 			if(current.aerial){
@@ -588,6 +594,7 @@ void character::init(status& current)
 	current.meter[1] = 0;
 	resetAirOptions(current.meter);
 	current.meter[4] = 0;
+	current.mode = 0;
 }
 
 void character::resetAirOptions(vector<int>& meter)

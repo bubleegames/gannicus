@@ -38,9 +38,11 @@ interface::interface()
 	read.open(".config/resolution.conf");
 	if(read.fail()){ 
 		scalingFactor = 0.5;
+		musicVolume = 100;
 	} else {
 		read >> scalingFactor >> displayMode;
 		read.ignore(100, '\n');
+		read >> musicVolume;
 	}
 	read.close();
 	sf = scalingFactor;
@@ -63,6 +65,16 @@ void interface::handleArgs(vector<string> args)
 			pauseEnabled = true;
 		}
 	}
+}
+
+void interface::initShaders()
+{
+	//string version(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+	//version.erase(1,1);
+	//Currently we've only dealt with two shaders, which we have code for. 
+	//Ostensibly we need to look for a closest version or a threshold version where syntax changed.
+	prog = shaderProgram("", "src/shaders/pink130.frag");
+	window::initShaders();
 }
 
 void interface::createPlayers(string rep)
@@ -93,7 +105,6 @@ void interface::createPlayers()
 		P.push_back(new player(i+1));
 		p.push_back(P[i]);
 		select.push_back(false);
-		groove.push_back(0);
 		selection.push_back(1+i);
 		combo.push_back(0);
 		damage.push_back(0);
@@ -115,7 +126,31 @@ void interface::loadMatchBackground()
 	char buffer[100];
 
 	sprintf(buffer, "content/stages/%i/bg.png", selection[0]);
-	background = aux::load_texture(buffer);
+	if(!killTimer && scalingFactor > .8) background = aux::load_texture(buffer);
+	else {
+		switch (selection[0]){
+		case 1: 
+			bgR = 1.0;
+			bgG = 0.0;
+			bgB = 0.0;
+			break;
+		case 2:
+			bgR = 1.0;
+			bgG = 1.0;
+			bgB = 0.0;
+			break;
+		case 3:
+			bgR = 0.0;
+			bgG = 0.0;
+			bgB = 0.0;
+			break;
+		case 4:
+			bgR = 1.0;
+			bgG = 0.5;
+			bgB = 0.0;
+			break;
+		}
+	}
 
 	if(selection[0] == selection[1]) sprintf(buffer, "content/sound/Mirror.ogg");
 	else sprintf(buffer, "content/sound/%i.ogg", selection[1]);
@@ -234,7 +269,7 @@ void interface::matchInit()
 	}
 	pMenu = 0;
 	if(!select[0] || !select[1]){
-		Mix_VolumeMusic(100);
+		Mix_VolumeMusic(musicVolume);
 		Mix_PlayMusic(menuMusic, -1);
 		//printf("\n");
 	}
@@ -281,7 +316,7 @@ void interface::runTimer()
 {
 	if(freeze > 0) freeze--;
 	if(P[0]->rounds == 0 && P[1]->rounds == 0 && timer == 101 * 60){
-		Mix_VolumeMusic(100);
+		Mix_VolumeMusic(musicVolume);
 		Mix_PlayMusic(matchMusic,-1);
 	}
 	int plus;
@@ -330,7 +365,6 @@ void interface::runTimer()
 						for(unsigned int i = 0; i < P.size(); i++){
 							delete P[i]->pick();
 							select[i] = 0;
-							groove[i] = 0;
 						}
 					}
 					if(SDL_WasInit(SDL_INIT_VIDEO) != 0){
@@ -431,7 +465,13 @@ void interface::resolveCombos()
 				blockFail[i] = 0;
 				break;
 			case 0:
-				if(killTimer) P[i]->current.meter[0] = 600;
+				if(killTimer && !freeze){ 
+					P[i]->current.meter[0] = 600;
+					if(combo[i] == 0 && P[(i+1)%2]->current.move->state[0].b.neutral){
+						P[(i+1)%2]->current.meter[1] = 300;
+						P[(i+1)%2]->current.meter[4] = 0;
+					}
+				}
 				combo[(i+1)%2] = 0;
 				damage[(i+1)%2] = 0;
 				prorate[(i+1)%2] = 1.0;
@@ -497,8 +537,8 @@ void interface::resolveInputs()
 				else if(currentFrame[i].n.raw.dir % 3 == 1) flop[i] += 2; 
 			}
 		}
-		for(unsigned int i = 0; i < things.size(); i++)
-			things[i]->pushInput(currentFrame[things[i]->ID - 1].n.raw.dir + flop[things[i]->ID -1]);
+		for(player *i:P) i->pushInput(currentFrame[i->ID - 1].n.raw.dir + flop[i->ID -1]);
+		for(unsigned int i = 2; i < things.size(); i++) things[i]->pushInput(P[things[i]->ID - 1]->inputBuffer);
 		for(unsigned int i = 0; i < P.size(); i++){
 			bool test = 1;
 			P[i]->getMove(currentFrame[i].buttons, test);
@@ -526,6 +566,7 @@ void interface::resolveInputs()
 
 void interface::resolvePhysics()
 {
+	bool gripCheck;
 	for(unsigned int i = 0; i < things.size(); i++){
 		if(!things[i]->current.freeze){
 			if(!(things[i]->current.move->stop & 4)){
@@ -536,6 +577,7 @@ void interface::resolvePhysics()
 			}
 			for(unsigned int j = 0; j < globals.size(); j++){
 				if(globals[j]->ID != things[i]->ID){
+					gripCheck = globals[j]->grip ? true : false;
 					if(i < P.size()){
 						if(globals[j]->effectCode & 1){
 							things[i]->enforceAttractor(globals[j]);
@@ -544,6 +586,10 @@ void interface::resolvePhysics()
 						if(globals[j]->effectCode & 2){
 							things[i]->enforceAttractor(globals[j]);
 						}
+					}
+					if(!globals[j]->grip && gripCheck){ 
+						globals.erase(globals.begin()+j);
+						j--;
 					}
 				}
 			}
@@ -689,6 +735,7 @@ void interface::summonAttractors()
 			avec->radius = tvec->radius;
 			avec->effectCode = tvec->effectCode;
 			avec->eventHorizon = tvec->eventHorizon;
+			avec->grip = tvec->grip;
 			if(things[i]->current.facing == 1) avec->posX = things[i]->collision.x + things[i]->collision.w / 2;
 			else avec->posX = things[i]->collision.x + things[i]->collision.w / 2 + things[i]->collision.w % 2;
 			avec->posY = things[i]->collision.y + things[i]->collision.h/2;
@@ -852,11 +899,11 @@ void gameInstance::processInput(SDL_Event &event)
 void interface::cSelectMenu()
 {
 	/*The plan is that this is eventually a menu, preferably pretty visual, in which players can select characters.*/
-	for(player *i:P) i->secondInstance = 0;
 	if(!initd){ 
 		ofstream write;
-		write.open(".config/resolution.conf");
+		write.open(".config/settings.conf");
 		write << sf << ' ' << displayMode << '\n';
+		write << musicVolume << '\n';
 		write.close();
 		scalingFactor = sf;
 		assert(screenInit() != false);
@@ -880,16 +927,14 @@ void interface::cSelectMenu()
 				}
 				for(int j = 0; j < 5; j++){
 					if(currentFrame[i].buttons[j] == 1 && !select[i]){
-						if(j == 1) groove[i] = 2;
-						else groove[i] = 1;
 						select[i] = 1;
+						P[i]->selectedPalette = j;
 					}
 				}
 				if(currentFrame[i].n.raw.Start){
 					if(!select[i]) menu[i] = 3;
 					else {
 						select[i] = 0;
-						groove[i] = 0;
 					}
 					counter[i] = 10;
 				}
@@ -904,14 +949,15 @@ void interface::cSelectMenu()
 
 	if(select[0] && select[1]){
 		//cout << "2 6\n" << selection[0] << " " << selection[1] << '\n';
-		if(selection[0] == selection[1]) P[1]->secondInstance = true;
+		if(selection[0] == selection[1] && P[0]->selectedPalette == P[1]->selectedPalette){ 
+			P[1]->selectedPalette = (P[1]->selectedPalette + 1) % 5;
+		}
 		glClear(GL_COLOR_BUFFER_BIT);
 		glDisable(GL_TEXTURE_2D);
 		drawLoadingScreen();
 		SDL_GL_SwapBuffers();
 		for(unsigned int i = 0; i < P.size(); i++){
 			P[i]->characterSelect(selection[i]);
-//			P[i]->current.mode = groove[i];
 		}
 		loadAssets();
 		if(analytics){
@@ -1068,7 +1114,6 @@ void interface::pauseMenu()
 					for(unsigned int i = 0; i < P.size(); i++){
 						delete P[i]->pick();
 						select[i] = 0;
-						groove[i] = 0;
 						initCharacters();
 						things[i]->current.meter.clear();
 					}
@@ -1115,7 +1160,6 @@ void interface::rematchMenu()
 					for(unsigned int k = 0; k < P.size(); k++){
 						delete P[k]->pick();
 						select[k] = 0;
-						groove[k] = 0;
 						things[k]->current.meter.clear();
 					}
 					Mix_HaltMusic();
@@ -1317,7 +1361,7 @@ void interface::resolveHits()
 			if(m != (int)i){
 				for(unsigned int j = 0; j < things[i]->hitbox.size(); j++){
 					for(unsigned int k = 0; k < things[m]->hitreg.size(); k++){
-						if(aux::checkCollision(things[i]->hitbox[j], things[m]->hitreg[k])){
+						if(things[m]->checkHit(things[i]->hitbox[j], things[m]->hitreg[k])){
 							if(!taken[m] && !connect[i] && things[i]->acceptTarget(things[m])){
 								connect[i] = 1;
 								things[i]->current.counter = things[m]->CHState();
@@ -1392,7 +1436,7 @@ void interface::resolveHits()
 			}
 			if(!things[i]->current.aerial){
 				for(int j = 0; j < 6; j++){
-					if(2 << j & things[i]->current.move->state[things[i]->current.hit].i){
+					if(2 << j & things[i]->current.move->state[things[i]->current.hit].i || s[i].autoCorrects){
 						P[i]->checkFacing(P[(things[i]->ID)%2]);
 						break;
 					}
@@ -1418,8 +1462,8 @@ void interface::resolveHits()
 				}
 			} else { 
 				if(things[(i+1)%2]->current.aerial){
-					if(P[(i+1)%2]->current.rCorner || P[(i+1)%2]->current.lCorner) residual.x -= combo[i];
-					if(P[(i+1)%2]->stick) residual.x -= s[i].push/2 + combo[i];
+					if(P[(i+1)%2]->current.rCorner || P[(i+1)%2]->current.lCorner) residual.x -= abs(combo[i]);
+					if(P[(i+1)%2]->stick) residual.x -= s[i].push/2 + abs(combo[i]);
 					residual.x -= 2;
 				} else {
 					if(combo[i] > 1) residual.x = -3*(abs(combo[i]-1));

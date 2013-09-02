@@ -39,7 +39,10 @@ void action::zero()
 	tempRiposte.clear();
 	tempOnHold.clear();
 	tempParticle.clear();
+	restrictedMode = 0;
 	requiredMode = 0;
+	activateMode = 0;
+	removeMode = 0;
 	particleX = 0;
 	particleY = 0;
 	particleSpawn = -1;
@@ -167,7 +170,13 @@ void action::build(string dir, string n)
 			read.getline(buffer, 1000);
 			parseRect(buffer);
 		} while (buffer[0] == '$');
-		if(hitbox.size() < hitreg.size()) hitbox.push_back(vector<SDL_Rect>(0));
+		if(hitbox.size() < (unsigned int)i+1) hitbox.push_back(vector<SDL_Rect>(0));
+		if(hitreg.size() < (unsigned int)i+1) hitreg.push_back(vector<SDL_Rect>(0));
+		if(delta.size() < (unsigned int)i+1) delta.push_back(vector<SDL_Rect>(0));
+		if(collision.size() < (unsigned int)i+1){ 
+			SDL_Rect a;
+			collision.push_back(a);
+		}
 	}
 	read.close();
 }
@@ -209,7 +218,9 @@ void action::loadMisc(string dir)
 		}
 		SDL_FreeSurface(temp);
 	}
-	soundClip = Mix_LoadWAV(string("content/characters/"+dir+"/"+fileName+".ogg").c_str());
+//	soundClip = Mix_LoadWAV(string("content/characters/"+dir+"/"+fileName+".ogg").c_str());
+//	normalImage = aux::load_image("content/normal0000.png");
+//	normals = aux::surface_to_normals(normalImage);
 }
 
 bool action::setParameter(string buffer)
@@ -217,6 +228,15 @@ bool action::setParameter(string buffer)
 	tokenizer t(buffer, "\t:+\n");
 	if(t() == "Name"){;
 		name += t();
+		return true;
+	} else if (t.current() == "+Mode") {
+		activateMode += stoi(t("\t: \n"));
+		return true;
+	} else if (t.current() == "-Mode") {
+		removeMode += stoi(t("\t: \n"));
+		return true;
+	} else if (t.current() == "RestrictedMode") {
+		restrictedMode = stoi(t("\t: \n"));
 		return true;
 	} else if (t.current() == "RequiredMode") {
 		requiredMode = stoi(t("\t: \n"));
@@ -298,6 +318,7 @@ bool action::setParameter(string buffer)
 		return true;
 	} else if (t.current() == "EventHorizon") {
 		distortion->eventHorizon = stoi(t("\t: \n"));
+		distortion->grip = stoi(t());
 		return true;
 	} else if (t.current() == "Attracts") {
 		distortion->ID = stoi(t("\t: \n"));
@@ -428,6 +449,16 @@ bool action::setParameter(string buffer)
 			}
 		}
 		return true;
+	} else if (t.current() == "Launch") {
+		for(int i = 0; i < hits; i++){
+			if(buffer[0] == '+')
+				CHStats[i].initialLaunch = stoi(t("\t: \n"));
+			else{
+				stats[i].initialLaunch = stoi(t("\t: \n"));
+				CHStats[i].initialLaunch = 10;
+			}
+		}
+		return true;
 	} else if (t.current() == "Untech") {
 		for(int i = 0; i < hits; i++){
 			if(buffer[0] == '+')
@@ -530,6 +561,10 @@ void action::parseProperties(string buffer, bool counter)
 	while(buffer[i++] != ':'); i++;
 	for(; i < buffer.size(); i++){
 		switch(buffer[i]){
+		case 'a':
+			if(counter) CHStats[ch].autoCorrects = 1;
+			else stats[ch].autoCorrects = 1;
+			break;
 		case '^':
 			if(counter) CHStats[ch].launch = 1;
 			else stats[ch].launch = 1;
@@ -642,12 +677,18 @@ bool action::patternMatch(vector<int> inputs, int pattern, int t, int f)
 
 bool action::check(const status &current)
 {
-	if(requiredMode && requiredMode != current.mode) return 0;
-	if(cost && cost > current.meter[1]){
+	if(restrictedMode)
+		if(restrictedMode & current.mode)
+			return 0;
+	if(requiredMode)
+		if(!(requiredMode & current.mode))
+			return 0;
+	if(cost && cost > current.meter[1])
 		return 0;
-	}
-	if(xRequisite > 0 && current.prox->w > xRequisite) return 0;
-	if(yRequisite > 0 && current.prox->h > yRequisite) return 0;
+	if(xRequisite > 0 && current.prox->w > xRequisite) 
+		return 0;
+	if(yRequisite > 0 && current.prox->h > yRequisite) 
+		return 0;
 	return 1;
 }
 
@@ -656,23 +697,22 @@ void action::pollRects(int f, int cFlag, SDL_Rect &c, vector<SDL_Rect> &r, vecto
 	if(modifier && basis.move) basis.move->pollRects(basis.frame, basis.connect, c, r, b);
 	else {
 		if(f >= frames) f = frames-1;
-		c = collision[f];
+		if((unsigned int)f < collision.size()) c = collision[f];
 		r.clear();
-		r = hitreg[f];
+		if((unsigned int)f < hitreg.size()) r = hitreg[f];
 		b.clear();
-		if(cFlag <= calcCurrentHit(f)) {
-			b = hitbox[f];
-		}
+		if((unsigned int)f < hitbox.size() && cFlag <= calcCurrentHit(f)) b = hitbox[f];
 	}
 }
 
 vector<SDL_Rect> action::pollDelta(int f)
 {
+	vector<SDL_Rect> ret;
 	if(modifier && basis.move){
-		vector<SDL_Rect> ret = basis.move->pollDelta(basis.frame);
+		ret = basis.move->pollDelta(basis.frame);
 		for(SDL_Rect i:delta[f]) ret.push_back(i);
-		return ret;
-	} else return delta[f];
+	} else if ((unsigned int)f < delta.size()) ret = delta[f];
+	return ret;
 }
 
 int action::displace(int x, int &y, int f)
@@ -697,10 +737,12 @@ hStat action::pollStats(int f, bool CH)
 		s.stun = stats[c].stun + CHStats[c].stun * CH;
 		s.push = stats[c].push + CHStats[c].push * CH;
 		s.lift = stats[c].lift + CHStats[c].lift * CH;
+		s.initialLaunch = stats[c].initialLaunch + CHStats[c].initialLaunch * CH;
 		s.untech = stats[c].untech + CHStats[c].untech * CH;
 		s.blowback = stats[c].blowback + CHStats[c].blowback * CH;
 		s.pause = stats[c].pause + CHStats[c].pause * CH;
 		s.connect = stats[c].connect + CHStats[c].connect * CH;
+		s.autoCorrects = stats[c].autoCorrects + CHStats[c].autoCorrects * CH;
 		if(CH){
 			s.launch = CHStats[c].launch || stats[c].launch;
 			s.hover = CHStats[c].hover;
@@ -889,8 +931,7 @@ bool action::operator!=(const string &o)
 
 bool action::operator==(const string &o)
 {
-	if (fileName == o) return true;
-	else return false;
+	return fileName == o;
 }
 
 bool action::canGuard(int f)
@@ -920,7 +961,6 @@ int action::takeHit(hStat & s, int b, status &current)
 		}
 		if(s.stun != 0){
 			current.frame = 0;
-			current.frame = 0;
 			current.hit = 0;
 		}
 		return 1;
@@ -929,10 +969,11 @@ int action::takeHit(hStat & s, int b, status &current)
 
 bool action::CHState(int f)
 {
+	if(fch) return true;
 	if(modifier && basis.move) return basis.move->CHState(basis.frame);
 	if(hits < 1) return false;
-	else if(f < totalStartup[hits-1] + active[hits-1]) return true;
-	else return fch;
+	if(f < totalStartup[hits-1] + active[hits-1]) return true;
+	return false;
 }
 
 hStat::hStat(const hStat& o)

@@ -14,25 +14,42 @@ using std::vector;
 
 class instance;
 class action;
+
+class vect{
+public:
+	float x, y, z;
+	void unitNormal(float, float, float, float, float, float, float, float, float);
+};
+
+struct pixelMap{
+	vect normal;
+	int colorIndex;
+};
+
 class aux{
 	private:
 		static void scale  (SDL_Surface* source, SDL_Surface* destination);
 		static void bilinear_scale  (SDL_Surface* source, SDL_Surface* destination);
 		static SDL_Surface* scale2x(SDL_Surface* source);
 	public:
+		static string textFileRead(string filename);
 		static GLuint load_texture(string filename); 
 		static GLuint surface_to_texture(SDL_Surface* source);
+		static GLuint surface_to_texture(SDL_Surface* source, unsigned int *);
+		static vector<pixelMap> surface_to_normals(SDL_Surface *);
 		static SDL_Surface* init_screen(int width, int height, int bpp);
 		static void update_screen(SDL_Surface* source, SDL_Surface* destination);
 
 		static SDL_Surface* load_image(string filename);
 		static void apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destination);
 		static bool checkCollision(SDL_Rect, SDL_Rect);
+		static bool checkCollision(SDL_Rect, SDL_Rect, SDL_Rect&);
+		static SDL_Rect collisionRect(SDL_Rect, SDL_Rect);
 		static vector<SDL_Rect> defineRectArray(string);
 };
 
 struct attractor{
-	attractor() : x(0), y(0), type(0), radius(0), eventHorizon(0), effectCode(3), origin(nullptr), check(nullptr) {}
+	attractor() : x(0), y(0), type(0), radius(0), eventHorizon(0), effectCode(3), origin(nullptr), check(nullptr), grip(0) {}
 	int x, y; //X-Yvalue. For globals this is only influenced by facingness, for local it is attractive force (negative for repulsive) based on mean Y
 	int length; //How long the attractor holds
 	int ID; //Who the attractor affects
@@ -45,12 +62,7 @@ struct attractor{
 	int effectCode;
 	instance * origin;
 	action * check;
-};
-
-class vect{
-public:
-	float x, y, z;
-	void unitNormal(float, float, float, float, float, float, float, float, float);
+	int grip;
 };
 
 struct status{

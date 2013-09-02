@@ -10,6 +10,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "window.h"
+#include "shader.h"
 
 using std::to_string;
 
@@ -191,37 +193,47 @@ void interface::drawLoadingScreen()
 
 void interface::drawGame()
 {
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glEnable( GL_TEXTURE_2D );
-	glBindTexture(GL_TEXTURE_2D, background);
 	glPushMatrix();
 		glTranslatef(-bg.x, bg.y, 0);
-		glBegin(GL_QUADS);
-		glTexCoord2i(0, 0);
-		glVertex3f(0.0f, 0.0f, 0.f);
+		if(killTimer || scalingFactor < .8){
+			glColor4f(bgR, bgG, bgB, 0.5f);
+			glRectf(0, 0, bg.w, bg.h);
+			glEnable( GL_TEXTURE_2D );
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		} else {
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+			glEnable( GL_TEXTURE_2D );
+			glBindTexture(GL_TEXTURE_2D, background);
+			glBegin(GL_QUADS);
+				glTexCoord2i(0, 0);
+				glVertex3f(0.0f, 0.0f, 0.f);
 
-		glTexCoord2i(1, 0);
-		glVertex3f((GLfloat)(bg.w), 0.0f, 0.f);
+				glTexCoord2i(1, 0);
+				glVertex3f((GLfloat)(bg.w), 0.0f, 0.f);
 
-		glTexCoord2i(1, 1);
-		glVertex3f((GLfloat)(bg.w), (GLfloat)(bg.h), 0.f);
+				glTexCoord2i(1, 1);
+				glVertex3f((GLfloat)(bg.w), (GLfloat)(bg.h), 0.f);
 
-		glTexCoord2i(0, 1);
-		glVertex3f(0.0f, (GLfloat)(bg.h), 0.f);
-		glEnd();
+				glTexCoord2i(0, 1);
+				glVertex3f(0.0f, (GLfloat)(bg.h), 0.f);
+			glEnd();
+		}
 	glPopMatrix();
 	drawHUD();
 	glPushMatrix();
 		glTranslatef(-bg.x, (bg.y+bg.h), 0);
-		for(unsigned int i = 0; i < things.size(); i++){
-			things[i]->draw();
-			if(i < 2)
-				P[i]->drawHitParticle();
+		for(instance *i:things){ 
+			i->draw(prog());
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			glEnable( GL_TEXTURE_2D );
 		}
+		for(player *i:P) i->drawHitParticle();
+		glEnable( GL_TEXTURE_2D );
+		glDisable( GL_TEXTURE_2D );
 	glPopMatrix();
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		glEnable( GL_TEXTURE_2D );
 	glDisable( GL_TEXTURE_2D );
+
 	if(freeze > 0){
 		glColor4f(0.0f, 0.0f, 0.0f, 0.4f);
 		glRectf(0.0f, 0.0f, (GLfloat)screenWidth, (GLfloat)screenHeight);
@@ -465,6 +477,7 @@ void character::drawMeters(int ID, int hidden, status &current)
 }
 
 void instance::drawBoxen()
+			
 {
 	glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 	glPushMatrix();
@@ -480,19 +493,19 @@ void instance::drawBoxen()
 			glRectf(0.0f, 0.0f, (GLfloat)(hitreg[i].w), (GLfloat)(-hitreg[i].h));
 		glPopMatrix();
 	}
-	for(unsigned int i = 0; i < hitbox.size(); i++){
+	for(unsigned int i = 0; i < current.move->hitbox[current.frame].size(); i++){
 		glFlush();
 		glColor4f(1.0f, 0.0f, (GLfloat)(ID - 1.0f)/2.0f, 0.5f);
 		glPushMatrix();
-			glTranslatef(hitbox[i].x, -hitbox[i].y, 0);
-			glRectf(0.0f, 0.0f, (GLfloat)(hitbox[i].w), (GLfloat)(-hitbox[i].h));
+			glTranslatef(current.move->hitbox[current.frame][i].x*current.facing + current.posX, -(current.move->hitbox[current.frame][i].y + current.posY), 0);
+			glRectf(0.0f, 0.0f, (GLfloat)(current.move->hitbox[current.frame][i].w*current.facing), (GLfloat)(-(current.move->hitbox[current.frame][i].h)));
 		glPopMatrix();
 	}
 	glFlush();
 	glDisable( GL_TEXTURE_2D );
 }
 
-void instance::draw()
+void instance::draw(GLint p)
 {
 	bool sCheck = spriteCheck();
 	status * n;
@@ -536,13 +549,12 @@ void instance::draw()
 	}
 	glEnable(GL_TEXTURE_2D);
 	if(sprite && sCheck){
-		if(secondInstance)
-			glColor4f(0.75f, 0.5f, 0.85f, 1.0f);
+		//	glColor4f(0.75f, 0.5f, 0.85f, 1.0f);
 		glPushMatrix();
 			glTranslatef(n->drawX, -n->drawY, 0);
 			glPushMatrix();
 				glScalef((float)n->facing, 1.0, 1.0);
-				pick()->draw(n->move, n->frame);
+				pick()->draw(n->move, n->frame, p);
 			glPopMatrix();
 		glPopMatrix();
 	}
@@ -582,16 +594,34 @@ void player::drawHitParticle()
 			glColor4f(0.4f, 0.4f, 0.4f, 0.5f);
 		}
 		glPushMatrix();
-			glTranslatef(current.posX, -collision.y, 0.0f);
-			glRectf((GLfloat)(-10*current.facing), (GLfloat)(-collision.h), (GLfloat)(50 * current.facing), (GLfloat)(-collision.h - 40));
+			glTranslatef(current.posX, 0.0f, 0.0f);
+			glPushMatrix();
+				glTranslatef(0.0f, -collision.y, 0.0f);
+				glRectf((GLfloat)(-10*current.facing), (GLfloat)(-collision.h), (GLfloat)(50 * current.facing), (GLfloat)(-collision.h - 40));
+			glPopMatrix();
+			for(SDL_Rect i:hitLocation){
+				glPushMatrix();
+					glTranslatef(i.x, -current.posY - i.y - i.h, 0.0f);
+					glRectf(0.0f, 0.0f, i.w, i.h);
+				glPopMatrix();
+			}
 		glPopMatrix();
 		particleLife--;
-	} else blockType = 0;
+	} else {
+		blockType = 0;
+		hitLocation.clear();
+	}
 }
 
-void avatar::draw(action *& cMove, int f)
+void avatar::draw(action *& cMove, int f, GLint p)
 {
-	cMove->draw(f);
+	if(palette) glUseProgram(p);
+	GLint paletteID = glGetUniformLocation(p, "palette"); //Get a pointer to a shader uniform var
+	glActiveTexture(GL_TEXTURE2); // Choose texture unit 1 (base texture). 
+	glBindTexture(GL_TEXTURE_2D, palette); //Bind texture as normal
+	glUniform1i(paletteID, 2); //Set base texture sampler uniform var
+	cMove->draw(f, p);
+	glUseProgram(0);
 }
 
 int gameInstance::drawGlyph(string s, int x, int space, int y, int height, int just)
@@ -645,11 +675,14 @@ int gameInstance::drawGlyph(string s, int x, int space, int y, int height, int j
 	return x;
 }
 
-void action::draw(int f)
+void action::draw(int f, GLint p)
 {
-	if(modifier && basis.move) basis.move->draw(basis.frame);
+	if(modifier && basis.move) basis.move->draw(basis.frame, p);
 	if(sprite[f]){
-		glBindTexture(GL_TEXTURE_2D, sprite[f]);
+		GLint baseTextureID = glGetUniformLocation(p, "colorIn"); //Get a pointer to a shader uniform var
+		glActiveTexture(GL_TEXTURE0); // Choose texture unit 0 (base texture). 
+		glBindTexture(GL_TEXTURE_2D, sprite[f]); //Bind texture as usual
+		glUniform1i(baseTextureID, 0); //Set base texture sampler uniform var
 		glBegin(GL_QUADS);
 		glTexCoord2i(0, 0);
 		glVertex3f(0.0f, (GLfloat)(-height[f]), 0.f);
@@ -848,7 +881,7 @@ void session::draw(model & object)
 	SDL_GL_SwapBuffers();
 }
 
-void model::draw()
+void model::draw(GLint shaderProg)
 {
 /* Load the identity matrix into modelmatrix. rotate the model, and move it back 5 */
 	vect v;

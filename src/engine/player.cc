@@ -80,6 +80,18 @@ bool instance::acceptTarget(instance * m)
 	return m->pick()->acceptTarget(current.move, current.frame);
 }
 
+bool instance::checkHit(SDL_Rect a, SDL_Rect b)
+{
+	SDL_Rect hitLoc;
+	if(aux::checkCollision(a, b, hitLoc)){
+		hitLoc.x -= current.posX;
+		hitLoc.y -= current.posY;
+		hitLocation.push_back(hitLoc);
+		return true;
+	}
+	return false;
+}
+
 void player::init()
 {
 	/*Initialize input containers*/
@@ -326,6 +338,9 @@ void controller::writeConfig(int ID)
 
 bool player::reversalPossible()
 {
+	if(!current.move) return false;
+	if(current.connect > current.move->hits) return false;
+	if(current.connect < 0) current.connect = 0;
 	if(current.move->state[current.connect].i & 1) return false;
 	if(current.move->linkable) return true;
 	if(current.counter < 0 && current.counter > -11) return true;
@@ -435,7 +450,7 @@ void instance::combineDelta()
 
 void instance::loadAssets()
 {
-	if(sprite) pick()->loadAssets();
+	if(sprite) pick()->loadAssets(selectedPalette);
 }
 
 void instance::enforceAttractor(attractor* p)
@@ -454,10 +469,11 @@ void instance::enforceAttractor(attractor* p)
 	xDist = abs(midpoint - p->posX);
 	yDist = abs(collision.y + collision.h/2 - p->posY);
 	float totalDist = sqrt(pow(xDist, 2) + pow(yDist, 2));
-	if(totalDist < p->eventHorizon && p->eventHorizon > 0){
+	if(totalDist < p->eventHorizon && p->eventHorizon > 0 && p->grip){
 		resultant.x = 0;
 		resultant.y = 0;
 		current.deltaX = 0; current.deltaY = 0;
+		p->grip--;
 		momentum.clear();
 	} else {
 		switch(p->type){
@@ -743,6 +759,11 @@ int instance::passSignal(int sig)
 	default:
 		return 0;
 	}
+}
+
+void instance::pushInput(deque <int> i)
+{
+	inputBuffer = i;
 }
 
 void instance::pushInput(unsigned int i)

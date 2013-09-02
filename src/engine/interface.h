@@ -40,6 +40,7 @@ public:
 	void readInput();
 	void loadMisc();
 	void initCharacters();
+	virtual void initShaders();
 	virtual void loadAssets();
 	virtual void handleArgs(vector<string>);
 	void processInput(SDL_Event&);
@@ -86,13 +87,13 @@ public:
 	void writeImage(string, int, action*);
 
 	vector<bool> select;
-	vector<int> groove;
 	vector<int> selection;
 	sample call[2];
 	int menu[2];
 	int configMenu[2];
 	int rMenu;
 	int pMenu;
+	float bgR, bgG, bgB;
 	SDL_Rect bg;
 	SDL_Rect prox;
 	bool firstFrame:1;
@@ -105,6 +106,7 @@ public:
 	int grav;
 
 	GLuint background;
+	int musicVolume;
 	Mix_Music *matchMusic;
 	Mix_Music *menuMusic;
 	Mix_Chunk **announceWinner;

@@ -28,14 +28,12 @@ class flashSummon : public special {
 public:
 	flashSummon();
 	flashSummon(string, string);
-	int arbitraryPoll(int, int);
 	bool check(const status&);
 	void execute(status&);
 	bool setParameter(string);
 	virtual void zero();
 	void step(status&);
 private:
-	bool uFlag;
 	int flashMeterGain;
 };
 #endif

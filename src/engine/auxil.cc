@@ -7,9 +7,12 @@
 #include <SDL/SDL_opengl.h>
 #include <cmath>
 #include <iostream>
+#include <fstream>
 #include <math.h>
 #include <string>
 #include <vector>
+using std::max;
+using std::min;
 SDL_Surface* aux::init_screen(int width, int height, int bpp) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
 		return nullptr;
@@ -29,6 +32,17 @@ void aux::update_screen(SDL_Surface* source, SDL_Surface* destination) {
 
 	//scale(source, destination);
 	SDL_Flip(destination);
+}
+
+string aux::textFileRead(string filename)
+{
+	std::ifstream read;
+	read.open(filename);
+	string buf, ret;
+	while(std::getline(read, buf))
+		ret += buf + "\n";
+	read.close();
+	return ret;
 }
 
 // uses nearest-neighbor algorithm found here:
@@ -216,6 +230,25 @@ void aux::apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destinat
 	SDL_BlitSurface(source, nullptr, destination, &offset);
 }
 
+SDL_Rect aux::collisionRect(SDL_Rect a, SDL_Rect b)
+{
+	SDL_Rect ret = {0, 0, 0, 0};
+	int leftX = max(a.x, b.x);
+	int rightX = min(a.x+a.w, b.x+b.w);
+	int bottomY = max(a.y, b.y);
+	int topY = min(a.y+a.h, b.y+b.h);
+	ret.x = leftX; ret.y = bottomY; 
+	ret.w = rightX - leftX > 0 ? rightX - leftX : 0;
+	ret.h = topY - bottomY > 0 ? topY - bottomY : 0;
+	return ret;
+}
+
+bool aux::checkCollision(SDL_Rect a, SDL_Rect b, SDL_Rect &c)
+{
+	c = collisionRect(a, b);
+	return (c.w && c.h);
+}
+
 bool aux::checkCollision(SDL_Rect a, SDL_Rect b)
 {
 	if(a.h == 0 || a.w == 0 || b.h == 0 || b.w == 0) return 0;
@@ -244,14 +277,33 @@ vector<SDL_Rect> aux::defineRectArray(string definition)
 	return ret;
 }
 
-GLuint aux::surface_to_texture(SDL_Surface * source)
+vector<pixelMap> aux::surface_to_normals(SDL_Surface * source)
+{
+	unsigned char * p = (unsigned char*)source->pixels;
+	int x = 0;
+	vector<pixelMap> ret;
+	pixelMap temp;
+	for(int i = 0; i < source->h; i++){
+		for(int j = 0; j < source->w; j++){
+			temp.normal.x = (p[x] - 128) / 128.0;
+			temp.normal.y = (p[x+1] - 128) / 128.0;
+			temp.normal.z = (p[x+2] - 128) / 128.0;
+			temp.colorIndex = p[x+3];
+			x += 4;
+			ret.push_back(temp);
+		}
+	}
+	return ret;
+}
+
+GLuint aux::surface_to_texture(SDL_Surface * source, unsigned int * pixels)
 {
 	if(source == nullptr) return -1;
 	GLint nColors;
 	GLenum texFormat;
 	GLuint texture;
 	nColors = source->format->BytesPerPixel;
-  if (source->format->Rmask == 0x000000ff)
+	if (source->format->Rmask == 0x000000ff)
 		texFormat = GL_RGBA;
 	else
 		texFormat = GL_BGRA;
@@ -259,14 +311,34 @@ GLuint aux::surface_to_texture(SDL_Surface * source)
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
+	glTexImage2D(GL_TEXTURE_2D, 0, nColors, source->w, source->h, 0, texFormat, ___gufg_tex_mode, pixels);
+	return texture;
+}
+
+GLuint aux::surface_to_texture(SDL_Surface * source)
+{
+	if(source == nullptr) return -1;
+	GLint nColors;
+	GLenum texFormat;
+	GLuint texture;
+	nColors = source->format->BytesPerPixel;
+	if (source->format->Rmask == 0x000000ff)
+		texFormat = GL_RGBA;
+	else
+		texFormat = GL_BGRA;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, nColors, source->w, source->h, 0, texFormat, ___gufg_tex_mode, source->pixels);
 	return texture;
 }
 
 GLuint aux::load_texture (string filename)
 {
-	return surface_to_texture(load_image(filename));
+	SDL_Surface * i = load_image(filename);
+	if(!i) return 0;
+	else return surface_to_texture(i);
 }
 
 void vect::unitNormal(float Ax, float Ay, float Az, float Bx, float By, float Bz, float Cx, float Cy, float Cz)

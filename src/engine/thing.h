@@ -18,6 +18,7 @@ public:
 class model{
 public:
 	virtual void draw();
+	virtual void draw(GLint);
 	virtual bool readModel();
 	virtual bool readModel(string);
 	vector<double> vertices [3];

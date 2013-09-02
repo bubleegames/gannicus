@@ -29,8 +29,9 @@ void yellow::tick(status &current)
 	if(current.meter[5] > 0){
 		if(current.meter[4] < 2) current.meter[4] = 2;
 		current.meter[5]--;
-		if(current.meter[5] == 0){ 
+		if(current.meter[5] == 0 && current.mode & 1){ 
 			current.meter[5] = -360;
+			current.mode = 0;
 		}
 	}
 }
@@ -87,6 +88,7 @@ void yellow::drawMeters(int ID, int hidden, status &current)
 int yellow::takeHit(status& current, hStat & s, int blockType, int &hitType)
 {
 	int x = character::takeHit(current, s, blockType, hitType);
+	if(hitType == -2) current.meter[5] = 21;
 	if(hitType == 1 && current.meter[5] > 0) current.meter[5] = 0;
 	return x;
 }
@@ -108,7 +110,6 @@ void flashSummon::zero()
 {
 	flashMeterGain = 0;
 	action::zero();
-	uFlag = 0;
 }
 
 bool flashSummon::setParameter(string buffer)
@@ -129,30 +130,20 @@ bool flashStep::check(const status &current)
 bool flashSummon::check(const status &current)
 {
 	if(current.meter[5] < 0) return 0;
-	if(current.meter[5] > 0) uFlag = 1;
 	int temp = cost;
-	if(uFlag) cost = 0;
+	if(current.mode & 1) cost = 0;
 	bool ret = action::check(current);
-	if(uFlag) cost = temp;
-	uFlag = 0;
+	cost = temp;
 	return ret;
-}
-
-int flashSummon::arbitraryPoll(int q, int f)
-{
-	if(uFlag == 1 && q == 2) return 0;
-	else return action::arbitraryPoll(q,f);
 }
 
 void flashSummon::execute(status &current)
 {
-	if(current.meter[5] > 0) uFlag = 1;
-	else uFlag = 0;
+	current.mode = (current.mode & 1) ? 0 : 1;
+	int temp = cost;
+	if(current.mode & 1) cost = 0;
+	cost = temp;
 	action::execute(current);
-	if(uFlag){
-		current.meter[1] += cost;
-		current.meter[4] -= cost;
-	}
 }
 
 void flashStep::execute(status &current)
@@ -165,7 +156,7 @@ void flashStep::execute(status &current)
 
 void flashSummon::step(status &current)
 {
-	if(uFlag){
+	if(current.mode & 1){
 		if(current.frame == frames - 1) current.meter[5] = 0;
 	} else current.meter[5] += flashMeterGain / frames + 1;
 	if(current.meter[5] > 540) current.meter[5] = 540;

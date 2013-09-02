@@ -16,7 +16,8 @@ public:
 
 	SDL_Rect collision;
 	vector<SDL_Rect> hitbox, hitreg, momentum;
-	bool secondInstance;
+	vector<SDL_Rect> hitLocation;
+	int selectedPalette;
 	int ID;
 	deque<int> inputBuffer;
 	void checkFacing(instance*);
@@ -34,17 +35,19 @@ public:
 	virtual void pullVolition();
 	virtual void setPosition(int, int);
 	virtual void updateRects();
-	virtual void draw();
+	virtual void draw(GLint);
 	virtual instance* spawn();
 	virtual void drawBoxen();
 	virtual void combineDelta();
 	virtual bool spriteCheck();
 	virtual void connect(int, hStat&);
 	virtual void pushInput(unsigned int);
+	virtual void pushInput(deque<int>);
 	virtual int passSignal(int);
 	virtual int dragBG(int, int);
 	virtual void follow(instance*);
 	virtual void loadAssets();
+	virtual bool checkHit(SDL_Rect, SDL_Rect);
 	void enforceAttractor(attractor*);
 	int middle();
 	void flip();
