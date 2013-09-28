@@ -1313,6 +1313,13 @@ void interface::resolveThrows()
 			isThrown[(i+1)%2] = true;
 		}
 	}
+	if(isThrown[0] || isThrown[1]){
+		for(player *i:P){
+			for(player *j:P){
+				if(i != j) i->checkFacing(j);
+			}
+		}
+	}
 	if(isThrown[0] && isThrown[1]){
 		things[0]->current.move = P[0]->pick()->throwBreak;
 		things[1]->current.move = P[1]->pick()->throwBreak;
