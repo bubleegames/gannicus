@@ -1,6 +1,5 @@
 #include "window.h"
 #include "gl-compat.h"
-#include <SFML/OpenGL.hpp>
 #include "shader.h"
 #include "auxil.h"
 #include <SDL/SDL_opengl.h>
