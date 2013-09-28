@@ -538,6 +538,7 @@ void interface::resolveInputs()
 			}
 			P[i]->current.prox.y = P[(i+1)%2]->current.aerial;
 			P[i]->current.prox.x = P[(i+1)%2]->current.throwInvuln;
+			if(P[0]->current.facing == P[1]->current.facing) P[i]->current.prox.x = 1;
 		}
 		for(unsigned int i = 0; i < things.size(); i++){
 			bool d = 0;
