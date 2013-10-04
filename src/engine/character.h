@@ -106,4 +106,13 @@ public:
 	virtual bool death(status&);
 	virtual void init(status&);
 };
+
+class pet : virtual public projectile, virtual public character {
+public:
+	pet(string, string);
+	virtual int takeHit(status&, hStat&, int, int&);
+	virtual void build(string, string);
+	virtual void init(status&);
+	pet();
+};
 #endif

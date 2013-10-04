@@ -107,7 +107,9 @@ void action::zero()
 
 void action::generate(string directory, string name)
 {
-	payload = new projectile(directory, name);
+	tokenizer t(name, "%");
+	if(name[0] == '%') payload = new pet(directory, t());
+	else payload = new projectile(directory, name);
 	if(lifespan) payload->lifespan = lifespan;
 }
 
@@ -959,9 +961,9 @@ bool action::armor(status &current)
 	return (current.frame >= armorStart && current.frame <= armorStart + armorLength && (armorHits < 1 || armorHits >= current.absorbedHits));
 }
 
-int action::takeHit(hStat & s, int b, status &current)
+int action::takeHit(hStat & s, int blockType, status &current)
 {
-	if(modifier && basis.move) return basis.move->takeHit(s, b, current);
+	if(modifier && basis.move) return basis.move->takeHit(s, blockType, current);
 	else {
 		if(!stunMin || s.stun >= stunMin){
 			if(!stunMax || s.stun <= stunMax){

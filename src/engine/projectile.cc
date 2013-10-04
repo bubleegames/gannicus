@@ -7,6 +7,23 @@ projectile::projectile(string directory, string file)
 	build(directory, file);
 }
 
+void pet::init(status& current)
+{
+	character::init(current);
+}
+
+pet::pet(string directory, string file)
+{
+	head = new actionTrie;
+	neutral = nullptr;
+	build(directory, file);
+}
+
+void pet::build(string directory, string file)
+{
+	projectile::build(directory, file);
+}
+
 void projectile::build(string directory, string file)
 {
 	getName(directory.c_str(), file.c_str());
@@ -56,6 +73,14 @@ bool projectile::turn(int &ID)
 {
 	ID = ID % 2 + 1;
 	return 1;
+}
+
+int pet::takeHit(status &current, hStat &s, int blockType, int &hitType)
+{
+	if(current.move->takeHit(s, blockType, current) == 1)
+		return projectile::takeHit(current, s, blockType, hitType);
+	else
+		return character::takeHit(current, s, blockType, hitType);
 }
 
 int projectile::takeHit(status &current, hStat &s, int blockType, int &hitType)

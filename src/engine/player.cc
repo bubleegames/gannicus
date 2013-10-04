@@ -346,6 +346,27 @@ bool player::reversalPossible()
 	return true;
 }
 
+void player::enemySelect(int i)
+{
+	ifstream charlist;
+	vector<string> chr (i+1);
+	chr[0] = "White";
+	charlist.open("src/charlist.h");
+	int j = 0;
+	while(j < i){
+		char k;
+		do charlist >> k;
+		while(k != '/');
+		do charlist >> k;
+		while(k != '-');
+		j++;
+		charlist >> chr[j];
+	}
+	charlist.close();
+	std::cout << name + "/" + chr[j] + name;
+	pick()->avatar::build(name + "/" + chr[j], name);
+}
+
 void player::characterSelect(int i)
 {
 	v = nullptr;
@@ -357,21 +378,21 @@ void player::characterSelect(int i)
 		v = new yellow;
 		break;
 	default:
-		ifstream nch;
+		ifstream charlist;
 		vector<string> chr (i+1);
 		chr[0] = "White";
-		nch.open("src/charlist.h");
+		charlist.open("src/charlist.h");
 		int j = 0;
 		while(j < i){
 			char k;
-			do nch >> k;
+			do charlist >> k;
 			while(k != '/');
-			do nch >> k;
+			do charlist >> k;
 			while(k != '-');
 			j++;
-			nch >> chr[j];
+			charlist >> chr[j];
 		}
-		nch.close();
+		charlist.close();
 		v = new character(chr[i]);
 		break;
 	}

@@ -947,6 +947,7 @@ void interface::cSelectMenu()
 		SDL_GL_SwapBuffers();
 		for(unsigned int i = 0; i < P.size(); i++){
 			P[i]->characterSelect(selection[i]);
+			//P[i]->enemySelect(selection[(i+1)%2]);
 		}
 		loadAssets();
 		if(analytics){
