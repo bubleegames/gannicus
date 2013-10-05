@@ -11,6 +11,8 @@ using std::ifstream;
 using std::ofstream;
 using std::max;
 using std::min;
+using std::to_string;
+
 interface::interface()
 {
 	stats = nullptr;
@@ -115,18 +117,14 @@ void interface::createPlayers()
 		menu[i] = 0;
 		configMenu[i] = 0;
 		things.push_back(P[i]);
-		P[i]->boxen = false;
-		P[i]->sprite = true;
-		P[i]->current.prox = &prox;
+		P[i]->boxen = true;
+		P[i]->sprite = false;
 	}
 }
 
 void interface::loadMatchBackground()
 {
-	char buffer[100];
-
-	sprintf(buffer, "content/stages/%i/bg.png", selection[0]);
-	if(!killTimer && scalingFactor > .8) background = aux::load_texture(buffer);
+	if(!killTimer && scalingFactor > .8) background = aux::load_texture("content/stages/" + to_string(selection[0]) + "/bg.png");
 	else {
 		switch (selection[0]){
 		case 1: 
@@ -152,9 +150,10 @@ void interface::loadMatchBackground()
 		}
 	}
 
-	if(selection[0] == selection[1]) sprintf(buffer, "content/sound/Mirror.ogg");
-	else sprintf(buffer, "content/sound/%i.ogg", selection[1]);
-	matchMusic = Mix_LoadMUS(buffer);
+	if(selection[0] == selection[1]) 
+		matchMusic = Mix_LoadMUS("content/sound/Mirror.ogg");
+	else
+		matchMusic = Mix_LoadMUS(("content/sound/" + to_string(selection[1]) + ".ogg").c_str());
 }
 
 void interface::startGame()
@@ -173,23 +172,19 @@ void interface::startGame()
 /*This function loads a few miscellaneous things the game will need in all cases*/
 void HUD::loadMisc()
 {
-	char buffer[200];
 	for(int i = 0; i < 91; i++){
-		sprintf(buffer, "content/glyphs/%i.png", i);
-		glyph.push_back(aux::load_texture(buffer));
+		glyph.push_back(aux::load_texture("content/glyphs/"+to_string(i)+".png"));
 	}
 }
 
 void interface::loadMisc()
 {
 	HUD::loadMisc();
-	char buffer[200];
 	selectScreen = aux::load_texture("content/menu/Select.png");
 	menuMusic = Mix_LoadMUS("content/sound/Menu.ogg");
 	announceWinner = new Mix_Chunk*[numChars + 1];
 	for(int i = 0; i < numChars + 1; i++){
-		sprintf(buffer, "content/sound/announcer/Win%i.ogg", i);
-		announceWinner[i] = Mix_LoadWAV(buffer);
+		announceWinner[i] = Mix_LoadWAV(("content/sound/announcer/Win"+to_string(i)+".ogg").c_str());
 	}
 	for(unsigned int i = 0; i < p.size(); i++){
 		if(!p[i]->readConfig(i+1)) initialConfig(i);
@@ -234,11 +229,8 @@ void gameInstance::init()
 
 void gameInstance::initialConfig(int ID)
 {
-	char buffer[200];
-	char pident[30];
 	glPushMatrix();
 		glScalef(scalingFactor, scalingFactor, 1.0f);
-		sprintf(pident, "Player %i", ID + 1);
 		p[ID]->input.clear();
 		for(unsigned int i = 0; i < p[ID]->inputName.size(); i++){
 			glClear(GL_COLOR_BUFFER_BIT);
@@ -246,10 +238,9 @@ void gameInstance::initialConfig(int ID)
 			glRectf(0.0f, 0.0f, (GLfloat)screenWidth, (GLfloat)screenHeight);
 			glEnable( GL_TEXTURE_2D );
 			glColor4f(0.1f, 0.1f, 0.1f, 1.0f);
-			drawGlyph(pident, 0, screenWidth, 300, 80, 1);
+			drawGlyph("Player " + to_string(ID + 1), 0, screenWidth, 300, 80, 1);
 			drawGlyph("Please enter a", 0, screenWidth, 400, 80, 1);
-			sprintf(buffer, "command for %s", p[ID]->inputName[i].c_str());
-			drawGlyph(buffer, 0, screenWidth, 500, 80, 1);
+			drawGlyph("command for %s" + p[ID]->inputName[i], 0, screenWidth, 500, 80, 1);
 			SDL_GL_SwapBuffers();
 			glDisable( GL_TEXTURE_2D );
 			glClear(GL_COLOR_BUFFER_BIT);
@@ -306,8 +297,10 @@ void interface::roundInit()
 	grav = -6;
 	timer = 60 * 101;
 	endTimer = 60 * 5;
-	prox.w = 200;
-	prox.h = 0;
+	for(player *i:P){
+		i->current.prox.w = 200;
+		i->current.prox.h = 0;
+	}
 	freeze = 0;
 }
 
@@ -378,9 +371,7 @@ void interface::runTimer()
 					}
 					for(player *i:P){
 						if(i->record){
-							char buffer[200];
-							sprintf(buffer, "%i-%s.sh", i->ID, i->pick()->name.c_str());
-							i->record->write(buffer);
+							i->record->write(to_string(i->ID) + "-" + i->pick()->name + ".sh");
 							delete i->record;
 							i->record = nullptr;
 						}
@@ -429,7 +420,7 @@ void interface::resolve()
 		resolveThrows();
 		doSuperFreeze();
 		for(instance *i:things) i->updateRects();
-		resolveCollision();
+		//resolveCollision();
 		resolvePhysics();
 		resolveCamera();
 		resolveCollision();
@@ -545,15 +536,14 @@ void interface::resolveInputs()
 			if(!test && !P[i]->current.aerial){ 
 				P[i]->checkFacing(P[(i+1)%2]);
 			}
+			P[i]->current.prox.y = P[(i+1)%2]->current.aerial;
+			P[i]->current.prox.x = P[(i+1)%2]->current.throwInvuln;
+			if(P[0]->current.facing == P[1]->current.facing) P[i]->current.prox.x = 1;
 		}
 		for(unsigned int i = 0; i < things.size(); i++){
-			if(i < P.size()){
-				if(things[(i+1)%2]->current.aerial) prox.y = 1;
-				else prox.y = 0;
-				prox.x = things[(i+1)%2]->current.throwInvuln;
-			}
 			bool d = 0;
-			things[i]->getMove(currentFrame[things[i]->ID - 1].buttons, d);
+			if(things[i])
+				things[i]->getMove(currentFrame[things[i]->ID - 1].buttons, d);
 		}
 	}
 	for(unsigned int i = 0; i < P.size(); i++){
@@ -672,7 +662,6 @@ void interface::resolveSummons()
 			if(things[i]->current.move->arbitraryPoll(50, things[i]->current.frame)){
 				larva = things[i]->spawn();
 				if(larva){
-					larva->current.prox = &prox;
 					larva->boxen = things[i]->boxen;
 					larva->sprite = things[i]->sprite;
 					switch (things[i]->current.move->arbitraryPoll(56, things[i]->current.frame)){
@@ -958,6 +947,7 @@ void interface::cSelectMenu()
 		SDL_GL_SwapBuffers();
 		for(unsigned int i = 0; i < P.size(); i++){
 			P[i]->characterSelect(selection[i]);
+			//P[i]->enemySelect(selection[(i+1)%2]);
 		}
 		loadAssets();
 		if(analytics){
@@ -1248,7 +1238,7 @@ void interface::resolveCollision()
 		temp.back().x -= dx.back();
 	}
 
-	unsigned int localMaximum = min(temp[0].w, temp[1].w) / 6 - 1;
+	unsigned int localMaximum = 20;
 	unsigned int j[2] = {0, 0};
 	while(j[0] < abs(dx[0]) || j[1] < abs(dx[1])){
 		if(aux::checkCollision(temp[0], temp[1])){
@@ -1288,8 +1278,10 @@ void interface::resolveCollision()
 		}
 	}
 
-	prox.w = abs(things[0]->current.posX - things[1]->current.posX);
-	prox.h = abs(things[0]->current.posY - things[1]->current.posY);
+	for(player *i:P){
+		i->current.prox.w = abs(P[0]->current.posX - P[1]->current.posX);
+		i->current.prox.h = abs(P[0]->current.posY - P[1]->current.posY);
+	}
 
 	for(unsigned int i = 0; i < things.size(); i++){
 		if(things[i]->current.move->track){
@@ -1309,8 +1301,10 @@ void interface::resolveCollision()
 	//Some issues arise if you don't have this second pass
 	if (aux::checkCollision(P[0]->collision, P[1]->collision))
 		unitCollision(P[0], P[1]);
-	prox.w = abs(things[0]->current.posX - things[1]->current.posX);
-	prox.h = abs(things[0]->current.posY - things[1]->current.posY);
+	for(player *i:P){
+		i->current.prox.w = abs(P[0]->current.posX - P[1]->current.posX);
+		i->current.prox.h = abs(P[0]->current.posY - P[1]->current.posY);
+	}
 }
 
 void interface::resolveThrows()
@@ -1319,6 +1313,13 @@ void interface::resolveThrows()
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(things[i]->current.move->arbitraryPoll(28, things[i]->current.frame)){ 
 			isThrown[(i+1)%2] = true;
+		}
+	}
+	if(isThrown[0] || isThrown[1]){
+		for(player *i:P){
+			for(player *j:P){
+				if(i != j) i->checkFacing(j);
+			}
 		}
 	}
 	if(isThrown[0] && isThrown[1]){
@@ -1391,13 +1392,11 @@ void interface::resolveHits()
 		if(taken[i]){
 			int health = things[things[i]->ID-1]->current.meter[0];
 			bool actuallyDoesDamage = (s[hitBy[i]].damage != 0);
-//			cout << s[hitBy[i]].damage << " Prorated by ";
 			s[hitBy[i]].damage *= prorate[things[hitBy[i]]->ID-1];
-//			cout << prorate[things[hitBy[i]]->ID-1] << " -> " << s[hitBy[i]].damage << '\n';
 			if(actuallyDoesDamage && s[hitBy[i]].damage == 0) s[hitBy[i]].damage = 1;
 			action * b = things[i]->current.move;
 			bool wasair = things[i]->current.aerial;
-			hit[hitBy[i]] = things[i]->takeHit(combo[things[hitBy[i]]->ID-1], s[hitBy[i]], prox);
+			hit[hitBy[i]] = things[i]->takeHit(combo[things[hitBy[i]]->ID-1], s[hitBy[i]]);
 			if(i < P.size()){
 				if(hit[hitBy[i]] == 1){
 					if(b->canGuard(P[i]->current.frame)){
@@ -1407,15 +1406,15 @@ void interface::resolveHits()
 					}
 				}
 				if(things[i]->particleType == -2){
-					hStat ths;
-					ths.damage = s[hitBy[i]].chip ? s[hitBy[i]].chip : s[hitBy[i]].damage/5;
-					ths.ghostHit = true;
-					ths.stun = 0;
-					ths.push = s[hitBy[i]].push;
+					hStat parryHit;
+					parryHit.damage = s[hitBy[i]].chip ? s[hitBy[i]].chip : s[hitBy[i]].damage/5;
+					parryHit.ghostHit = true;
+					parryHit.stun = 0;
+					parryHit.push = s[hitBy[i]].push;
 					if(things[i]->current.aerial){
-						ths.push += (P[things[hitBy[i]]->ID-1]->current.aerial) ? s[hitBy[i]].blowback*5 : s[hitBy[i]].blowback;
+						parryHit.push += (P[things[hitBy[i]]->ID-1]->current.aerial) ? s[hitBy[i]].blowback*5 : s[hitBy[i]].blowback;
 					}
-					P[things[hitBy[i]]->ID-1]->takeHit(combo[i], ths, prox);
+					P[things[hitBy[i]]->ID-1]->takeHit(combo[i], parryHit);
 					s[hitBy[i]].pause = 0;
 				}
 				if(s[hitBy[i]].stun) combo[(i+1)%2] += hit[hitBy[i]];
@@ -1479,10 +1478,10 @@ void interface::resolveHits()
 			if(!s[i].ghostHit) things[i]->momentum.push_back(residual);
 		}
 	}
-	if(connect[0] || connect[1]){
-		resolveCollision();
+/*	if(connect[0] || connect[1]){
+		//resolveCollision();
 	}
-
+*/
 	for(unsigned int i = 0; i < P.size(); i++) {
 		if(things[i]->current.meter[0] <= 0 && endTimer >= 5 * 60){ 
 			i = 2;

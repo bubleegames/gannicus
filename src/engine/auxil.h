@@ -70,13 +70,14 @@ struct status{
 	status(const status&);
 	vector<int> meter;
 	int mode;
-	SDL_Rect *prox;
+	SDL_Rect prox;
 	int posX, posY;
 	int age;
 	int facing;
 	int deltaX, deltaY; 
 	int frame;
 	int freeze;
+	int absorbedHits;
 	bool aerial;
 	bool rCorner, lCorner;
 	action *move, *bufferedMove, *reversal;

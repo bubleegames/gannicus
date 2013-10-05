@@ -95,7 +95,6 @@ public:
 	int pMenu;
 	float bgR, bgG, bgB;
 	SDL_Rect bg;
-	SDL_Rect prox;
 	bool firstFrame:1;
 	bool shortcut:1;
 	bool continuous:1;

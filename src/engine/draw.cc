@@ -31,7 +31,6 @@ void interface::draw()
 
 void interface::drawCSelect()
 {
-	char buffer[20];
 	int x, y;
 	glColor4f(0.1f, 0.1f, 0.1f, 1.0f);
 	glRectf(0.0f, 0.0f, (GLfloat)screenWidth, (GLfloat)screenHeight);
@@ -60,11 +59,10 @@ void interface::drawCSelect()
 
 	for(int i = 0; i < 2; i++){
 		if(!menu[i]){
-			sprintf(buffer, "P%i", i+1);
 			x = ((float)screenWidth/2.0 + ((float)screenHeight/3.0) * cos(((M_PI*2.0)/(float)numChars)*(float)selection[i]+M_PI/4.0+M_PI/2.0)) - 100.0;
 			y = ((float)screenHeight/2.0 + ((float)screenHeight/3.0) * sin(((M_PI*2.0)/(float)numChars)*(float)selection[i]+M_PI/4.0+M_PI/2.0));
 			glColor4f(0.0, 0.3+i*0.3, 0.3+(1-i)*0.3, 1.0-select[i]*0.5);
-			drawGlyph(buffer, x, 200, y, 50, i*2);
+			drawGlyph("P" + to_string(i+1), x, 200, y, 50, i*2);
 		}
 	}
 
@@ -76,13 +74,13 @@ void interface::drawCSelect()
 void interface::drawMainMenu(int ID)
 {
 	glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
-	char buffer[200];
 	glRectf(0.0f + 800.0 * ID, 0.0, (screenWidth/2*ID) + (GLfloat)screenWidth/2.0, (GLfloat)screenHeight);
 	glEnable( GL_TEXTURE_2D );
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 1)*0.4);
-	if(analytics) sprintf(buffer, "Replay");
-	else sprintf(buffer, "No Replay");
-	drawGlyph(buffer, 20 + 1260*ID, 300, 290, 40, 2*ID);
+	if(analytics)
+		drawGlyph("Replay", 20 + 1260*ID, 300, 290, 40, 2*ID);
+	else
+		drawGlyph("No Replay", 20 + 1260*ID, 300, 290, 40, 2*ID);
 
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 2)*0.4);
 	drawGlyph("Key Config", 20 + 1260*ID, 300, 330, 40, 2*ID);
@@ -90,25 +88,30 @@ void interface::drawMainMenu(int ID)
 	drawGlyph("Exit Menu", 20 + 1260*ID, 300, 370, 40, 2*ID);
 
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 4)*0.4);
-	if(shortcut) sprintf(buffer, "Rematch");
-	else sprintf(buffer, "Reselect");
-	drawGlyph(buffer, 20 + 1260*ID, 300, 410, 40, 2*ID);
+	if(shortcut)
+		drawGlyph("Rematch", 20 + 1260*ID, 300, 410, 40, 2*ID);
+	else
+		drawGlyph("Reselect", 20 + 1260*ID, 300, 410, 40, 2*ID);
 
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 5)*0.4);
-	if(scripting) sprintf(buffer, "Scripts on");
-	else sprintf(buffer, "Scripts off");
-	drawGlyph(buffer, 20 + 1260*ID, 300, 450, 40, 2*ID);
+	if(scripting)
+		drawGlyph("Scripts On", 20 + 1260*ID, 300, 450, 40, 2*ID);
+	else
+		drawGlyph("Scripts Off", 20 + 1260*ID, 300, 450, 40, 2*ID);
 
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 6)*0.4);
-	if(pauseEnabled) sprintf(buffer, "Pause on");
-	else sprintf(buffer, "Pause off");
-	drawGlyph(buffer, 20 + 1260*ID, 300, 490, 40, 2*ID);
+	if(pauseEnabled) 
+		drawGlyph("Pause on", 20 + 1260*ID, 300, 490, 40, 2*ID);
+	else 
+		drawGlyph("Pause off", 20 + 1260*ID, 300, 490, 40, 2*ID);
 
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 7)*0.4);
-	if(P[ID]->boxen && P[ID]->sprite) sprintf(buffer, "Both");
-	else if(P[ID]->boxen) sprintf(buffer, "Boxen");
-	else sprintf(buffer, "Sprites");
-	drawGlyph(buffer, 20 + 1260*ID, 300, 530, 40, 2*ID);
+	if(P[ID]->boxen && P[ID]->sprite) 
+		drawGlyph("Both", 20 + 1260*ID, 300, 530, 40, 2*ID);
+	else if(P[ID]->boxen) 
+		drawGlyph("Boxen", 20 + 1260*ID, 300, 530, 40, 2*ID);
+	else
+		drawGlyph("Sprites", 20 + 1260*ID, 300, 530, 40, 2*ID);
 
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 8)*0.4);
 	drawGlyph("Quit Game", 20 + 1260*ID, 300, 570, 40, 2*ID);
@@ -120,58 +123,54 @@ void interface::drawConfigMenu(int ID)
 {
 	int i;
 	glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
-	char buffer[200];
 	glRectf(0.0f + 800.0 * ID, 0.0, (screenWidth/2*ID) + (GLfloat)screenWidth/2.0, (GLfloat)screenHeight);
 	glEnable( GL_TEXTURE_2D );
+	glColor4f(1.0, 1.0, 0.0, 0.4 + (float)(configMenu[ID] == 1)*0.4);
 	switch(p[ID]->input[0]->trigger.type){
 	case SDL_KEYDOWN:
-		sprintf(buffer, "Keyboard");
+		drawGlyph("Keyboard", 20 + 1260*ID, 300, 310, 40, 2*ID);
 		break;
 	case SDL_JOYBUTTONDOWN:
-		sprintf(buffer, "Joy %i", p[ID]->input[0]->trigger.jaxis.which);
+		drawGlyph("Joy " + to_string(p[ID]->input[0]->trigger.jbutton.which), 20 + 1260*ID, 300, 310, 40, 2*ID);
 		break;
 	case SDL_JOYAXISMOTION:
-		sprintf(buffer, "Joy %i", p[ID]->input[0]->trigger.jbutton.which);
+		drawGlyph("Joy " + to_string(p[ID]->input[0]->trigger.jaxis.which), 20 + 1260*ID, 300, 310, 40, 2*ID);
 		break;
 	case SDL_JOYHATMOTION:
-		sprintf(buffer, "Joy %i", p[ID]->input[0]->trigger.jhat.which);
+		drawGlyph("Joy " + to_string(p[ID]->input[0]->trigger.jhat.which), 20 + 1260*ID, 300, 310, 40, 2*ID);
 		break;
 	}
-	glColor4f(1.0, 1.0, 0.0, 0.4 + (float)(configMenu[ID] == 1)*0.4);
-	drawGlyph(buffer, 20 + 1260*ID, 300, 310, 40, 2*ID);
 	for(i = 2; i < 7; i++){
-		sprintf(buffer, "%s", p[ID]->inputName[i+2].c_str());
 		glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(configMenu[ID] == i)*0.4);
-		drawGlyph(buffer, 20 + 1230*ID, 300, 310+40*(i-1), 40, 0);
-		int a = 0;
+		drawGlyph(p[ID]->inputName[i+2], 20 + 1230*ID, 300, 310+40*(i-1), 40, 0);
 		for(unsigned int j = 0; j < p[ID]->input.size(); j++)
 			if(p[ID]->input[j]->effect == 1 << (i+2)){
+				glColor4f(1.0, 1.0, 0.0, 0.4 + (float)(configMenu[ID] == i)*0.4);
 				switch(p[ID]->input[j]->trigger.type){
 				case SDL_KEYDOWN:
-					sprintf(buffer, "%s", SDL_GetKeyName(p[ID]->input[j]->trigger.key.keysym.sym));
-					a = 1;
+					drawGlyph(to_string(p[ID]->input[j]->trigger.key.keysym.sym),
+							  70 + 1230*ID, 300, 310+40*(i-1), 40, 0);
 					break;
 				case SDL_JOYBUTTONDOWN:
-					sprintf(buffer, "B%i", p[ID]->input[j]->trigger.jbutton.button);
-					a = 2;
+					drawGlyph("B" + to_string(p[ID]->input[j]->trigger.jbutton.button),
+							  70 + 1230*ID, 300, 310+40*(i-1), 40, 0);
 					break;
 				case SDL_JOYAXISMOTION:
-					a = 3;
-					sprintf(buffer, "Axis %i %i", p[ID]->input[j]->trigger.jaxis.axis,
-						p[ID]->input[j]->trigger.jaxis.value);
+					drawGlyph("Axis "+ to_string(p[ID]->input[j]->trigger.jaxis.axis) 
+							  + " " + to_string(p[ID]->input[j]->trigger.jaxis.value), 
+							  70 + 1230*ID, 300, 310+40*(i-1), 40, 0);
 					break;
 				case SDL_JOYHATMOTION:
-					a = 4;
-					sprintf(buffer, "Hat %i %i", p[ID]->input[j]->trigger.jhat.hat,
-						p[ID]->input[j]->trigger.jhat.value);
+					drawGlyph("Hat "+ to_string(p[ID]->input[j]->trigger.jhat.hat) 
+							  + " " + to_string(p[ID]->input[j]->trigger.jhat.value), 
+							  70 + 1230*ID, 300, 310+40*(i-1), 40, 0);
+					break;
+				default:
+					glColor4f(1.0, 0.0, 0.0, 0.4 + (float)(configMenu[ID] == i)*0.4);
+					drawGlyph("Not Set", 70 + 1230*ID, 300, 310+40*(i-1), 40, 0);
 					break;
 			}
 		}
-		if(!a){ 
-			sprintf(buffer, "Not Set");
-			glColor4f(1.0, 0.0, 0.0, 0.4 + (float)(configMenu[ID] == i)*0.4);
-		} else glColor4f(1.0, 1.0, 0.0, 0.4 + (float)(configMenu[ID] == i)*0.4);
-		drawGlyph(buffer, 70 + 1230*ID, 300, 310+40*(i-1), 40, 0);
 	}
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(configMenu[ID] == 7)*0.4);
 	drawGlyph("Exit Menu", 20 + 1260*ID, 300, 310+40*(i-1), 40, 2*ID);
@@ -264,15 +263,15 @@ void interface::drawHint(int i)
 
 void interface::drawHUD()
 {
-	char buffer[200];
-	if(timer / 60 > 99) sprintf(buffer, "99");
+	int currentRound = P[0]->rounds + P[1]->rounds + 1;
+	if(timer / 60 > 99) 
+		drawGlyph("99", 700, 200, 0, 90, 1);
 	else if(timer / 60 < 10){
 		glColor4f(1.0, 0.0, 0.0, 1.0);
-		sprintf(buffer, "0%i", timer / 60);
-	}
-	else sprintf(buffer, "%i", timer / 60);
+		drawGlyph("0" + to_string(timer / 60), 700, 200, 0, 90, 1);
+	} else
+		drawGlyph(to_string(timer / 60), 700, 200, 0, 90, 1);
 
-	drawGlyph(buffer, 700, 200, 0, 90, 1);
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(P[i]->name.size()) drawGlyph(P[i]->name, 100+800*i, 600, 30, 40, 0+2*i);
@@ -312,23 +311,19 @@ void interface::drawHUD()
 		//*/
 		if(combo[i] > 1){
 			glColor4f(1.0, 1.0-.5*illegit[i], 1.0-.5*illegit[i], 1.0);
-			sprintf(buffer, "%i hits", combo[i]);
-			drawGlyph(buffer, 100+800*i, 600, 400, 75, 0+2*i);
-			sprintf(buffer, "%i damage", damage[i]);
-			drawGlyph(buffer, 100+800*i, 600, 475, 35, 0+2*i);
+			drawGlyph(to_string(combo[i]) + " hits", 100+800*i, 600, 400, 75, 0+2*i);
+			drawGlyph(to_string(damage[i]) + " damage", 100+800*i, 600, 475, 35, 0+2*i);
 			glColor4f(1.0, 1.0, 1.0, 1.0);
 		}
 	}
 
 	if(timer > 100 * 60 && timer < 100 * 60 + 31){ 
-		int l = P[0]->rounds + P[1]->rounds + 1;
-		sprintf(buffer, "Round %i", l);
 		if(timer == 100 * 60 + 30){
 			play(1);
 			play(0);
 			//Mix_PlayChannel(3, announceRound[l - 1], 0);
 		}
-		drawGlyph(buffer, 0, 1600, 375, 150, 1);
+		drawGlyph("Round " + to_string(currentRound), 0, 1600, 375, 150, 1);
 	}
 	if(timer > 99 * 60 && timer < 99 * 60 + 31){ 
 		drawGlyph("FIGHT", 0, 1600, 375, 150, 1);
@@ -348,25 +343,21 @@ void interface::drawHUD()
 	}
 	if(endTimer > 3 * 60 + 29 && endTimer < 4 * 60){ 
 		if(things[0]->current.meter[0] > things[1]->current.meter[0]){ 
-			sprintf(buffer, "%s", things[0]->pick()->name.c_str());
-			drawGlyph(buffer, 0, 1600, 300, 150, 1);
+			drawGlyph(P[0]->pick()->name, 0, 1600, 300, 150, 1);
 			drawGlyph("Wins", 0, 1600, 450, 150, 1);
 			if(endTimer == 4 * 60 - 1)
 				Mix_PlayChannel(3, announceWinner[selection[0]], 0);
 		} else if(things[1]->current.meter[0] > things[0]->current.meter[0]){
-			sprintf(buffer, "%s", things[1]->pick()->name.c_str());
-			drawGlyph(buffer, 0, 1600, 300, 150, 1);
+			drawGlyph(P[1]->pick()->name, 0, 1600, 300, 150, 1);
 			drawGlyph("Wins", 0, 1600, 450, 150, 1);
 			if(endTimer == 4 * 60 - 1)
 				Mix_PlayChannel(3, announceWinner[selection[1]], 0);
 		} else if(things[0]->current.meter[0] <= 0){ 
-			sprintf(buffer, "Double KO");
-			drawGlyph(buffer, 0, 1600, 375, 150, 1);
+			drawGlyph("Double KO", 0, 1600, 375, 150, 1);
 			if(endTimer == 4 * 60 - 1)
 				Mix_PlayChannel(3, announceDraw[0], 0);
 		} else {
-		sprintf(buffer, "Draw");
-		drawGlyph(buffer, 0, 1600, 375, 150, 1);
+		drawGlyph("Draw", 0, 1600, 375, 150, 1);
 		if(endTimer == 4 * 60 - 1)
 			Mix_PlayChannel(3, announceDraw[1], 0);
 		}

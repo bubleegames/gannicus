@@ -7,6 +7,7 @@
 #include <iostream>
 #include <stdio.h>
 
+using std::to_string;
 using std::cout;
 using std::ifstream;
 
@@ -140,14 +141,20 @@ action * avatar::moveSignal(int)
 action * avatar::neutralize(status &current)
 {
 	current.reversalFlag = false;
+	neutral->execute(current);
 	return neutral;
 }
 
 action * character::neutralize(status &current)
 {
 	current.reversalFlag = false;
-	if(current.aerial) return airNeutral;
-	else return neutral;
+	if(current.aerial){ 
+		airNeutral->execute(current);
+		return airNeutral;
+	} else {
+		neutral->execute(current);
+		return neutral;
+	}
 }
 
 void avatar::getName(string directory, string file)
@@ -251,7 +258,7 @@ void avatar::sortMove(action * m, string key)
 
 void avatar::loadAssets(int pal)
 {
-	string p = "content/characters/"+dir+"/palette" + std::to_string(pal) + ".png";
+	string p = "content/characters/"+dir+"/palette" + to_string(pal) + ".png";
 	palette = aux::load_texture(p);
 	for(action *i:moveList){
 		if(i->payload) i->payload->loadAssets(pal);
@@ -439,7 +446,7 @@ instance * avatar::spawn(status &current)
 
 void avatar::connect(status &current)
 {
-	action * t = current.move->connect(current.meter, current.connect, current.frame);
+	action * t = current.move->connect(current.meter, current);
 	if(t != nullptr){
 		current.bufferedMove = t;
 	}
@@ -508,7 +515,7 @@ void character::block(status &current, int st, bool high)
 
 void avatar::pollRects(status& current, SDL_Rect& collision, vector<SDL_Rect>& hitreg, vector<SDL_Rect>& hitbox)
 {
-	current.move->pollRects(current.frame, current.connect, collision, hitreg, hitbox);
+	current.move->pollRects(current, collision, hitreg, hitbox);
 }
 
 hStat avatar::pollStats(status &current)
@@ -518,7 +525,23 @@ hStat avatar::pollStats(status &current)
 	return s;
 }
 
-int character::takeHit(status &current, hStat & s, int blockType, int &hitType)
+int character::assessStun(status &current, hStat &s)
+{
+	if(current.move->armor(current)) return 0;
+	else if(current.aerial){
+		current.move = untech;
+		resetAirOptions(current.meter);
+		return -(s.stun+s.untech);
+	} else if(current.move->crouch) {
+		current.move = crouchReel;
+		return -(s.stun + s.stun/5);
+	} else {
+		current.move = reel;
+		return -(s.stun);
+	}
+}
+
+int character::takeHit(status &current, hStat &s, int blockType, int &hitType)
 {
 	bool dead = false;
 	int freeze = 0;
@@ -526,6 +549,7 @@ int character::takeHit(status &current, hStat & s, int blockType, int &hitType)
 		freeze = s.stun/4 + 10;
 		if(s.ghostHit) freeze = 0;
 	} else freeze = s.pause;
+	current.absorbedHits++;
 	hitType = current.move->takeHit(s, blockType, current);
 	if(hitType == 1) current.meter[0] -= s.damage;
 	else if(hitType > -2) {
@@ -544,22 +568,16 @@ int character::takeHit(status &current, hStat & s, int blockType, int &hitType)
 		current.move = die;
 		current.aerial = true;
 	} else if(hitType == 1) {
-		if(s.launch){
-			if(!current.aerial) s.untech += s.initialLaunch;
-			current.aerial = true;
-		}
 		if(s.stun != 0){
-			current.frame = 0;
-			if(current.aerial){
-				current.counter = -(s.stun+s.untech);
-				current.move = untech;
-				resetAirOptions(current.meter);
-			} else if(current.move->crouch) {
-				current.counter = -(s.stun + s.stun/5);
-				current.move = crouchReel;
-			} else {
-				current.counter = -(s.stun);
-				current.move = reel;
+			if(s.launch){
+				if(!current.aerial) s.untech += s.initialLaunch;
+				current.aerial = true;
+			}
+			current.counter = assessStun(current, s);
+			if(current.counter < 0){
+				current.frame = 0;
+				current.hit = 0;
+				current.connect = 0;
 			}
 		}
 	} else if (hitType == -1) {
@@ -624,25 +642,12 @@ void character::land(status& current)
 
 void avatar::step(status &current)
 {
-	int a = 0;
-	if(current.move){
-		if(current.move->hits > 0 && current.connect <= current.move->hits){
-			a += current.move->stats[current.connect-1].connect;
-			if(current.counter > 0)
-				a += current.move->CHStats[current.connect-1].connect;
-		}
-	}
 	if(current.freeze <= 0){
 		current.move->step(current);
 		tick(current);
-		if(a < 0) current.connect += a;
 		if(current.counter > 0) current.counter = 0;
 	} else {
 		current.freeze--;
-		if(!current.freeze && a > 0){
-			current.connect += a;
-			current.hit += a;
-		}
 	}
 	if(current.meter[4] > 0) current.meter[4]--;
 }

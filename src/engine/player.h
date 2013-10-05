@@ -29,7 +29,7 @@ public:
 	virtual void step();
 
 	virtual void getMove(vector<int>, bool&);
-	virtual int takeHit(int, hStat&, SDL_Rect&);
+	virtual int takeHit(int, hStat&);
 	virtual void enforceGravity(int, int);
 	virtual void invertVectors(int);
 	virtual void pullVolition();
@@ -74,6 +74,7 @@ public:
 	int rounds;		//How many rounds has this player won this match?
 //	int padding[400];	//More magic. Do not touch
 	virtual void characterSelect(int);
+	virtual void enemySelect(int);
 	virtual void drawHitParticle();
 
 	virtual void readEvent(SDL_Event &, frame &);
@@ -83,8 +84,7 @@ public:
 	virtual void drawMeters(int);
 	virtual void roundInit();
 	virtual void macroCheck(SDL_Event&);
-	virtual int takeHit(int, hStat&, SDL_Rect&);
-//	virtual void connect(int, hStat&);
+	virtual int takeHit(int, hStat&);
 	virtual int CHState();
 	virtual bool reversalPossible();
 

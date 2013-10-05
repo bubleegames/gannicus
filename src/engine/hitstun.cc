@@ -21,8 +21,10 @@ bool hitstun::canGuard(int f)
 
 int hitstun::takeHit(hStat& s, int b, status& current)
 {
-	if(!s.stun) return 1;
-	if(s.blockMask.i & blockState.i){
+	blockField temp;
+	temp.i = s.blockMask.i;
+	if(b == -2 && temp.i) temp.b.air = true;
+	if(temp.i & blockState.i){
 		switch (b){
 		case -2:
 			current.frame = 0;

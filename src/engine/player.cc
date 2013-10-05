@@ -8,6 +8,7 @@
 
 using std::ifstream;
 using std::ofstream;
+using std::to_string;
 using std::cout;
 
 player::player()
@@ -115,13 +116,11 @@ void player::init()
 
 void player::roundInit()
 {
-	char buffer[200];
 	instance::init();
 	neutralize();
 	if(v) pick()->init(current);
 	if(record){
-		sprintf(buffer, "%i-%s.sh", ID, pick()->name.c_str());
-		record->write(buffer);
+		record->write(to_string(ID)+"-"+pick()->name+".sh");
 		delete record;
 		record = nullptr;
 	}
@@ -148,11 +147,9 @@ void player::roundInit()
 
 bool controller::readConfig(int ID)
 {
-	char fname[30];
-	sprintf(fname, ".config/p%i.conf", ID);
 	ifstream read;
 	int i = 0;
-	read.open(fname);
+	read.open(".config/p" + to_string(ID) + ".conf");
 	if(read.fail()) {
 		read.close();
 		return 0;
@@ -308,10 +305,8 @@ bool player::setKey(int effect, SDL_Event temp)
 
 void controller::writeConfig(int ID)
 {
-	char fname[30];
-	sprintf(fname, ".config/p%i.conf", ID);
 	ofstream write;
-	write.open(fname);
+	write.open(".config/p" + to_string(ID) + ".conf");
 	for(unsigned int i = 0; i < input.size(); i++){
 		switch(input[i]->trigger.type){
 		case SDL_JOYHATMOTION:
@@ -351,6 +346,27 @@ bool player::reversalPossible()
 	return true;
 }
 
+void player::enemySelect(int i)
+{
+	ifstream charlist;
+	vector<string> chr (i+1);
+	chr[0] = "White";
+	charlist.open("src/charlist.h");
+	int j = 0;
+	while(j < i){
+		char k;
+		do charlist >> k;
+		while(k != '/');
+		do charlist >> k;
+		while(k != '-');
+		j++;
+		charlist >> chr[j];
+	}
+	charlist.close();
+	std::cout << name + "/" + chr[j] + name;
+	pick()->avatar::build(name + "/" + chr[j], name);
+}
+
 void player::characterSelect(int i)
 {
 	v = nullptr;
@@ -362,21 +378,21 @@ void player::characterSelect(int i)
 		v = new yellow;
 		break;
 	default:
-		ifstream nch;
+		ifstream charlist;
 		vector<string> chr (i+1);
 		chr[0] = "White";
-		nch.open("src/charlist.h");
+		charlist.open("src/charlist.h");
 		int j = 0;
 		while(j < i){
 			char k;
-			do nch >> k;
+			do charlist >> k;
 			while(k != '/');
-			do nch >> k;
+			do charlist >> k;
 			while(k != '-');
 			j++;
-			nch >> chr[j];
+			charlist >> chr[j];
 		}
-		nch.close();
+		charlist.close();
 		v = new character(chr[i]);
 		break;
 	}
@@ -669,7 +685,8 @@ void instance::step()
 		current.connect = 0;
 		current.hit = 0;
 	}
-	if(current.posX > 3400 || current.posX < -200) current.dead = true;
+	if(current.posX > 4200 || current.posX < -1000 || current.posY < -1000 || current.posY > 3000) current.age = pick()->lifespan - 1;
+	else if(current.posX > 3200 || current.posX < 0 || current.posY < 0 || current.posY > 2000) current.age = pick()->lifespan - 240;
 	if(!current.freeze){ 
 		if(current.move->flip == current.frame) flip();
 		current.age++;
@@ -833,7 +850,6 @@ int instance::middle()
 
 void player::macroCheck(SDL_Event &event)
 {
-	char buffer[200];
 	int effect = tap(event);
 	if(effect > 0){
 		currentMacro = nullptr;
@@ -846,8 +862,7 @@ void player::macroCheck(SDL_Event &event)
 					record = new script();
 					record->init(1);
 				} else {
-					sprintf(buffer, "%i-%s.sh", ID, v->name.c_str());
-					record->write(buffer);
+					record->write(to_string(ID) + "-" + v->name + ".sh");
 					delete record;
 					record = nullptr;
 				}
@@ -926,7 +941,7 @@ void instance::connect(int combo, hStat & s)
 	if(current.bufferedMove == current.move) current.bufferedMove = nullptr;
 }
 
-int instance::takeHit(int combo, hStat & s, SDL_Rect &p)
+int instance::takeHit(int combo, hStat & s)
 {
 	if(s.turnsProjectile){
 		if(pick()->turn(ID)){ 
@@ -940,7 +955,7 @@ int instance::takeHit(int combo, hStat & s, SDL_Rect &p)
 	return pick()->takeHit(current, s, blockType, particleType);
 }
 
-int player::takeHit(int combo, hStat & s, SDL_Rect &p)
+int player::takeHit(int combo, hStat & s)
 {
 	SDL_Rect v = {0, 0, 1, 0};
 	action * temp = nullptr;
@@ -952,14 +967,14 @@ int player::takeHit(int combo, hStat & s, SDL_Rect &p)
 	s.untech -= combo;
 	int f;
 	if(slide) s.lift += 15 - abs(s.lift)/4;
-	f = instance::takeHit(combo, s, p);
+	f = instance::takeHit(combo, s);
 	current.freeze = f;
 	if(particleType != 1){
 		temp = current.move->blockSuccess(s.stun, s.isProjectile);
 	}
 	SDL_Rect fake = {0, 0, 0, 0};
-	SDL_Rect *tempProx = current.prox;
-	current.prox = &fake;
+	SDL_Rect tempProx = current.prox;
+	current.prox = fake;
 	if(temp && temp != current.move && temp->check(current)){
 		combo = 0;
 		current.bufferedMove = temp;
@@ -967,7 +982,7 @@ int player::takeHit(int combo, hStat & s, SDL_Rect &p)
 	} else {
 		particleLife = 8;
 		current.deltaX /= 6;
-		if(current.deltaY < 0) current.deltaY /= 55; 
+		if(current.deltaY < 0) current.deltaY /= 55;
 		else current.deltaY /= 6;
 		momentum.clear();
 		if(current.aerial) v.y = s.lift;

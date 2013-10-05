@@ -103,15 +103,15 @@ int werf::arbitraryPoll(int n, int f)
 
 bool werf::check(const status &current)
 {
-	if(current.prox->y != 0) return 0;
-	if(current.prox->x > 0) return 0;
+	if(current.prox.y != 0) return 0;
+	if(current.prox.x > 0) return 0;
 	return action::check(current);
 }
 
 bool luftigeWerf::check(const status &current)
 {
-	if(current.prox->y == 0) return 0;
-	if(current.prox->x > 0) return 0;
+	if(current.prox.y == 0) return 0;
+	if(current.prox.x > 0) return 0;
 	return action::check(current);
 }
 

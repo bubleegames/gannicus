@@ -76,14 +76,14 @@ public:
 	virtual int arbitraryPoll(int q, int f);
 
 	//Return the relevant information needed for interface::resolve(), then step to the next frame.
-	virtual void pollRects(int, int, SDL_Rect&, vector<SDL_Rect>&, vector<SDL_Rect>&);
+	virtual void pollRects(status&, SDL_Rect&, vector<SDL_Rect>&, vector<SDL_Rect>&);
 	virtual vector<SDL_Rect> pollDelta(int);
 	virtual int displace(int, int&, int);
 	virtual hStat pollStats(int, bool);
 	virtual bool cancel(action*, int, int); //Cancel allowed patternMatch. Essentially: is action Lvalue allowed given the current state of action Rvalue?
 	virtual void step(status&); //Step forward one frame. This only happens if we're not in freeze state
 	virtual action * land(status&) { return this; }
-	virtual action * connect(vector<int>&, int&, int);
+	virtual action * connect(vector<int>&, status&);
 	virtual instance * spawn();
 	virtual int takeHit(hStat&, int, status&);
 	virtual bool canGuard(int);
@@ -96,6 +96,7 @@ public:
 	virtual bool CHState(int);
 
 	virtual bool window(int);
+	virtual bool armor(status&);
 	int calcCurrentHit(int);
 
 	vector<hStat> stats, CHStats;
@@ -200,6 +201,7 @@ public:
 	int spawnPosX, spawnPosY;
 	int lifespan;
 	int allegiance;
+	bool unique:1;
 	bool spawnTrackX:1;
 	bool spawnTrackY:1;
 	bool spawnTrackFloor:1;

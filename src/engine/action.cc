@@ -7,6 +7,7 @@
 
 using std::ifstream;
 using std::ofstream;
+using std::to_string;
 
 action::action() {}
 
@@ -27,6 +28,7 @@ void action::zero()
 	typeKey = '0';
 	frames = 0;
 	hits = 0;
+	unique = false;
 	collision.clear();
 	hitbox.clear();
 	hitreg.clear();
@@ -105,7 +107,9 @@ void action::zero()
 
 void action::generate(string directory, string name)
 {
-	payload = new projectile(directory, name);
+	tokenizer t(name, "%");
+	if(name[0] == '%') payload = new pet(directory, t());
+	else payload = new projectile(directory, name);
 	if(lifespan) payload->lifespan = lifespan;
 }
 
@@ -202,11 +206,9 @@ bool action::parseRect(string buffer)
 
 void action::loadMisc(string dir)
 {
-	char fname[1024];
 	SDL_Surface *temp;
 	for(int i = 0; i < frames; i++){
-		sprintf(fname, "content/characters/%s/%s#%i.png", dir.c_str(), fileName.c_str(), i);
-		temp = aux::load_image(fname);
+		temp = aux::load_image("content/characters/" + dir + "/" + fileName + "#" + to_string(i) + ".png");
 		if(!temp){
 			width.push_back(0);
 			height.push_back(0);
@@ -219,8 +221,6 @@ void action::loadMisc(string dir)
 		SDL_FreeSurface(temp);
 	}
 //	soundClip = Mix_LoadWAV(string("content/characters/"+dir+"/"+fileName+".ogg").c_str());
-//	normalImage = aux::load_image("content/normal0000.png");
-//	normals = aux::surface_to_normals(normalImage);
 }
 
 bool action::setParameter(string buffer)
@@ -585,6 +585,9 @@ void action::parseProperties(string buffer, bool counter)
 			if(counter) CHStats[ch].stick = 1;
 			else stats[ch].stick = 1;
 			break;
+		case 'u':
+			if(!counter) unique = true;
+			break;
 		case 's':
 			if(!counter) stop += 1;
 			break;
@@ -683,25 +686,36 @@ bool action::check(const status &current)
 	if(requiredMode)
 		if(!(requiredMode & current.mode))
 			return 0;
+	if(unique){
+		for(instance *i:current.offspring){
+			if(i->pick() == payload) 
+				return 0;
+		}
+	}
 	if(cost && cost > current.meter[1])
 		return 0;
-	if(xRequisite > 0 && current.prox->w > xRequisite) 
+	if(xRequisite > 0 && current.prox.w > xRequisite) 
 		return 0;
-	if(yRequisite > 0 && current.prox->h > yRequisite) 
+	if(yRequisite > 0 && current.prox.h > yRequisite) 
 		return 0;
 	return 1;
 }
 
-void action::pollRects(int f, int cFlag, SDL_Rect &c, vector<SDL_Rect> &r, vector<SDL_Rect> &b)
+void action::pollRects(status &current, SDL_Rect &c, vector<SDL_Rect> &r, vector<SDL_Rect> &b)
 {
-	if(modifier && basis.move) basis.move->pollRects(basis.frame, basis.connect, c, r, b);
+	if(modifier && basis.move) basis.move->pollRects(basis, c, r, b);
 	else {
-		if(f >= frames) f = frames-1;
-		if((unsigned int)f < collision.size()) c = collision[f];
+		if(current.frame >= frames) current.frame = frames-1;
+		if((unsigned int)current.frame < collision.size()) {
+			c.x = collision[current.frame].x;
+			c.y = collision[current.frame].y;
+			c.w = collision[current.frame].w;
+			c.h = collision[current.frame].h;
+		}
 		r.clear();
-		if((unsigned int)f < hitreg.size()) r = hitreg[f];
+		if((unsigned int)current.frame < hitreg.size()) r = hitreg[current.frame];
 		b.clear();
-		if((unsigned int)f < hitbox.size() && cFlag <= calcCurrentHit(f)) b = hitbox[f];
+		if((unsigned int)current.frame < hitbox.size() && current.connect <= calcCurrentHit(current.frame)) b = hitbox[current.frame];
 	}
 }
 
@@ -810,6 +824,8 @@ bool action::operator>(const status& o)
 
 void action::step(status &current)
 {
+	if(current.connect == calcCurrentHit(current.frame)+1) 
+		current.connect += stats[current.connect-1].connect;
 	if(!current.frame && !current.meter[4]){
 		if(current.meter[1] + gain[0] < 300) current.meter[1] += gain[0];
 		else current.meter[1] = 300;
@@ -836,18 +852,18 @@ int action::calcCurrentHit(int frame)
 	return b;
 }
 
-action * action::connect(vector<int>& meter, int &c, int f)
+action * action::connect(vector<int> &meter, status &current)
 {
-	if(modifier && basis.move) return basis.move->connect(meter, basis.connect, basis.frame);
+	if(modifier && basis.move) return basis.move->connect(meter, basis);
 	else if (hits == 0) return nullptr;
 	else {
-		c = calcCurrentHit(f)+1;
+		current.connect = calcCurrentHit(current.frame)+1;
 		if(!meter[4]){
-			if(meter[1] + gain[c] < 300) meter[1] += gain[c];
+			if(meter[1] + gain[current.connect] < 300) meter[1] += gain[current.connect];
 			else meter[1] = 300;
 		}
-		if(onConnect[c-1] != nullptr){
-			return onConnect[c-1];
+		if(onConnect[current.connect-1] != nullptr){
+			return onConnect[current.connect-1];
 		} else return nullptr;
 	}
 }
@@ -868,7 +884,7 @@ void action::playSound(int channel)
 
 void action::execute(status &current)
 {
-	armorCounter = 0;
+	current.absorbedHits = 0;
 	current.meter[1] -= cost;
 	current.meter[4] += cost;
 	if(modifier){
@@ -940,10 +956,15 @@ bool action::canGuard(int f)
 	else return false;
 }
 
-int action::takeHit(hStat & s, int b, status &current)
+bool action::armor(status &current)
 {
-	if(modifier && basis.move) return basis.move->takeHit(s, b, current);
-	else{
+	return (current.frame >= armorStart && current.frame <= armorStart + armorLength && (armorHits < 1 || armorHits >= current.absorbedHits));
+}
+
+int action::takeHit(hStat & s, int blockType, status &current)
+{
+	if(modifier && basis.move) return basis.move->takeHit(s, blockType, current);
+	else {
 		if(!stunMin || s.stun >= stunMin){
 			if(!stunMax || s.stun <= stunMax){
 				if(s.blockMask.i & blockState.i && canGuard(current.frame)){
@@ -951,17 +972,8 @@ int action::takeHit(hStat & s, int b, status &current)
 						if(!s.isProjectile || countersProjectile) return -5;
 					}
 					return guardType;
-				} else if (current.frame >= armorStart && current.frame <= armorStart + armorLength && 
-						   (armorHits < 1 || armorHits < armorCounter)){
-					s.stun = 0;
-					armorCounter++;
-					return 1;
 				}
 			}
-		}
-		if(s.stun != 0){
-			current.frame = 0;
-			current.hit = 0;
 		}
 		return 1;
 	}

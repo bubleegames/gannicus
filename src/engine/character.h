@@ -65,6 +65,7 @@ public:
 	virtual ~character();
 
 	virtual void build(string, string);
+	virtual int assessStun(status&, hStat&);
 	virtual int comboState(action *);
 	virtual action * neutralize(status&);
 	virtual void drawMeters(int, int, status&);
@@ -104,5 +105,14 @@ public:
 	virtual void processMove(action * m);
 	virtual bool death(status&);
 	virtual void init(status&);
+};
+
+class pet : virtual public projectile, virtual public character {
+public:
+	pet(string, string);
+	virtual int takeHit(status&, hStat&, int, int&);
+	virtual void build(string, string);
+	virtual void init(status&);
+	pet();
 };
 #endif

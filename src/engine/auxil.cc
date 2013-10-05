@@ -367,6 +367,7 @@ status::status()
 	frame = 0;
 	connect = 0;
 	counter = 0;
+	absorbedHits = 0;
 	hit = 0;
 	reversalTimer = 0;
 	move = nullptr;
@@ -399,5 +400,6 @@ status::status(const status & o)
 	dead = o.dead;
 	mode = o.mode;
 	prox = o.prox;
+	absorbedHits = o.absorbedHits;
 }
 
