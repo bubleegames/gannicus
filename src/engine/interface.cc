@@ -570,11 +570,11 @@ void SaltAndBone::resolvePhysics()
 					gripCheck = globals[j]->grip ? true : false;
 					if(i < P.size()){
 						if(globals[j]->effectCode & 1){
-							things[i]->enforceAttractor(globals[j]);
+							things[i]->enforceForce(globals[j]);
 						}
 					} else {
 						if(globals[j]->effectCode & 2){
-							things[i]->enforceAttractor(globals[j]);
+							things[i]->enforceForce(globals[j]);
 						}
 					}
 					if(!globals[j]->grip && gripCheck){ 
@@ -628,7 +628,7 @@ void SaltAndBone::cleanup()
 				}
 			}
 			resolveSummons();
-			summonAttractors();
+			summonForces();
 			if(!roundEnd) checkWin();
 			runTimer();
 		}
@@ -703,13 +703,13 @@ void SaltAndBone::resolveSummons()
 	}
 }
 
-void SaltAndBone::summonAttractors()
+void SaltAndBone::summonForces()
 {
-	attractor * tvec = nullptr, * avec = nullptr;
+	force * tvec = nullptr, * avec = nullptr;
 	for(unsigned int i = 0; i < things.size(); i++){
 		if(things[i]->current.move && things[i]->current.frame == things[i]->current.move->distortSpawn) tvec = things[i]->current.move->distortion;
 		if(tvec != nullptr){
-			avec = new attractor;
+			avec = new force;
 			avec->x = tvec->x;
 			avec->y = tvec->y;
 			avec->type = tvec->type;

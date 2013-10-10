@@ -48,7 +48,7 @@ public:
 	virtual void follow(instance*);
 	virtual void loadAssets();
 	virtual bool checkHit(SDL_Rect, SDL_Rect);
-	void enforceAttractor(attractor*);
+	void enforceForce(force*);
 	int middle();
 	void flip();
 	void print();

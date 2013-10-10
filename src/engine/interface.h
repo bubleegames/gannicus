@@ -58,7 +58,7 @@ public:
 	void resolveHits();
 	void resolveThrows();
 	void resolveSummons();
-	void summonAttractors();
+	void summonForces();
 	void draw();
 	void drawLoadingScreen();
 	void drawHitParticles();
@@ -115,7 +115,7 @@ public:
 	Mix_Chunk *announceEnd[2];
 	Mix_Chunk *announceSelect;
 
-	vector<attractor *> globals;
+	vector<force *> globals;
 
 	script *replay;
 
