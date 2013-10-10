@@ -15,7 +15,7 @@
 
 using std::to_string;
 
-void interface::draw()
+void SaltAndBone::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glPushMatrix();
@@ -29,7 +29,7 @@ void interface::draw()
 	SDL_GL_SwapBuffers();
 }
 
-void interface::drawCSelect()
+void SaltAndBone::drawCSelect()
 {
 	int x, y;
 	glColor4f(0.1f, 0.1f, 0.1f, 1.0f);
@@ -71,7 +71,7 @@ void interface::drawCSelect()
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-void interface::drawMainMenu(int ID)
+void SaltAndBone::drawMainMenu(int ID)
 {
 	glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
 	glRectf(0.0f + 800.0 * ID, 0.0, (screenWidth/2*ID) + (GLfloat)screenWidth/2.0, (GLfloat)screenHeight);
@@ -119,7 +119,7 @@ void interface::drawMainMenu(int ID)
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
 }
 
-void interface::drawConfigMenu(int ID)
+void SaltAndBone::drawConfigMenu(int ID)
 {
 	int i;
 	glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
@@ -178,7 +178,7 @@ void interface::drawConfigMenu(int ID)
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
 }
 
-void interface::drawLoadingScreen()
+void SaltAndBone::drawLoadingScreen()
 {
 	glPushMatrix();
 		glScalef(scalingFactor, scalingFactor, 0.0f);
@@ -190,7 +190,7 @@ void interface::drawLoadingScreen()
 	glPopMatrix();
 }
 
-void interface::drawGame()
+void SaltAndBone::drawGame()
 {
 	glPushMatrix();
 		glTranslatef(-bg.x, bg.y, 0);
@@ -239,7 +239,7 @@ void interface::drawGame()
 	}
 }
 
-void interface::drawHint(int i)
+void SaltAndBone::drawHint(int i)
 {
 	if(blockFail[i]){
 		if(blockFail[i] & 1){
@@ -261,7 +261,7 @@ void interface::drawHint(int i)
 	}
 }
 
-void interface::drawHUD()
+void SaltAndBone::drawHUD()
 {
 	int currentRound = P[0]->rounds + P[1]->rounds + 1;
 	if(timer / 60 > 99) 
@@ -377,7 +377,7 @@ void interface::drawHUD()
 	glEnable( GL_TEXTURE_2D );
 }
 
-void interface::drawPauseMenu()
+void SaltAndBone::drawPauseMenu()
 {
 	glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
 	glRectf(0.0, 0.0, (GLfloat)screenWidth, (GLfloat)screenHeight);
@@ -392,7 +392,7 @@ void interface::drawPauseMenu()
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
 }
 
-void interface::drawRematchMenu()
+void SaltAndBone::drawRematchMenu()
 {
 	glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
 	glRectf(0.0, 0.0, (GLfloat)screenWidth, (GLfloat)screenHeight);
@@ -615,7 +615,7 @@ void avatar::draw(action *& cMove, int f, GLint p)
 	glUseProgram(0);
 }
 
-int gameInstance::drawGlyph(string s, int x, int space, int y, int height, int just)
+int fightingGame::drawGlyph(string s, int x, int space, int y, int height, int just)
 {
 	int w, h, width = 0, padding = 0, totalWidth = 0;
 	if(just != 0){
@@ -711,7 +711,7 @@ bool action::spriteCheck(int f)
 	else return 0;
 }
 
-void interface::writeImage(string movename, int frame, action * move)
+void SaltAndBone::writeImage(string movename, int frame, action * move)
 {
 	int Y = 0;
 	int X = 0;
@@ -799,7 +799,7 @@ void action::drawBoxen(int frame){
 	glFlush();
 }
 
-bool gameInstance::screenInit(int w, int h)
+bool fightingGame::screenInit(int w, int h)
 {
 	/*Initialize SDL*/
 	if(SDL_Init(SDL_INIT_EVERYTHING) < 0) return false;

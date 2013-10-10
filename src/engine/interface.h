@@ -2,12 +2,12 @@
 #include "harness.h"
 #include "window.h"
 #include "opera.h"
-#ifndef ___interface
-#define ___interface
+#ifndef ___SaltAndBone
+#define ___SaltAndBone
 using std::string;
 using std::vector;
 
-class gameInstance : public window, public arcadeHarness, public HUD, public soundScape {
+class fightingGame : public window, public arcadeHarness, public HUD, public soundScape {
 public:
 	virtual void resolve() = 0;
 	virtual void handleArgs(vector<string>) {}
@@ -33,10 +33,10 @@ public:
 	bool initd:1;
 };
 
-class interface : public gameInstance{
+class SaltAndBone : public fightingGame{
 public:
-	interface();
-	~interface();
+	SaltAndBone();
+	~SaltAndBone();
 	void readInput();
 	void loadMisc();
 	void initCharacters();
