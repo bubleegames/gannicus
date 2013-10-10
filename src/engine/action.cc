@@ -302,7 +302,7 @@ bool action::setParameter(string buffer)
 		tempOnHold = t();
 		return true;
 	} else if (t.current() == "Distort") {
-		distortion = new attractor;
+		distortion = new force;
 		distortSpawn = stoi(t("\t:- \n"));
 		distortion->length = stoi(t());
 		distortion->length -= distortSpawn;

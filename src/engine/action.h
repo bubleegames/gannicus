@@ -167,7 +167,7 @@ public:
 	int holdFrame;
 	int holdCheck;
 
-	attractor * distortion;
+	force * distortion;
 	int distortSpawn;
 	span<int> followupSpan;
 	span<int> attemptSpan;

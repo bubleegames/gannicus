@@ -448,7 +448,7 @@ void instance::loadAssets()
 	if(sprite) pick()->loadAssets(selectedPalette);
 }
 
-void instance::enforceAttractor(attractor* p)
+void instance::enforceForce(force* p)
 {
 	SDL_Rect resultant;
 	int midpoint, xDist, yDist;
