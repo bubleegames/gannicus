@@ -13,7 +13,7 @@ using std::max;
 using std::min;
 using std::to_string;
 
-interface::interface()
+SaltAndBone::SaltAndBone()
 {
 	stats = nullptr;
 	initCharacters();
@@ -59,7 +59,7 @@ interface::interface()
 	replay = nullptr;
 }
 
-void interface::handleArgs(vector<string> args)
+void SaltAndBone::handleArgs(vector<string> args)
 {
 	for(string i:args) {
 		if(i == "eleven"){
@@ -69,7 +69,7 @@ void interface::handleArgs(vector<string> args)
 	}
 }
 
-void interface::initShaders()
+void SaltAndBone::initShaders()
 {
 	//string version(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 	//version.erase(1,1);
@@ -79,7 +79,7 @@ void interface::initShaders()
 	window::initShaders();
 }
 
-void interface::createPlayers(string rep)
+void SaltAndBone::createPlayers(string rep)
 {
 	oldReplay = new script(rep);
 	createPlayers();
@@ -100,7 +100,7 @@ void interface::createPlayers(string rep)
 	}
 }
 
-void interface::createPlayers()
+void SaltAndBone::createPlayers()
 {
 	/*Initialize players.*/
 	for(int i = 0; i < 2; i++){
@@ -122,7 +122,7 @@ void interface::createPlayers()
 	}
 }
 
-void interface::loadMatchBackground()
+void SaltAndBone::loadMatchBackground()
 {
 	if(!killTimer && scalingFactor > .8) background = aux::load_texture("content/stages/" + to_string(selection[0]) + "/bg.png");
 	else {
@@ -156,7 +156,7 @@ void interface::loadMatchBackground()
 		matchMusic = Mix_LoadMUS(("content/sound/" + to_string(selection[1]) + ".ogg").c_str());
 }
 
-void interface::startGame()
+void SaltAndBone::startGame()
 {
 	SDL_Event temp;
 	while(SDL_PollEvent(&temp));
@@ -177,7 +177,7 @@ void HUD::loadMisc()
 	}
 }
 
-void interface::loadMisc()
+void SaltAndBone::loadMisc()
 {
 	HUD::loadMisc();
 	selectScreen = aux::load_texture("content/menu/Select.png");
@@ -201,7 +201,7 @@ void interface::loadMisc()
 }
 
 /*Initialize SDL and openGL, creating a window, among other things*/
-bool gameInstance::screenInit()
+bool fightingGame::screenInit()
 {
 	w = screenWidth*sf; h = screenHeight*sf;
 	if(screen){
@@ -221,13 +221,13 @@ bool gameInstance::screenInit()
 	return ret;
 }
 
-void gameInstance::init()
+void fightingGame::init()
 {
 	soundScape::init();
 	harness::init();
 }
 
-void gameInstance::initialConfig(int ID)
+void fightingGame::initialConfig(int ID)
 {
 	glPushMatrix();
 		glScalef(scalingFactor, scalingFactor, 1.0f);
@@ -251,7 +251,7 @@ void gameInstance::initialConfig(int ID)
 }
 
 	/*This functions sets things up for a new match. Initializes some things and draws the background*/
-void interface::matchInit()
+void SaltAndBone::matchInit()
 {
 	SDL_Event event;
 	rMenu = 0;
@@ -268,7 +268,7 @@ void interface::matchInit()
 }
 
 /*Sets stuff up for a new round. This initializes the characters, the timer, and the background.*/
-void interface::roundInit()
+void SaltAndBone::roundInit()
 {
 	roundEnd = false;
 	while(things.size() > P.size())
@@ -305,7 +305,7 @@ void interface::roundInit()
 }
 
 /*Pretty simple timer modifier*/
-void interface::runTimer()
+void SaltAndBone::runTimer()
 {
 	if(freeze > 0) freeze--;
 	if(P[0]->rounds == 0 && P[1]->rounds == 0 && timer == 101 * 60){
@@ -398,7 +398,7 @@ void interface::runTimer()
 	} else if(!killTimer || timer > 99 * 60) timer--;
 }
 
-void gameInstance::print()
+void fightingGame::print()
 {
 	cout << "\x1b[A" << "\x1b[A";
 	for(int i = 0; i < 2; i++){
@@ -409,7 +409,7 @@ void gameInstance::print()
 }
 
 /*Main function for a frame. This resolves character spritions, background scrolling, and hitboxes*/
-void interface::resolve()
+void SaltAndBone::resolve()
 {
 	if(!select[0] || !select[1]) cSelectMenu();
 	else if(rMenu) rematchMenu();
@@ -429,7 +429,7 @@ void interface::resolve()
 	}
 }
 
-void interface::initCharacters()
+void SaltAndBone::initCharacters()
 {
 	ifstream nch;
 	numChars = 0;
@@ -444,7 +444,7 @@ void interface::initCharacters()
 	stats = new chart(numChars);
 }
 
-void interface::resolveCombos()
+void SaltAndBone::resolveCombos()
 {
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(!roundEnd){
@@ -478,7 +478,7 @@ void interface::resolveCombos()
 	}
 }
 
-void interface::resolveCamera()
+void SaltAndBone::resolveCamera()
 {
 	/*Really rudimentary camera logic. Really just scrolls the background (Which characters are drawn relative to)
 	 *appropriately, attempting to adjust to approximately be looking at the point in the middle of the two characters.
@@ -504,7 +504,7 @@ void interface::resolveCamera()
 	bg.y = dy - bg.h;
 }
 
-void interface::resolveInputs()
+void SaltAndBone::resolveInputs()
 {
 	if(timer > 99 * 60){
 		for(unsigned int i = 0; i < P.size(); i++){
@@ -554,7 +554,7 @@ void interface::resolveInputs()
 	}
 }
 
-void interface::resolvePhysics()
+void SaltAndBone::resolvePhysics()
 {
 	bool gripCheck;
 	for(unsigned int i = 0; i < things.size(); i++){
@@ -587,7 +587,7 @@ void interface::resolvePhysics()
 	}
 }
 
-void interface::cleanup()
+void SaltAndBone::cleanup()
 {
 	if(select[0] && select[1] && !pMenu){
 		for(unsigned int i = 0; i < P.size(); i++) {
@@ -653,7 +653,7 @@ void interface::cleanup()
 	}
 }
 
-void interface::resolveSummons()
+void SaltAndBone::resolveSummons()
 {
 	instance * larva;
 	int x, y, f;
@@ -703,7 +703,7 @@ void interface::resolveSummons()
 	}
 }
 
-void interface::summonAttractors()
+void SaltAndBone::summonAttractors()
 {
 	attractor * tvec = nullptr, * avec = nullptr;
 	for(unsigned int i = 0; i < things.size(); i++){
@@ -748,7 +748,7 @@ void interface::summonAttractors()
 }
 
 /*Check if someone won*/
-void interface::checkWin()
+void SaltAndBone::checkWin()
 {
 	if(P[0]->current.meter[0] == 0 || P[1]->current.meter[0] == 0 || timer == 0){
 		roundEnd = true;
@@ -765,7 +765,7 @@ void interface::checkWin()
 	}
 }
 
-void gameInstance::genInput()
+void fightingGame::genInput()
 {
 	if(oldReplay){
 		for(unsigned int i = 0; i < p.size(); i++)
@@ -797,7 +797,7 @@ void gameInstance::genInput()
 }
 
 /*Read the input that's happened this frame*/
-void interface::processInput(SDL_Event &event)
+void SaltAndBone::processInput(SDL_Event &event)
 {
 	/*Do stuff with event*/
 	for(unsigned int i = 0; i < p.size(); i++){
@@ -813,10 +813,10 @@ void interface::processInput(SDL_Event &event)
 			}
 		}
 	}
-	gameInstance::processInput(event);
+	fightingGame::processInput(event);
 }
 
-void interface::readInput()
+void SaltAndBone::readInput()
 {
 	vector<SDL_Event> events;
 	SDL_Event event;
@@ -862,7 +862,7 @@ void interface::readInput()
 	}
 }
 
-void gameInstance::processInput(SDL_Event &event)
+void fightingGame::processInput(SDL_Event &event)
 {
 	switch (event.type){
 	case SDL_KEYDOWN:
@@ -885,7 +885,7 @@ void gameInstance::processInput(SDL_Event &event)
 	}
 }
 
-void interface::cSelectMenu()
+void SaltAndBone::cSelectMenu()
 {
 	/*The plan is that this is eventually a menu, preferably pretty visual, in which players can select characters.*/
 	if(!initd){ 
@@ -961,7 +961,7 @@ void interface::cSelectMenu()
 	}
 }
 
-void interface::loadAssets()
+void SaltAndBone::loadAssets()
 {
 	unsigned int b = SDL_WasInit(SDL_INIT_VIDEO);
 	for(int i = 0; i < 2; i++){
@@ -976,7 +976,7 @@ void interface::loadAssets()
 	}
 }
 
-void interface::mainMenu(int ID)
+void SaltAndBone::mainMenu(int ID)
 {
 	if(currentFrame[ID].axis[0] && !counter[ID]){
 		menu[ID]--;
@@ -1038,7 +1038,7 @@ void interface::mainMenu(int ID)
 	}
 }
 
-void interface::keyConfig(int ID)
+void SaltAndBone::keyConfig(int ID)
 {
 	if(currentFrame[ID].axis[0] && !counter[ID]){
 		configMenu[ID]--;
@@ -1075,14 +1075,14 @@ void interface::keyConfig(int ID)
 	}
 }
 
-void interface::dragBG(int dx)
+void SaltAndBone::dragBG(int dx)
 {
 	bg.x += dx;
 	if(bg.x < 0) bg.x = 0;
 	else if(bg.x > bg.w - screenWidth) bg.x = bg.w - screenWidth;
 }
 
-void interface::pauseMenu()
+void SaltAndBone::pauseMenu()
 {
 	for(unsigned int j = 0; j < p.size(); j++){
 		if(currentFrame[j].axis[0] && !counter[j]){
@@ -1126,7 +1126,7 @@ void interface::pauseMenu()
 	}
 }
 
-void interface::rematchMenu()
+void SaltAndBone::rematchMenu()
 {
 	for(unsigned int j = 0; j < P.size(); j++){
 		if(currentFrame[j].axis[0] && !counter[j]){
@@ -1170,7 +1170,7 @@ void interface::rematchMenu()
 	}
 }
 
-interface::~interface()
+SaltAndBone::~SaltAndBone()
 {
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(select[i] && P[i]->pick()) delete P[i]->pick();
@@ -1181,7 +1181,7 @@ interface::~interface()
 	SDL_Quit();
 }
 
-void gameInstance::unitCollision(instance *a, instance *b)
+void fightingGame::unitCollision(instance *a, instance *b)
 {
 	instance *right, *left;
 	if(a->middle() > b->middle()){
@@ -1227,7 +1227,7 @@ void gameInstance::unitCollision(instance *a, instance *b)
 	left->updateRects();
 }
 
-void interface::resolveCollision()
+void SaltAndBone::resolveCollision()
 {
 	vector<SDL_Rect> temp;
 	vector<int> dx;
@@ -1307,7 +1307,7 @@ void interface::resolveCollision()
 	}
 }
 
-void interface::resolveThrows()
+void SaltAndBone::resolveThrows()
 {
 	bool isThrown[2] = {false, false};
 	for(unsigned int i = 0; i < P.size(); i++){
@@ -1337,7 +1337,7 @@ void interface::resolveThrows()
 	}
 }
 
-void interface::resolveHits()
+void SaltAndBone::resolveHits()
 {
 	vector<hStat> s(things.size());
 	vector<int> hit(things.size());
@@ -1491,7 +1491,7 @@ void interface::resolveHits()
 	}
 }
 
-void interface::doSuperFreeze()
+void SaltAndBone::doSuperFreeze()
 {
 	int go[2] = {0, 0};
 	for(unsigned int i = 0; i < P.size(); i++){
