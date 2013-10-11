@@ -1,7 +1,8 @@
 using gcc
 	: s11
 	: /usr/bin/g++
-	: <cxxflags>-std=c++11 <linkflags>"-lGL -lSDLmain -l SDL_image -lSDL_mixer -lalut -lopenal -lGLU -lglut"
+	: <cxxflags>"-std=c++11 -g -O2 -DGL_GLEXT_PROTOTYPES -Wall"
+	  <linkflags>"-lGL -lSDLmain -l SDL_image -lSDL_mixer -lalut -lopenal -lGLU -lglut"
 	;
 
 
