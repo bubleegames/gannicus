@@ -5,7 +5,7 @@
 #include <cstring>
 int main(int argc, char* argv[])
 {
-	interface z;
+	SaltAndBone z;
 	if(argc < 2) printf("Please supply a move\n");
 	else{
 		tokenizer t(argv[1], "/");
