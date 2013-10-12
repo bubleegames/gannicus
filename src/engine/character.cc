@@ -221,7 +221,6 @@ action * avatar::dealWithMove(string input)
 void avatar::build(string directory, string file)
 {
 	char buffer[101];
-	bool commentFlag;
 	ifstream read;
 	read.open("content/characters/"+directory+"/"+file+".ch");
 	dir = directory;
@@ -234,7 +233,6 @@ void avatar::build(string directory, string file)
 	read.get(buffer, 50); read.ignore(100, '\n');
 
 	while(!read.eof()){
-		commentFlag = 0;
 		read.get(buffer, 100, '\n'); read.ignore(100, '\n');
 		dealWithMove(buffer);
 	}
