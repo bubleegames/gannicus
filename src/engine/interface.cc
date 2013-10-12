@@ -240,7 +240,7 @@ void gameInstance::initialConfig(int ID)
 			glColor4f(0.1f, 0.1f, 0.1f, 1.0f);
 			drawGlyph("Player " + to_string(ID + 1), 0, screenWidth, 300, 80, 1);
 			drawGlyph("Please enter a", 0, screenWidth, 400, 80, 1);
-			drawGlyph("command for %s" + p[ID]->inputName[i], 0, screenWidth, 500, 80, 1);
+			drawGlyph("command for " + p[ID]->inputName[i], 0, screenWidth, 500, 80, 1);
 			SDL_GL_SwapBuffers();
 			glDisable( GL_TEXTURE_2D );
 			glClear(GL_COLOR_BUFFER_BIT);
