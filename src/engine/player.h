@@ -74,6 +74,7 @@ public:
 	int rounds;		//How many rounds has this player won this match?
 //	int padding[400];	//More magic. Do not touch
 	virtual void characterSelect(int);
+	virtual void enemySelect(int);
 	virtual void drawHitParticle();
 
 	virtual void readEvent(SDL_Event &, frame &);
