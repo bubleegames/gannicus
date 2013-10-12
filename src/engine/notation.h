@@ -1,33 +1,78 @@
 #include<array>
-#include<bitset>
+#include<map>
+#include<tuple>
+#include<vector>
 
 #ifndef ___notation
 #define ___notation
 
 using std::array;
-using std::bitset;
+using std::map;
+using std::tuple;
+using std::vector;
 
-enum diatonic {Tonic, Supertonic, Mediant, Subdominant, 
-               Dominant, Submediant, Leading, DiatonicDegrees};
-
-enum chromatic {Cr0,Cr1,Cr2,Cr3,Cr4,Cr5,Cr6,Cr7,
-                     Cr8,Cr9,Cr10,Cr11,ChromaticOctave};
-
+enum diatonic {Tonic, Supertonic, Mediant, Subdominant, Dominant, Submediant, Leading, DiatonicDegrees};
+enum chromatic {Cr0,Cr1,Cr2,Cr3,Cr4,Cr5,Cr6,Cr7,Cr8,Cr9,Cr10,Cr11,ChromaticOctave};
+enum octave {octave0, octave1, octave2, octave3, octave4};
 enum accidental {DoubleFlat=-2, Flat, Neutral, Sharp, DoubleSharp};
+enum dynamic {mute, piano, mezzopiano, mezzoforte, forte};
 
-typedef array <chromatic, DiatonicDegrees> scale;
+typedef array<chromatic, DiatonicDegrees> scale;
+
+struct pitch
+{
+    chromatic c;
+    octave o;
+    pitch();
+    pitch(size_t);
+    pitch(chromatic, octave);
+    size_t p();
+    pitch add(size_t);
+    pitch add(chromatic, octave);
+    pitch subtract(size_t);
+    pitch subtract(chromatic, octave);
+};
+
+struct degree
+{
+    diatonic d;
+    accidental a;
+    octave o;
+};
 
 struct note
 {
-	accidental a;
-	diatonic d;
-	size_t octave; //Octave is between like, 0 and 5
-	size_t dynamic; //I think we should use a narrow range of "dynamics" that get applied to overall volume at a different step, e.g. dynamic is probably between like, 0 and 5
-	size_t duration; //In frames
+    pitch p;
+    size_t duration;
 };
 
-template <size_t L> class phrase : array<note, L> {};
+typedef vector<degree> phrase;
 
-template <size_t S, size_t L> class rhythm : array<bitset<S>, L> {};
+class key
+{
+    scale basis;
+    pitch root;
+public:
+    key(scale, pitch);
+    key translate(pitch);
+    key transform(scale);
+    pitch p(degree);
+};
+
+template <size_t FrameLength>
+using rhythm = array<array<size_t, FrameLength>, FrameLength>;
+
+template <size_t FrameLength>
+class expression : array<note, FrameLength>
+{
+    expression(phrase p, rhythm<FrameLength> r, key k)
+    {   
+        int j = 0;
+        for (int i = 0; i < FrameLength; i++)
+            if (r[i] != 0)
+                this[i] = note{k.p(p[j]), r[i]};
+    }
+};
+
 
 #endif

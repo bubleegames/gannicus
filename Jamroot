@@ -1,0 +1,24 @@
+using gcc
+	: s11
+	: /usr/bin/g++
+	: <cxxflags>"-std=c++11 -g -O2 -DGL_GLEXT_PROTOTYPES -Wall"
+	  <linkflags>"-lGL -lSDLmain -l SDL_image -lSDL_mixer -lalut -lopenal -lGLU -lglut"
+	;
+
+
+
+lib gannicus
+	: [ glob src/engine/*.cc ] 
+	;
+
+lib characters
+	: [ glob src/characters/*.cc ]
+	;
+
+exe salt
+	: gannicus characters src/game.cc
+	;
+
+exe bmpout
+	: gannicus characters src/bmp.cc
+	;
