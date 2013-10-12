@@ -5,20 +5,14 @@ using gcc
 	  <linkflags>"-lGL -lSDLmain -l SDL_image -lSDL_mixer -lalut -lopenal -lGLU -lglut"
 	;
 
-
-
 lib gannicus
-	: [ glob src/engine/*.cc ] 
-	;
-
-lib characters
-	: [ glob src/characters/*.cc ]
+	: [ glob src/*/*.cc ] 
 	;
 
 exe salt
-	: gannicus characters src/game.cc
+	: gannicus src/game.cc
 	;
 
 exe bmpout
-	: gannicus characters src/bmp.cc
+	: gannicus src/bmp.cc
 	;
