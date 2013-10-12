@@ -518,7 +518,7 @@ void SaltAndBone::resolveInputs()
 				P[i]->current.mode = P[i]->current.mode == 1 ? 2 : 1;
 				counter[i] = 10;
 			}
-*/			for(int j:currentFrame[i].buttons) j = 0;
+*/			for(int &j:currentFrame[i].buttons) j = 0;
 		}
 	} else {
 		int flop[2] = {0, 0};
@@ -840,7 +840,7 @@ void SaltAndBone::readInput()
 				}
 				if(i->search){
 					for(unsigned int j = 0; j < events.size(); j++){
-						if(i->currentMacro = i->patternMatch(abs(i->tap(events[j])))){
+						if((i->currentMacro = i->patternMatch(abs(i->tap(events[j]))))){
 							j = events.size();
 							i->search = false;
 							i->iterator = 0;
@@ -1240,7 +1240,7 @@ void SaltAndBone::resolveCollision()
 
 	unsigned int localMaximum = 20;
 	unsigned int j[2] = {0, 0};
-	while(j[0] < abs(dx[0]) || j[1] < abs(dx[1])){
+	while((int)j[0] < abs(dx[0]) || (int)j[1] < abs(dx[1])){
 		if(aux::checkCollision(temp[0], temp[1])){
 			unsigned int k[2] = {j[0], j[1]};
 			while(dx[0] || dx[1]){
@@ -1266,7 +1266,7 @@ void SaltAndBone::resolveCollision()
 			}
 		} else {
 			for(unsigned int i = 0; i < P.size(); i++){
-				if(j[i] < abs(dx[i])) {
+				if((int)j[i] < abs(dx[i])) {
 					if(dx[i] < 0){
 						temp[i].x--;
 					} else if(dx[i] > 0){
