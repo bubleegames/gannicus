@@ -274,8 +274,7 @@ void SaltAndBone::roundInit()
 	roundEnd = false;
 	while(things.size() > P.size())
 		things.pop_back();
-	while(env.globals.size() > 1)
-		env.globals.pop_back();
+	env.roundInit();
 	bg.x = 800;
 	bg.y = -900;
 
@@ -563,7 +562,7 @@ void SaltAndBone::resolvePhysics()
 				things[i]->pullVolition();
 				if(things[i]->ID) things[i]->follow(things[(things[i]->ID)%2]);
 				things[i]->combineDelta();
-				things[i]->enforceGravity(env.grav, env.floor);
+				env.enforceGravity(things[i]);
 			}
 			for(unsigned int j = 0; j < env.globals.size(); j++){
 				if(env.globals[j]->ID != things[i]->ID){

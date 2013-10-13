@@ -6,6 +6,9 @@ class environment {
 public:
 	environment();
 	void cleanup();
+	void roundInit();
+	void enforceGravity(instance *);
+	void enforceGravity(player *);
 	vector<force *> globals;
 	int grav, floor, wall;
 };

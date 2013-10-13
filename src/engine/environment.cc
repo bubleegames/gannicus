@@ -1,4 +1,5 @@
 #include "environment.h"
+#include "player.h"
 #include <utility>
 
 using std::move;
@@ -20,23 +21,59 @@ environment::environment()
 
 void environment::cleanup()
 {
-	for(unsigned int i = 0; i < env.globals.size(); i++){
-		if(env.globals[i]->origin){
-			if(env.globals[i]->origin->current.move != env.globals[i]->check ||
-			   env.globals[i]->origin->current.frame == env.globals[i]->check->distortSpawn){
-				if(env.globals[i]->length < 0){ 
-					env.globals[i]->origin = nullptr;
-					env.globals[i]->length = -env.globals[i]->length;
+	for(unsigned int i = 0; i < globals.size(); i++){
+		if(globals[i]->origin){
+			if(globals[i]->origin->current.move != globals[i]->check ||
+			   globals[i]->origin->current.frame == globals[i]->check->distortSpawn){
+				if(globals[i]->length < 0){ 
+					globals[i]->origin = nullptr;
+					globals[i]->length = -globals[i]->length;
 				} else { 
-					env.globals.erase(env.globals.begin()+i);
+					globals.erase(globals.begin()+i);
 					i--;
 				}
 			}
 		} else {
-			if (!env.globals[i]->length) {
-				env.globals.erase(env.globals.begin()+i);
+			if (!globals[i]->length) {
+				globals.erase(globals.begin()+i);
 				i--;
-			} else env.globals[i]->length--;
+			} else globals[i]->length--;
 		}
 	}
 }
+
+
+
+void environment::roundInit()
+{
+	while(globals.size() > 1)
+		globals.pop_back();
+}
+
+void environment::enforceGravity(instance * a)
+{
+	SDL_Rect g; g.x = 0; g.y = grav; g.w = 0; g.h = 0;
+
+	if(a->collision.y > floor && a->current.aerial == 0){
+		a->current.aerial = 1;
+		a->current.reversal = nullptr;
+	}
+	else if(a->current.aerial && !a->current.freeze){ 
+		a->momentum.push_back(g);
+	}
+}
+
+void environment::enforceGravity(player * a)
+{
+	SDL_Rect g; g.x = 0; g.y = grav; g.w = 0; g.h = 0;
+
+	if(a->collision.y > floor && a->current.aerial == 0){
+		a->current.aerial = 1;
+		a->current.reversal = nullptr;
+	}
+	else if(a->current.aerial && !a->current.freeze){ 
+		if(a->hover > 0 && a->current.deltaY - 6 < 0) g.y = -a->current.deltaY;
+		a->momentum.push_back(g);
+	}
+}
+
