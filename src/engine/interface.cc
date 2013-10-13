@@ -850,7 +850,7 @@ void SaltAndBone::readInput()
 			}
 		}
 		for(frame i:currentFrame){
-			for(int j:i.axis) j = 0;
+			for(auto j:i.axis) j = 0;
 			i.n.i = 0;
 		}
 	}
