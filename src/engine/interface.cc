@@ -562,7 +562,7 @@ void SaltAndBone::resolvePhysics()
 				things[i]->pullVolition();
 				if(things[i]->ID) things[i]->follow(things[(things[i]->ID)%2]);
 				things[i]->combineDelta();
-				env.enforceGravity(things[i]);
+//				env.enforceGravity(things[i]);
 			}
 			for(unsigned int j = 0; j < env.globals.size(); j++){
 				if(env.globals[j]->ID != things[i]->ID){
