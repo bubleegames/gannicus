@@ -569,11 +569,11 @@ void SaltAndBone::resolvePhysics()
 					gripCheck = env.globals[j]->grip ? true : false;
 					if(i < P.size()){
 						if(env.globals[j]->effectCode & 1){
-							things[i]->enforceForce(env.globals[j]);
+							things[i]->enforceForce(*env.globals[j]);
 						}
 					} else {
 						if(env.globals[j]->effectCode & 2){
-							things[i]->enforceForce(env.globals[j]);
+							things[i]->enforceForce(*env.globals[j]);
 						}
 					}
 					if(!env.globals[j]->grip && gripCheck){ 
@@ -686,11 +686,11 @@ void SaltAndBone::resolveSummons()
 
 void SaltAndBone::summonForces()
 {
-	force * tvec = nullptr, * avec = nullptr;
+	unique_ptr<force> tvec{nullptr}, avec{nullptr};
 	for(unsigned int i = 0; i < things.size(); i++){
-		if(things[i]->current.move && things[i]->current.frame == things[i]->current.move->distortSpawn) tvec = things[i]->current.move->distortion;
+		if(things[i]->current.move && things[i]->current.frame == things[i]->current.move->distortSpawn) tvec = unique_ptr<force>{things[i]->current.move->distortion};
 		if(tvec != nullptr){
-			avec = new force;
+			avec = make_unique<force>();
 			avec->x = tvec->x;
 			avec->y = tvec->y;
 			avec->type = tvec->type;
@@ -721,7 +721,7 @@ void SaltAndBone::summonForces()
 				avec->ID = 0;
 				break;
 			}
-			env.globals.push_back(avec);
+			env.globals.push_back(move(avec));
 			avec = nullptr;
 			tvec = nullptr;
 		}
