@@ -27,12 +27,12 @@ player::player(int id)
 
 bool player::validate(int id, int effect)
 {
-	return (id != ID) && (effect & 1)
+	return (id != ID) && (effect & 1);
 }
 
 bool instance::validate(int id, int effect)
 {
-	return (id != ID) && (effect & 2)
+	return (id != ID) && (effect & 2);
 }
 
 instance * instance::spawn()
