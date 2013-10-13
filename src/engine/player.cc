@@ -469,46 +469,46 @@ void instance::loadAssets()
 	if(sprite) pick()->loadAssets(selectedPalette);
 }
 
-void instance::enforceForce(force* p)
+void instance::enforceForce(force& p)
 {
 	SDL_Rect resultant;
 	int midpoint, xDist, yDist;
 	if(current.facing == 1) midpoint = current.posX + current.facing*current.move->collision[current.frame].x + current.facing*collision.w/2;
 	else midpoint = current.posX + current.facing*current.move->collision[current.frame].x + current.facing*collision.w/2 + collision.w%2;
-	resultant.x = p->x; resultant.y = p->y; resultant.w = 0; resultant.h = 0;
+	resultant.x = p.x; resultant.y = p.y; resultant.w = 0; resultant.h = 0;
 	if(!current.aerial) resultant.y = 0;
 	int directionX = 0, directionY = 0;
-	if(midpoint > p->posX) directionX = 1;
-	else if(midpoint < p->posX) directionX = -1;
-	if(collision.y + collision.h/2 > p->posY) directionY = 1;
-	else if(collision.y + collision.h/2 < p->posY) directionY = -1;
-	xDist = abs(midpoint - p->posX);
-	yDist = abs(collision.y + collision.h/2 - p->posY);
+	if(midpoint > p.posX) directionX = 1;
+	else if(midpoint < p.posX) directionX = -1;
+	if(collision.y + collision.h/2 > p.posY) directionY = 1;
+	else if(collision.y + collision.h/2 < p.posY) directionY = -1;
+	xDist = abs(midpoint - p.posX);
+	yDist = abs(collision.y + collision.h/2 - p.posY);
 	float totalDist = sqrt(pow(xDist, 2) + pow(yDist, 2));
-	if(totalDist < p->eventHorizon && p->eventHorizon > 0 && p->grip){
+	if(totalDist < p.eventHorizon && p.eventHorizon > 0 && p.grip){
 		resultant.x = 0;
 		resultant.y = 0;
 		current.deltaX = 0; current.deltaY = 0;
-		p->grip--;
+		p.grip--;
 		momentum.clear();
 	} else {
-		switch(p->type){
+		switch(p.type){
 		case 0:
 			break;
 		case 1:
-			resultant.x *= xDist * p->radius / totalDist;
-			resultant.y *= yDist * p->radius / totalDist;
+			resultant.x *= xDist * p.radius / totalDist;
+			resultant.y *= yDist * p.radius / totalDist;
 			resultant.x *= directionX;
 			resultant.y *= directionY;
 			break;
 		case 2:
-			resultant.x *= xDist * p->radius / pow(totalDist, 2);
-			resultant.y *= yDist * p->radius / pow(totalDist, 2);
+			resultant.x *= xDist * p.radius / pow(totalDist, 2);
+			resultant.y *= yDist * p.radius / pow(totalDist, 2);
 			resultant.x*= directionX;
 			resultant.y*= directionY;
 			break;
 		case 3:
-			if(totalDist > p->radius){
+			if(totalDist > p.radius){
 				resultant.x = 0;
 				resultant.y = 0;
 			}

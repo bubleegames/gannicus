@@ -50,7 +50,7 @@ public:
 	virtual void follow(instance*);
 	virtual void loadAssets();
 	virtual bool checkHit(SDL_Rect, SDL_Rect);
-	void enforceForce(force*);
+	void enforceForce(force&);
 	int middle();
 	void flip();
 	void print();
