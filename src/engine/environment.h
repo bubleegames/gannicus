@@ -14,6 +14,6 @@ public:
 	void roundInit();
 	void airCheck(instance *);
 	void enforce(instance *);
-	int grav, floor, wall;
+	int floor, wall;
 };
 #endif

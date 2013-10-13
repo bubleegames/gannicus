@@ -24,6 +24,8 @@ void force::enforce(instance * a)
 		resultant.x = 0;
 		resultant.y = 0;
 		a->current.deltaX = 0; a->current.deltaY = 0;
+		a->current.posX = posX - a->collision.w/2;
+		a->current.posY = posY - a->collision.h/2;
 		grip--;
 		a->momentum.clear();
 	} else {

@@ -42,8 +42,6 @@ void environment::cleanup()
 	}
 }
 
-
-
 void environment::roundInit()
 {
 	while(globals.size() > 1)

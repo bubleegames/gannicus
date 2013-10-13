@@ -53,7 +53,6 @@ SaltAndBone::SaltAndBone()
 	gameover = 0;
 	numRounds = 2;
 
-	env.grav = -6;
 	initContainers(2, 6);
 	oldReplay = nullptr;
 	replayIterator = 0;
