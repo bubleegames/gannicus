@@ -5,6 +5,7 @@
 class environment {
 public:
 	environment();
+	void cleanup();
 	vector<force *> globals;
 	int grav, floor, wall;
 };
