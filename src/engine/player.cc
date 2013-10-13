@@ -30,6 +30,15 @@ bool player::validate(int id, int effect)
 	return (id != ID) && (effect & 1);
 }
 
+int instance::cancelState()
+{
+	if(!current.move) return 0;
+	if(current.hit > current.move->hits) return 0;
+	if(current.connect > current.move->hits) return 0;
+	if(current.connect < 0) return 0;
+	return current.move->state[current.connect].i;
+}
+
 bool instance::validate(int id, int effect)
 {
 	return (id != ID) && (effect & 2);
@@ -343,10 +352,7 @@ void controller::writeConfig(int ID)
 
 bool player::reversalPossible()
 {
-	if(!current.move) return false;
-	if(current.connect > current.move->hits) return false;
-	if(current.connect < 0) current.connect = 0;
-	if(current.move->state[current.connect].i & 1) return false;
+	if(cancelState() & 1) return false;
 	if(current.move->linkable) return true;
 	if(current.counter < 0 && current.counter > -11) return true;
 	int f = current.move->frames;
@@ -481,7 +487,7 @@ void instance::loadAssets()
 
 void player::checkBlocking()
 {
-	if(current.move->state[current.connect].i & 513){
+	if(cancelState() & 513){
 		blockType = -pick()->checkBlocking(current, inputBuffer);
 		if(blockType == 1) blockType = !current.move->canGuard(current.frame);
 		updateRects();
