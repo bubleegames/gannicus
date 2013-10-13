@@ -60,5 +60,6 @@ void environment::enforce(instance * a)
 {
 	for(auto i:globals){
 		if(i->validate(a)) i->enforce(a);
+		else std::cout << i->y << ": " << a->pick()->name << '\n';
 	}
 }
