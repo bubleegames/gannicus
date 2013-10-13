@@ -32,7 +32,6 @@ public:
 
 	virtual void getMove(vector<int>, bool&);
 	virtual int takeHit(int, hStat&);
-	virtual void enforceGravity(int, int);
 	virtual void invertVectors(int);
 	virtual void pullVolition();
 	virtual void setPosition(int, int);
@@ -82,7 +81,6 @@ public:
 	virtual void readEvent(SDL_Event &, frame &);
 	virtual void land();
 	virtual void readScripts();
-	virtual void enforceGravity(int, int);
 	virtual void drawMeters(int);
 	virtual void roundInit();
 	virtual void macroCheck(SDL_Event&);

@@ -26,8 +26,7 @@ public:
 	virtual void print();
 
 	vector<player*> P;
-
-	int screenHeight, screenWidth, floor, wall;
+	int screenHeight, screenWidth;
 	float prorate[2];
 	bool pauseEnabled:1;
 	bool scripting:1;

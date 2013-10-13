@@ -522,33 +522,6 @@ void instance::enforceForce(force& p)
 	momentum.push_back(resultant);
 }
 
-void instance::enforceGravity(int grav, int floor)
-{
-	SDL_Rect g; g.x = 0; g.y = grav; g.w = 0; g.h = 0;
-
-	if(collision.y > floor && current.aerial == 0){
-		current.aerial = 1;
-		current.reversal = nullptr;
-	}
-	else if(current.aerial && !current.freeze){ 
-		momentum.push_back(g);
-	}
-}
-
-void player::enforceGravity(int grav, int floor)
-{
-	SDL_Rect g; g.x = 0; g.y = grav; g.w = 0; g.h = 0;
-
-	if(collision.y > floor && current.aerial == 0){
-		current.aerial = 1;
-		current.reversal = nullptr;
-	}
-	else if(current.aerial && !current.freeze){ 
-		if(hover > 0 && current.deltaY - 6 < 0) g.y = -current.deltaY;
-		momentum.push_back(g);
-	}
-}
-
 void player::checkBlocking()
 {
 	if(current.move->state[current.connect].i & 513){

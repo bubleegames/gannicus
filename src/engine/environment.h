@@ -10,6 +10,10 @@ class environment {
 public:
 	environment();
 	vector<shared_ptr<force>> globals;
-	int grav;
+	void cleanup();
+	void roundInit();
+	void enforceGravity(instance *);
+	void enforceGravity(player *);
+	int grav, floor, wall;
 };
 #endif
