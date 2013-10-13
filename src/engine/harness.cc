@@ -84,8 +84,6 @@ void harness::runMacro()
 void arcadeHarness::runMacro()
 {
 	pending.build(macro);
-	for(inputs i:pending){
-	}
 	pending.clear();
 }
 
@@ -102,6 +100,7 @@ void harness::readInput()
 
 void arcadeHarness::initContainers()
 {
+<<<<<<< HEAD
 	for(frame& i:currentFrame){
 		for(auto j:i.axis) j = false;
 		for(int& j:i.buttons) j = 0;

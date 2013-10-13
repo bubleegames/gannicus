@@ -275,14 +275,14 @@ bool action::setParameter(string buffer)
 			CHStats = vector<hStat> (hits);
 			onConnect = vector <action*> (hits);
 			tempOnConnect = vector <string> (hits);
-			for(action* i:onConnect) i = nullptr;
+			for(action *&i:onConnect) i = nullptr;
 			for(unsigned int i = 0; i < stats.size(); i++) stats[i].hitState.i = 0;
 			for(unsigned int i = 0; i < CHStats.size(); i++) CHStats[i].hitState.i = 0;
 		}
 		state = vector<cancelField> (hits+1);
 		gain = vector<int> (hits+1);
 		for(unsigned int i = 0; i < state.size(); i++) state[i].i = 0;
-		for(int i:gain) i = 0;
+		for(int &i:gain) i = 0;
 		return true;
 	} else if (t.current() == "Riposte") {
 		tempRiposte = t("\t: \n");
