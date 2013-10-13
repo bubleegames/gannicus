@@ -8,7 +8,7 @@
 using std::ifstream;
 using std::ofstream;
 using std::to_string;
-
+using std::make_shared;
 action::action() {}
 
 action::action(string dir, string file)
@@ -19,7 +19,6 @@ action::action(string dir, string file)
 action::~action()
 {
 	if(!this) return;
-	if(distortion) delete distortion;
 	if(next) delete next;
 }
 
@@ -304,7 +303,7 @@ bool action::setParameter(string buffer)
 		tempOnHold = t();
 		return true;
 	} else if (t.current() == "Distort") {
-		distortion = new force;
+		distortion = make_shared<force>();
 		distortSpawn = stoi(t("\t:- \n"));
 		distortion->length = stoi(t());
 		distortion->length -= distortSpawn;

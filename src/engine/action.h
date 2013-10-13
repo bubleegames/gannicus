@@ -5,10 +5,12 @@
 #include "tokenizer.h"
 #include <iostream>
 #include <fstream>
+#include <memory>
 
 #ifndef ___action
 #define ___action
 
+using std::shared_ptr;
 using std::string;
 using std::vector;
 using std::ifstream;
@@ -167,7 +169,7 @@ public:
 	int holdFrame;
 	int holdCheck;
 
-	force * distortion;
+	shared_ptr<force> distortion;
 	int distortSpawn;
 	span<int> followupSpan;
 	span<int> attemptSpan;

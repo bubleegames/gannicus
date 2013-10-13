@@ -705,11 +705,11 @@ void SaltAndBone::resolveSummons()
 
 void SaltAndBone::summonForces()
 {
-	unique_ptr<force> tvec{nullptr}, avec{nullptr};
+	shared_ptr<force> tvec{nullptr}, avec{nullptr};
 	for(unsigned int i = 0; i < things.size(); i++){
-		if(things[i]->current.move && things[i]->current.frame == things[i]->current.move->distortSpawn) tvec = unique_ptr<force>{things[i]->current.move->distortion};
+		if(things[i]->current.move && things[i]->current.frame == things[i]->current.move->distortSpawn) tvec = things[i]->current.move->distortion;
 		if(tvec != nullptr){
-			avec = make_unique<force>();
+			avec = make_shared<force>();
 			avec->x = tvec->x;
 			avec->y = tvec->y;
 			avec->type = tvec->type;
@@ -740,7 +740,7 @@ void SaltAndBone::summonForces()
 				avec->ID = 0;
 				break;
 			}
-			env.globals.push_back(move(avec));
+			env.globals.push_back(avec);
 			avec = nullptr;
 			tvec = nullptr;
 		}

@@ -5,7 +5,7 @@ using std::move;
 
 environment::environment()
 {
-	auto gravity = make_unique<force>();
+	auto gravity = make_shared<force>();
 	gravity->x = 0;
 	gravity->y = -6;
 	gravity->type = 0;
@@ -15,5 +15,5 @@ environment::environment()
 	gravity->posX = 0;
 	gravity->posY = 0;
 	gravity->length = -1;
-	globals.push_back(move(gravity));
+	globals.push_back(gravity);
 }
