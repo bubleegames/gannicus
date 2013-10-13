@@ -273,8 +273,8 @@ void SaltAndBone::roundInit()
 	roundEnd = false;
 	while(things.size() > P.size())
 		things.pop_back();
-	while(globals.size() > 0)
-		globals.pop_back();
+	while(env.globals.size() > 0)
+		env.globals.pop_back();
 	bg.x = 800;
 	bg.y = -900;
 
@@ -294,7 +294,7 @@ void SaltAndBone::roundInit()
 		blockFail[i] = 0;
 	}
 
-	grav = -6;
+	env.grav = -6;
 	timer = 60 * 101;
 	endTimer = 60 * 5;
 	for(player *i:P){
@@ -563,22 +563,22 @@ void SaltAndBone::resolvePhysics()
 				things[i]->pullVolition();
 				if(things[i]->ID) things[i]->follow(things[(things[i]->ID)%2]);
 				things[i]->combineDelta();
-				things[i]->enforceGravity(grav, floor);
+				things[i]->enforceGravity(env.grav, floor);
 			}
-			for(unsigned int j = 0; j < globals.size(); j++){
-				if(globals[j]->ID != things[i]->ID){
-					gripCheck = globals[j]->grip ? true : false;
+			for(unsigned int j = 0; j < env.globals.size(); j++){
+				if(env.globals[j]->ID != things[i]->ID){
+					gripCheck = env.globals[j]->grip ? true : false;
 					if(i < P.size()){
-						if(globals[j]->effectCode & 1){
-							things[i]->enforceForce(globals[j]);
+						if(env.globals[j]->effectCode & 1){
+							things[i]->enforceForce(env.globals[j]);
 						}
 					} else {
-						if(globals[j]->effectCode & 2){
-							things[i]->enforceForce(globals[j]);
+						if(env.globals[j]->effectCode & 2){
+							things[i]->enforceForce(env.globals[j]);
 						}
 					}
-					if(!globals[j]->grip && gripCheck){ 
-						globals.erase(globals.begin()+j);
+					if(!env.globals[j]->grip && gripCheck){ 
+						env.globals.erase(env.globals.begin()+j);
 						j--;
 					}
 				}
@@ -608,23 +608,23 @@ void SaltAndBone::cleanup()
 					i--;
 				}
 			}
-			for(unsigned int i = 0; i < globals.size(); i++){
-				if(globals[i]->origin){
-					if(globals[i]->origin->current.move != globals[i]->check ||
-					   globals[i]->origin->current.frame == globals[i]->check->distortSpawn){
-						if(globals[i]->length < 0){ 
-							globals[i]->origin = nullptr;
-							globals[i]->length = -globals[i]->length;
+			for(unsigned int i = 0; i < env.globals.size(); i++){
+				if(env.globals[i]->origin){
+					if(env.globals[i]->origin->current.move != env.globals[i]->check ||
+					   env.globals[i]->origin->current.frame == env.globals[i]->check->distortSpawn){
+						if(env.globals[i]->length < 0){ 
+							env.globals[i]->origin = nullptr;
+							env.globals[i]->length = -env.globals[i]->length;
 						} else { 
-							globals.erase(globals.begin()+i);
+							env.globals.erase(env.globals.begin()+i);
 							i--;
 						}
 					}
 				} else {
-					if (!globals[i]->length) {
-						globals.erase(globals.begin()+i);
+					if (!env.globals[i]->length) {
+						env.globals.erase(env.globals.begin()+i);
 						i--;
-					} else globals[i]->length--;
+					} else env.globals[i]->length--;
 				}
 			}
 			resolveSummons();
@@ -740,7 +740,7 @@ void SaltAndBone::summonForces()
 				avec->ID = 0;
 				break;
 			}
-			globals.push_back(avec);
+			env.globals.push_back(avec);
 			avec = nullptr;
 			tvec = nullptr;
 		}

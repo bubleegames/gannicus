@@ -2,6 +2,7 @@
 #include "harness.h"
 #include "window.h"
 #include "opera.h"
+#include "environment.h"
 #ifndef ___SaltAndBone
 #define ___SaltAndBone
 using std::string;
@@ -31,6 +32,7 @@ public:
 	bool scripting:1;
 	float scalingFactor, sf;
 	bool initd:1;
+	environment env;
 };
 
 class SaltAndBone : public fightingGame{
@@ -102,7 +104,6 @@ public:
 	bool analytics:1;
 	chart *stats;
 	int numRounds;
-	int grav;
 
 	GLuint background;
 	int musicVolume;
@@ -115,7 +116,6 @@ public:
 	Mix_Chunk *announceEnd[2];
 	Mix_Chunk *announceSelect;
 
-	vector<force *> globals;
 
 	script *replay;
 
