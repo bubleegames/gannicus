@@ -60,11 +60,11 @@ void force::enforce(instance * a)
 }
 
 bool force::validate(instance *a){
-	cout << a->pick()->name << '\n';
+	std::cout << a->pick()->name << '\n';
 	return (ID == a->ID) ? false : (effectCode & 1);
 }
 
 bool force::validate(player *a){
-	cout << "Daquiri!\n";
+	std::cout << "Daquiri!\n";
 	return (ID == a->ID) ? false : (effectCode & 2);
 }
