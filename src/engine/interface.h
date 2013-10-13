@@ -3,6 +3,7 @@
 #include "window.h"
 #include "opera.h"
 #include "environment.h"
+#include "force.h"
 #ifndef ___SaltAndBone
 #define ___SaltAndBone
 using std::string;

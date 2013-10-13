@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <fstream>
 #include <iostream>
-
+#include "force.h"
 using std::ifstream;
 using std::ofstream;
 using std::to_string;

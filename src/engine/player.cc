@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <math.h>
-
+#include "force.h"
 using std::ifstream;
 using std::ofstream;
 using std::to_string;

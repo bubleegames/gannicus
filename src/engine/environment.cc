@@ -1,4 +1,8 @@
 #include "environment.h"
+#include <utility>
+
+using std::move;
+
 environment::environment()
 {
 	force gravity;
@@ -11,5 +15,5 @@ environment::environment()
 	gravity.posX = 0;
 	gravity.posY = 0;
 	gravity.length = -1;
-	globals.push_back(&gravity);
+	globals.push_back(move(&gravity));
 }

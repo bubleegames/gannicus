@@ -6,6 +6,8 @@ using std::deque;
 #ifndef ___player
 #define ___player
 
+class force;
+
 struct frame;
 class instance{
 public:
