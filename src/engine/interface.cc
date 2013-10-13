@@ -538,10 +538,10 @@ void SaltAndBone::resolveInputs()
 			P[i]->current.prox.x = P[(i+1)%2]->current.throwInvuln;
 			if(P[0]->current.facing == P[1]->current.facing) P[i]->current.prox.x = 1;
 		}
-		for(unsigned int i = 0; i < things.size(); i++){
+		for(instance *i:things){
 			bool d = 0;
-			if(things[i])
-				things[i]->getMove(currentFrame[things[i]->ID - 1].buttons, d);
+			if(i)
+				i->getMove(currentFrame[things[i]->ID - 1].buttons, d);
 		}
 	}
 	for(unsigned int i = 0; i < P.size(); i++){
