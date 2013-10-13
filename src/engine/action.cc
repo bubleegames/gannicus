@@ -786,7 +786,7 @@ hStat action::pollStats(int f, bool CH)
 bool action::cancel(const status &current)
 {
 	cancelField r;
-	action *z;
+	action *z = current.move;
 	r.i = 0;
 	if(current.move == nullptr) return 1;
 	if(current.hit < 0 || current.connect < 0 || current.connect > current.move->hits || current.hit > current.move->hits) return 0;
