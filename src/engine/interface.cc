@@ -37,7 +37,7 @@ SaltAndBone::SaltAndBone()
 	wall = 50; /*The size of the offset at which characters start to scroll the background, and get stuck.*/
 	menuMusic = nullptr;
 
-	read.open(".config/resolution.conf");
+	read.open(".config/settings.conf");
 	if(read.fail()){ 
 		scalingFactor = 0.5;
 		musicVolume = 100;
@@ -53,6 +53,7 @@ SaltAndBone::SaltAndBone()
 	gameover = 0;
 	numRounds = 2;
 
+	env.grav = -6;
 	initContainers(2, 6);
 	oldReplay = nullptr;
 	replayIterator = 0;
@@ -273,7 +274,7 @@ void SaltAndBone::roundInit()
 	roundEnd = false;
 	while(things.size() > P.size())
 		things.pop_back();
-	while(env.globals.size() > 0)
+	while(env.globals.size() > 1)
 		env.globals.pop_back();
 	bg.x = 800;
 	bg.y = -900;
@@ -294,7 +295,6 @@ void SaltAndBone::roundInit()
 		blockFail[i] = 0;
 	}
 
-	env.grav = -6;
 	timer = 60 * 101;
 	endTimer = 60 * 5;
 	for(player *i:P){
