@@ -556,9 +556,9 @@ void SaltAndBone::resolvePhysics()
 {
 	for(unsigned int i = 0; i < things.size(); i++){
 		if(!things[i]->current.freeze){
+			if(things[i]->ID) things[i]->follow(things[(things[i]->ID)%2]);
 			if(!(things[i]->current.move->stop & 4)){
 				things[i]->pullVolition();
-				if(things[i]->ID) things[i]->follow(things[(things[i]->ID)%2]);
 				things[i]->combineDelta();
 				env.airCheck(things[i]);
 				if(i < 2){
@@ -574,8 +574,10 @@ void SaltAndBone::cleanup()
 {
 	if(select[0] && select[1] && !pMenu){
 		for(unsigned int i = 0; i < P.size(); i++) {
-			things[i]->current.throwInvuln--;
-			P[i]->hover--;
+			if(!P[i]->current.freeze){
+				P[i]->current.throwInvuln--;
+				P[i]->hover--;
+			}
 		}
 		for(unsigned int i = 2; i < things.size(); i++){
 			if(things[i]->current.posX > bg.w + 300 || things[i]->current.posX < -300 || things[i]->current.posY < -300 || things[i]->current.posY > bg.h){
