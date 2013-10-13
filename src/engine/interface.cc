@@ -564,8 +564,8 @@ void SaltAndBone::resolvePhysics()
 				if(i < 2){
 					if (P[i]->hover > 0 && P[i]->current.deltaY < 0) P[i]->momentum.push_back({0, -P[i]->current.deltaY, 0, 0});
 				}
+				env.enforce(things[i]);
 			}
-			env.enforce(things[i]);
 		}
 	}
 }
