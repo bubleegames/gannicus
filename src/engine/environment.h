@@ -3,23 +3,17 @@
 #include "force.h"
 #include <memory>
 #include <utility>
-using std::unique_ptr;
-
-template<typename T, typename ...Args>
-unique_ptr<T> make_unique( Args&& ...args )
-{
-	    return std::unique_ptr<T>( new T( std::forward<Args&>(args)... ) );
-}
-
+using std::shared_ptr;
+using std::make_shared;
 
 class environment {
 public:
 	environment();
+	vector<shared_ptr<force>> globals;
 	void cleanup();
 	void roundInit();
 	void airCheck(instance *);
 	void enforce(instance *);
 	int grav, floor, wall;
-	vector<unique_ptr<force>> globals;
 };
 #endif
