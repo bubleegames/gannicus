@@ -9,7 +9,7 @@ using std::make_shared;
 class environment {
 public:
 	environment();
-	vector<shared_ptr<force>> globals;
+	vector<shared_ptr<force>> physics;
 	void cleanup();
 	void roundInit();
 	void airCheck(instance *);

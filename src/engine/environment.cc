@@ -16,36 +16,36 @@ environment::environment()
 	gravity->posX = 0;
 	gravity->posY = 0;
 	gravity->length = -1;
-	globals.push_back(gravity);
+	physics.push_back(gravity);
 }
 
 void environment::cleanup()
 {
-	for(unsigned int i = 0; i < globals.size(); i++){
-		if(globals[i]->origin){
-			if(globals[i]->origin->current.move != globals[i]->check ||
-			   globals[i]->origin->current.frame == globals[i]->check->distortSpawn){
-				if(globals[i]->length < 0){ 
-					globals[i]->origin = nullptr;
-					globals[i]->length = -globals[i]->length;
+	for(unsigned int i = 0; i < physics.size(); i++){
+		if(physics[i]->origin){
+			if(physics[i]->origin->current.move != physics[i]->check ||
+			   physics[i]->origin->current.frame == physics[i]->check->distortSpawn){
+				if(physics[i]->length < 0){ 
+					physics[i]->origin = nullptr;
+					physics[i]->length = -physics[i]->length;
 				} else { 
-					globals.erase(globals.begin()+i);
+					physics.erase(physics.begin()+i);
 					i--;
 				}
 			}
 		} else {
-			if (!globals[i]->length) {
-				globals.erase(globals.begin()+i);
+			if (!physics[i]->length) {
+				physics.erase(physics.begin()+i);
 				i--;
-			} else globals[i]->length--;
+			} else physics[i]->length--;
 		}
 	}
 }
 
 void environment::roundInit()
 {
-	while(globals.size() > 1)
-		globals.pop_back();
+	while(physics.size() > 1)
+		physics.pop_back();
 }
 
 void environment::airCheck(instance * a)
@@ -58,7 +58,7 @@ void environment::airCheck(instance * a)
 
 void environment::enforce(instance * a)
 {
-	for(auto i:globals){
+	for(auto i:physics){
 		if(a->validate(i->ID, i->effectCode)) i->enforce(a);
 	}
 }

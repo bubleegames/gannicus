@@ -562,7 +562,7 @@ void SaltAndBone::resolvePhysics()
 				things[i]->combineDelta();
 				env.airCheck(things[i]);
 				if(i < 2){
-					if (P[i]->hover > 0 && P[i]->current.deltaY - 6 < 0) P[i]->momentum.push_back({0, -P[i]->current.deltaY, 0, 0});
+					if (P[i]->hover > 0 && P[i]->current.deltaY < 0) P[i]->momentum.push_back({0, -P[i]->current.deltaY, 0, 0});
 				}
 			}
 			env.enforce(things[i]);
@@ -705,7 +705,7 @@ void SaltAndBone::summonForces()
 				avec->ID = 0;
 				break;
 			}
-			env.globals.push_back(avec);
+			env.physics.push_back(avec);
 			avec = nullptr;
 			tvec = nullptr;
 		}
