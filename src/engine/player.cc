@@ -488,37 +488,6 @@ void player::checkBlocking()
 	}
 }
 
-void player::enforceFloor(int floor)
-{
-	/*Floor, or "Bottom corner"*/
-
-	if (collision.y < floor){
-		if(elasticY){
-			current.deltaY = -current.deltaY;
-			elasticY = false;
-		} else if (slide) {
-			current.deltaY = 0;
-			if(current.move == pick()->untech || current.move == pick()->die){ 
-				if(current.deltaX < 0) current.deltaX++;
-				else if(current.deltaX > 0) current.deltaX--;
-				current.aerial = 1;
-			} else {
-				current.deltaX = 0;
-				slide = 0;
-			}
-		} else {
-			if(current.aerial == 1){
-				land();
-				updateRects();
-				current.deltaX = 0;
-			}
-			current.deltaY = 0;
-		}
-		current.posY = floor - current.move->collision[current.frame].y;
-	}
-	updateRects();
-}
-
 void player::checkCorners(int left, int right)
 {
 	/*Walls, or "Left and Right" corners

@@ -106,7 +106,6 @@ public:
 	/*Helper functions for "resolve" tick*/
 	virtual void checkBlocking();
 	virtual void checkCorners(int, int);
-	virtual void enforceFloor(int);
 	virtual void getThrown(action*, int, int);
 
 	virtual void init();

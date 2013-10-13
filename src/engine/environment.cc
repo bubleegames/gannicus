@@ -62,3 +62,35 @@ void environment::enforce(instance * a)
 		if(a->validate(i->ID, i->effectCode)) i->enforce(a);
 	}
 }
+
+void environment::enforceFloor(player * a)
+{
+	/*Floor, or "Bottom corner"*/
+
+	if (a->collision.y < floor){
+		if(a->elasticY){
+			a->current.deltaY = -a->current.deltaY;
+			a->elasticY = false;
+		} else if (a->slide) {
+			a->current.deltaY = 0;
+			if(a->current.move == a->pick()->untech || a->current.move == a->pick()->die){ 
+				if(a->current.deltaX < 0) a->current.deltaX++;
+				else if(a->current.deltaX > 0) a->current.deltaX--;
+				a->current.aerial = 1;
+			} else {
+				a->current.deltaX = 0;
+				a->slide = 0;
+			}
+		} else {
+			if(a->current.aerial == 1){
+				a->land();
+				a->updateRects();
+				a->current.deltaX = 0;
+			}
+			a->current.deltaY = 0;
+		}
+		a->current.posY = floor - a->current.move->collision[a->current.frame].y;
+	}
+	a->updateRects();
+}
+

@@ -1197,7 +1197,7 @@ void SaltAndBone::resolveCollision()
 	vector<SDL_Rect> temp;
 	vector<int> dx;
 	for(player *i:P){
-		i->enforceFloor(env.floor);
+		env.enforceFloor(i);
 		temp.push_back(i->collision);
 		dx.push_back(i->current.deltaX);
 		temp.back().x -= dx.back();
@@ -1259,7 +1259,7 @@ void SaltAndBone::resolveCollision()
 	}
 
 	for(player *i:P){
-		i->enforceFloor(env.floor);
+		env.enforceFloor(i);
 		i->checkCorners(bg.x + env.wall, bg.x + screenWidth - env.wall);
 	}
 
@@ -1384,7 +1384,7 @@ void SaltAndBone::resolveHits()
 				}
 				if(s[hitBy[i]].stun) combo[(i+1)%2] += hit[hitBy[i]];
 			}
-			P[(i+1)%2]->enforceFloor(env.floor);
+			env.enforceFloor(P[(i+1)%2]);
 			P[(i+1)%2]->checkCorners(bg.x + env.wall, bg.x + screenWidth - env.wall);
 			if(things[i]->current.facing * things[hitBy[i]]->current.facing == 1) things[i]->invertVectors(1);
 			if(i < P.size()) damage[(i+1)%2] += health - P[i]->current.meter[0];
