@@ -100,7 +100,6 @@ void harness::readInput()
 
 void arcadeHarness::initContainers()
 {
-<<<<<<< HEAD
 	for(frame& i:currentFrame){
 		for(auto j:i.axis) j = false;
 		for(int& j:i.buttons) j = 0;
