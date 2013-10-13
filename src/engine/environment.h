@@ -5,6 +5,6 @@ class environment {
 public:
 	environment();
 	vector<force *> globals;
-	int grav;
+	int grav, floor, wall;
 };
 #endif

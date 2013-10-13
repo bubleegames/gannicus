@@ -33,8 +33,8 @@ SaltAndBone::SaltAndBone()
 	screen = nullptr; /*The screen gives a partial view of the background, which is the area available for character movement.*/
 	bg.w = 3200;
 	bg.h = 1800;
-	floor = 50; /*Value of the floor. This is the maximum distance downward that characters can travel.*/
-	wall = 50; /*The size of the offset at which characters start to scroll the background, and get stuck.*/
+	env.floor = 50; /*Value of the env.floor. This is the maximum distance downward that characters can travel.*/
+	env.wall = 50; /*The size of the offset at which characters start to scroll the background, and get stuck.*/
 	menuMusic = nullptr;
 
 	read.open(".config/settings.conf");
@@ -280,7 +280,7 @@ void SaltAndBone::roundInit()
 	bg.y = -900;
 
 	for(player* i:P){
-		i->current.posY = floor;
+		i->current.posY = env.floor;
 		i->roundInit();
 	}
 	/*Initialize input containers*/
@@ -483,7 +483,7 @@ void SaltAndBone::resolveCamera()
 	/*Really rudimentary camera logic. Really just scrolls the background (Which characters are drawn relative to)
 	 *appropriately, attempting to adjust to approximately be looking at the point in the middle of the two characters.
 	 */
-	int dx = things[1]->dragBG(bg.x + wall, bg.x + screenWidth - wall) + things[0]->dragBG(bg.x + wall, bg.x + screenWidth - wall);
+	int dx = things[1]->dragBG(bg.x + env.wall, bg.x + screenWidth - env.wall) + things[0]->dragBG(bg.x + env.wall, bg.x + screenWidth - env.wall);
 	int dy = 900;
 
 	/*If a character leaves the camera boundaries, follow them immediately*/
@@ -563,7 +563,7 @@ void SaltAndBone::resolvePhysics()
 				things[i]->pullVolition();
 				if(things[i]->ID) things[i]->follow(things[(things[i]->ID)%2]);
 				things[i]->combineDelta();
-				things[i]->enforceGravity(env.grav, floor);
+				things[i]->enforceGravity(env.grav, env.floor);
 			}
 			for(unsigned int j = 0; j < env.globals.size(); j++){
 				if(env.globals[j]->ID != things[i]->ID){
@@ -1232,7 +1232,7 @@ void SaltAndBone::resolveCollision()
 	vector<SDL_Rect> temp;
 	vector<int> dx;
 	for(player *i:P){
-		i->enforceFloor(floor);
+		i->enforceFloor(env.floor);
 		temp.push_back(i->collision);
 		dx.push_back(i->current.deltaX);
 		temp.back().x -= dx.back();
@@ -1252,7 +1252,7 @@ void SaltAndBone::resolveCollision()
 						j[i] = 0;
 					}
 				}
-				for(player *i:P) i->checkCorners(bg.x + wall, bg.x + screenWidth - wall);
+				for(player *i:P) i->checkCorners(bg.x + env.wall, bg.x + screenWidth - env.wall);
 				unitCollision(P[0], P[1]);
 				for(unsigned int i = 0; i < P.size(); i++){
 					if(localMaximum < abs(dx[i]) - j[i]){
@@ -1294,8 +1294,8 @@ void SaltAndBone::resolveCollision()
 	}
 
 	for(player *i:P){
-		i->enforceFloor(floor);
-		i->checkCorners(bg.x + wall, bg.x + screenWidth - wall);
+		i->enforceFloor(env.floor);
+		i->checkCorners(bg.x + env.wall, bg.x + screenWidth - env.wall);
 	}
 
 	//Some issues arise if you don't have this second pass
@@ -1345,7 +1345,7 @@ void SaltAndBone::resolveHits()
 	vector<bool> taken(things.size());
 	vector<int> hitBy(things.size());
 	int push[2];
-	for(player *i:P) i->checkCorners(bg.x + wall, bg.x + screenWidth - wall);
+	for(player *i:P) i->checkCorners(bg.x + env.wall, bg.x + screenWidth - env.wall);
 	for(unsigned int i = 0; i < things.size(); i++){
 		taken[i] = 0;
 		hit[i] = 0;
@@ -1419,8 +1419,8 @@ void SaltAndBone::resolveHits()
 				}
 				if(s[hitBy[i]].stun) combo[(i+1)%2] += hit[hitBy[i]];
 			}
-			P[(i+1)%2]->enforceFloor(floor);
-			P[(i+1)%2]->checkCorners(bg.x + wall, bg.x + screenWidth - wall);
+			P[(i+1)%2]->enforceFloor(env.floor);
+			P[(i+1)%2]->checkCorners(bg.x + env.wall, bg.x + screenWidth - env.wall);
 			if(things[i]->current.facing * things[hitBy[i]]->current.facing == 1) things[i]->invertVectors(1);
 			if(i < P.size()) damage[(i+1)%2] += health - P[i]->current.meter[0];
 		}
