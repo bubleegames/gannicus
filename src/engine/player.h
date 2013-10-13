@@ -25,6 +25,7 @@ public:
 	void checkFacing(instance*);
 	virtual hStat pollStats();
 	virtual void neutralize();
+	virtual bool validate(int, int);
 	virtual bool acceptTarget(instance*);
 	virtual int CHState() { return 0; }
 	virtual void init();
@@ -76,6 +77,7 @@ public:
 //	int padding[400];	//More magic. Do not touch
 	virtual void characterSelect(int);
 	virtual void enemySelect(int);
+	virtual bool validate(int, int);
 	virtual void drawHitParticle();
 
 	virtual void readEvent(SDL_Event &, frame &);
