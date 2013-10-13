@@ -50,30 +50,17 @@ void environment::roundInit()
 		globals.pop_back();
 }
 
-void environment::enforceGravity(instance * a)
+void environment::airCheck(instance * a)
 {
-	SDL_Rect g; g.x = 0; g.y = grav; g.w = 0; g.h = 0;
-
 	if(a->collision.y > floor && a->current.aerial == 0){
 		a->current.aerial = 1;
 		a->current.reversal = nullptr;
 	}
-	else if(a->current.aerial && !a->current.freeze){ 
-		a->momentum.push_back(g);
-	}
 }
 
-void environment::enforceGravity(player * a)
+void environment::enforce(instance * a)
 {
-	SDL_Rect g; g.x = 0; g.y = grav; g.w = 0; g.h = 0;
-
-	if(a->collision.y > floor && a->current.aerial == 0){
-		a->current.aerial = 1;
-		a->current.reversal = nullptr;
-	}
-	else if(a->current.aerial && !a->current.freeze){ 
-		if(a->hover > 0 && a->current.deltaY - 6 < 0) g.y = -a->current.deltaY;
-		a->momentum.push_back(g);
+	for(auto i:globals){
+		if(i->validate(a)) i->enforce(a);
 	}
 }
-

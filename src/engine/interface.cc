@@ -555,33 +555,18 @@ void SaltAndBone::resolveInputs()
 
 void SaltAndBone::resolvePhysics()
 {
-	bool gripCheck;
 	for(unsigned int i = 0; i < things.size(); i++){
 		if(!things[i]->current.freeze){
 			if(!(things[i]->current.move->stop & 4)){
 				things[i]->pullVolition();
 				if(things[i]->ID) things[i]->follow(things[(things[i]->ID)%2]);
 				things[i]->combineDelta();
-				env.enforceGravity(things[i]);
-			}
-			for(unsigned int j = 0; j < env.globals.size(); j++){
-				if(env.globals[j]->ID != things[i]->ID){
-					gripCheck = env.globals[j]->grip ? true : false;
-					if(i < P.size()){
-						if(env.globals[j]->effectCode & 1){
-							things[i]->enforceForce(*env.globals[j]);
-						}
-					} else {
-						if(env.globals[j]->effectCode & 2){
-							things[i]->enforceForce(*env.globals[j]);
-						}
-					}
-					if(!env.globals[j]->grip && gripCheck){ 
-						env.globals.erase(env.globals.begin()+j);
-						j--;
-					}
+				env.airCheck(things[i]);
+				if(i < 2){
+					if (P[i]->hover > 0 && P[i]->current.deltaY - 6 < 0) P[i]->momentum.push_back({0, -P[i]->current.deltaY, 0, 0});
 				}
 			}
+			env.enforce(things[i]);
 		}
 	}
 }

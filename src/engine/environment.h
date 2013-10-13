@@ -17,8 +17,8 @@ public:
 	environment();
 	void cleanup();
 	void roundInit();
-	void enforceGravity(instance *);
-	void enforceGravity(player *);
+	void airCheck(instance *);
+	void enforce(instance *);
 	int grav, floor, wall;
 	vector<unique_ptr<force>> globals;
 };
