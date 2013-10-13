@@ -58,13 +58,3 @@ void force::enforce(instance * a)
 	}
 	a->momentum.push_back(resultant);
 }
-
-bool force::validate(instance *a){
-	std::cout << a->pick()->name << '\n';
-	return (ID == a->ID) ? false : (effectCode & 1);
-}
-
-bool force::validate(player *a){
-	std::cout << "Daquiri!\n";
-	return (ID == a->ID) ? false : (effectCode & 2);
-}
