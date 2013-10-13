@@ -783,30 +783,31 @@ hStat action::pollStats(int f, bool CH)
 	return s;
 }
 
-bool action::cancel(action * x, int c, int h)
+bool action::cancel(const status &current)
 {
 	cancelField r;
+	action *z;
 	r.i = 0;
-	if(x == nullptr) return 1;
-	if(h < 0 || c < 0 || c > x->hits || h > x->hits) return 0;
-	if(x->modifier && x->basis.move){
-		if(x->basis.move == nullptr){ 
+	if(current.move == nullptr) return 1;
+	if(current.hit < 0 || current.connect < 0 || current.connect > current.move->hits || current.hit > current.move->hits) return 0;
+	if(current.move->modifier && current.move->basis.move){
+		if(current.move->basis.move == nullptr){ 
 			return 1;
 		}
-		r.i = x->basis.move->state[x->basis.connect].i;
-		if(x->basis.hit > 0 && x->basis.hit == x->basis.connect){ 
-			r.i = r.i + x->basis.move->stats[x->basis.hit - 1].hitState.i;
+		r.i = current.move->basis.move->state[current.move->basis.connect].i;
+		if(current.move->basis.hit > 0 && current.move->basis.hit == current.move->basis.connect){ 
+			r.i = r.i + current.move->basis.move->stats[current.move->basis.hit - 1].hitState.i;
 		}
-		x = basis.move;
+		z = basis.move;
 	} else {
-		r.i = x->state[c].i;
-		if(h > 0 && h == c){
-			r.i = r.i + x->stats[h - 1].hitState.i;
+		r.i = current.move->state[current.connect].i;
+		if(current.hit > 0 && current.hit == current.connect){
+			r.i = r.i + current.move->stats[current.hit - 1].hitState.i;
 		}
 	}
 	if(allowed.i & r.i){
-		if(x == this){
-			if(c == 0) return 0;
+		if(z == this){
+			if(current.connect == 0) return 0;
 			else if(allowed.b.chain1) return 1;
 			else return 0;
 		} else {
@@ -818,7 +819,7 @@ bool action::cancel(action * x, int c, int h)
 
 bool action::operator>(const status& o)
 {
-	return check(o) && cancel(o.move, o.connect, o.hit);
+	return check(o) && cancel(o);
 }
 
 void action::step(status &current)
