@@ -60,9 +60,9 @@ void force::enforce(instance * a)
 }
 
 bool force::validate(instance *a){
-	return (ID == a->ID) ? false : (effectCode & 2);
+	return (ID == a->ID) ? false : (effectCode & 1);
 }
 
 bool force::validate(player *a){
-	return (ID == a->ID) ? false : (effectCode & 1);
+	return (ID == a->ID) ? false : (effectCode & 2);
 }
