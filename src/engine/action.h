@@ -17,7 +17,7 @@ struct animation{
 	int frames;	//Number of frames.
 	virtual void draw(int, GLint) = 0;
 };
-
+class force;
 class avatar;
 class instance;
 struct hStat{

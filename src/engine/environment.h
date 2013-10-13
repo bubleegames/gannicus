@@ -1,6 +1,7 @@
 #ifndef __ENVIRONMENT
 #define __ENVIRONMENT
-#include "auxil.h"
+#include "force.h"
+
 class environment {
 public:
 	environment();
