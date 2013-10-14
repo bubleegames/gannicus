@@ -303,7 +303,7 @@ bool action::setParameter(string buffer)
 		tempOnHold = t();
 		return true;
 	} else if (t.current() == "Distort") {
-		int type = stoi(t("\t:- ]n"));
+		int type = stoi(t("\t: \n"));
 		switch(type)
 		{
 			case 0: distortion = make_shared<globalForce>(); break;
@@ -312,7 +312,7 @@ bool action::setParameter(string buffer)
 			case 3: distortion = make_shared<cutoffDecay>(); break;
 		    case 4: return true;
 		}
-		distortSpawn = stoi(t());
+		distortSpawn = stoi(t("\t:- \n"));
 		distortion->length = stoi(t());
 		distortion->length -= distortSpawn;
 		distortion->x = stoi(t("\t: \n"));
