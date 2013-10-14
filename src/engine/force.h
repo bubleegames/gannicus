@@ -26,6 +26,8 @@ public:
 	int grip;
 };
 
+shared_ptr<force> makeForce(int t);
+
 class globalForce : public force
 {
 	void enforce(instance&);

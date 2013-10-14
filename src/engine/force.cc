@@ -5,6 +5,20 @@
 #include <math.h>
 
 using std::get;
+using std::make_shared;
+shared_ptr<force> makeForce(int t)
+{
+	shared_ptr<force> f;
+	switch(t)
+	{
+		case 0: f = make_shared<globalForce>(); break;
+		case 1: f = make_shared<linearDecay>(); break;
+		case 2: f = make_shared<halfLifeDecay>(); break;
+		case 3: f = make_shared<cutoffDecay>(); break;
+		default: f = nullptr;  
+	} 
+	return f; 
+}
 
 tuple<SDL_Rect, SDL_Rect, float, bool> force::enforceBegin(const instance& a)
 {

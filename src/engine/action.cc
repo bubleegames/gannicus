@@ -304,15 +304,9 @@ bool action::setParameter(string buffer)
 		return true;
 	} else if (t.current() == "Distort") {
 		int type = stoi(t("\t: \n"));
-		switch(type)
-		{
-			case 0: distortion = make_shared<globalForce>(); break;
-			case 1: distortion = make_shared<linearDecay>(); break;
-			case 2: distortion = make_shared<halfLifeDecay>(); break;
-			case 3: distortion = make_shared<cutoffDecay>(); break;
-		    case 4: return true;
-		}
+		distortion = makeForce(type);
 		distortSpawn = stoi(t("\t:- \n"));
+		distortion->type = type; //This is kind of stupid. But we need to be able to make copies of the right derived force somehow...
 		distortion->length = stoi(t());
 		distortion->length -= distortSpawn;
 		distortion->x = stoi(t("\t: \n"));
