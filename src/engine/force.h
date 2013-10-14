@@ -1,13 +1,16 @@
 #ifndef ___force
 #define ___force
 #include "player.h"
-
+#include <tuple>
+using std::tuple;
 class force : public instance {
 public:
 	force() : x(0), y(0), type(0), radius(0), eventHorizon(0), effectCode(3), origin(nullptr), check(nullptr), grip(0) {}
 	bool validate(instance *);
 	bool validate(player *);
-	void enforce(instance *);
+	virtual void enforce(instance&) = 0;
+	tuple<SDL_Rect, SDL_Rect, float, bool> enforceBegin(const instance&);
+	void enforceStop(instance&, SDL_Rect&);
 	int x, y; //X-Yvalue. For globals this is only influenced by facingness, for local it is attractive force (negative for repulsive) based on mean Y
 	int length; //How long the force holds
 	int ID; //Who the force affects
@@ -21,6 +24,26 @@ public:
 	instance * origin;
 	action * check;
 	int grip;
+};
+
+class globalForce : public force
+{
+	void enforce(instance&);
+};
+
+class linearDecay: public force
+{
+	void enforce(instance&);
+};
+
+class halfLifeDecay: public force
+{
+	void enforce(instance&);
+};
+
+class cutoffDecay : public force
+{
+	void enforce(instance&);
 };
 
 #endif

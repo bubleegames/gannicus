@@ -674,7 +674,7 @@ void SaltAndBone::summonForces()
 	for(unsigned int i = 0; i < things.size(); i++){
 		if(things[i]->current.move && things[i]->current.frame == things[i]->current.move->distortSpawn) tvec = things[i]->current.move->distortion;
 		if(tvec != nullptr){
-			avec = make_shared<force>();
+			avec = shared_ptr<force>{tvec};
 			avec->x = tvec->x;
 			avec->y = tvec->y;
 			avec->type = tvec->type;

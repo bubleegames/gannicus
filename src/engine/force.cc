@@ -3,61 +3,113 @@
 #include <fstream>
 #include <iostream>
 #include <math.h>
-void force::enforce(instance * a)
+
+using std::get;
+
+tuple<SDL_Rect, SDL_Rect, float, bool> force::enforceBegin(const instance& a)
 {
 	SDL_Rect resultant;
 	int midpoint, xDist, yDist;
 	int directionX = 0, directionY = 0;
 	float totalDist;
-	if(a->current.facing == 1) midpoint = a->current.posX + a->current.facing*a->current.move->collision[a->current.frame].x + a->current.facing*a->collision.w/2;
-	else midpoint = a->current.posX + a->current.facing*a->current.move->collision[a->current.frame].x + a->current.facing*a->collision.w/2 + a->collision.w%2;
-	resultant.x = x; resultant.y = y; resultant.w = 0; resultant.h = 0;
+
+	if(a.current.facing == 1) midpoint = a.current.posX + a.current.facing*a.current.move->collision[a.current.frame].x + a.current.facing*a.collision.w/2;
+	else midpoint = a.current.posX + a.current.facing*a.current.move->collision[a.current.frame].x + a.current.facing*a.collision.w/2 + a.collision.w%2;
+	resultant.x = x; resultant.y = y;
+
 	xDist = abs(midpoint - posX);
-	yDist = abs(a->collision.y + a->collision.h/2 - posY);
+	yDist = abs(a.collision.y + a.collision.h/2 - posY);
 	totalDist = sqrt(pow(xDist, 2) + pow(yDist, 2));
-	if(!a->current.aerial) resultant.y = 0;
+
+	if(!a.current.aerial) resultant.y = 0;
+
 	if(midpoint > posX) directionX = 1;
 	else if(midpoint < posX) directionX = -1;
-	if(a->collision.y + a->collision.h/2 > posY) directionY = 1;
-	else if(a->collision.y + a->collision.h/2 < posY) directionY = -1;
-	if(totalDist < eventHorizon && eventHorizon > 0 && grip){
-		resultant.x = 0;
-		resultant.y = 0;
-		a->current.deltaX = 0; a->current.deltaY = 0;
-		a->current.posX = posX - a->collision.w/2;
-		a->current.posY = posY - a->collision.h/2;
-		grip--;
-		a->momentum.clear();
-	} else {
-		switch(type){
-		case 0:
-			break;
-		case 1:
-			resultant.x *= xDist * radius / totalDist;
-			resultant.y *= yDist * radius / totalDist;
-			resultant.x *= directionX;
-			resultant.y *= directionY;
-			break;
-		case 2:
-			resultant.x *= xDist * radius / pow(totalDist, 2);
-			resultant.y *= yDist * radius / pow(totalDist, 2);
-			resultant.x*= directionX;
-			resultant.y*= directionY;
-			break;
-		case 3:
-			if(totalDist > radius){
-				resultant.x = 0;
-				resultant.y = 0;
-			}
-			resultant.x *= directionX;
-			resultant.y *= directionY;
-			break;
-		default:
-			return;
+
+
+	if(a.collision.y + a.collision.h/2 > posY) directionY = 1;
+	else if(a.collision.y + a.collision.h/2 < posY) directionY = -1;
+	
+
+	
+	bool stop = (totalDist < eventHorizon && eventHorizon > 0 && grip);
+	SDL_Rect intermediate;
+	intermediate.x = xDist; intermediate.y = yDist;
+	intermediate.w = directionX; intermediate.h = directionY;
+
+	return tuple<SDL_Rect, SDL_Rect, float, bool> {resultant, intermediate, totalDist, stop};
+}
+
+void force::enforceStop(instance& a, SDL_Rect& resultant)
+{
+	resultant.x = 0;
+	resultant.y = 0;
+	a.current.deltaX = 0; a.current.deltaY = 0;
+	a.current.posX = posX - a.collision.w/2;
+	a.current.posY = posY - a.collision.h/2;
+	grip--;
+	a.momentum.clear();
+}
+
+void globalForce::enforce(instance& a)
+{
+	auto r = enforceBegin(a);
+	SDL_Rect resultant = get<0>(r);
+	if (get<3>(r)) enforceStop(a, resultant);
+	a.momentum.push_back(resultant);
+};
+
+void linearDecay::enforce(instance& a)
+{
+	auto r = enforceBegin(a);
+	SDL_Rect resultant = get<0>(r);
+	if (get<3>(r)) enforceStop(a, resultant);
+	else
+	{
+		resultant.x *= get<1>(r).x * radius / get<2>(r);
+		resultant.y *= get<1>(r).y * radius / get<2>(r);
+		resultant.x *= get<1>(r).w;
+		resultant.y *= get<1>(r).h;	
+	}
+	a.momentum.push_back(resultant);
+}
+
+void halfLifeDecay::enforce(instance& a)
+{	
+	auto r = enforceBegin(a);
+	SDL_Rect resultant = get<0>(r);
+	if (get<3>(r)) enforceStop(a, resultant);
+	else
+	{	
+		resultant.x *= get<1>(r).x * radius / pow(get<2>(r), 2);
+		resultant.y *= get<1>(r).y * radius / pow(get<2>(r), 2);
+		resultant.x *= get<1>(r).w;
+		resultant.y *= get<1>(r).h;
+	}
+	a.momentum.push_back(resultant);
+}
+
+void cutoffDecay::enforce(instance & a)
+{
+	auto r = enforceBegin(a);
+	SDL_Rect resultant = get<0>(r);
+	if (get<3>(r)) enforceStop(a, resultant);
+	else
+	{
+		if(get<2>(r) > radius)
+		{
+			resultant.x = 0;
+			resultant.y = 0;
+		}
+		else
+		{
+			resultant.x *= get<1>(r).w;
+			resultant.y *= get<1>(r).h;
 		}
 	}
-	a->momentum.push_back(resultant);
+	a.momentum.push_back(resultant);
 }
+
 
 bool force::validate(instance *a){
 	return (ID == a->ID) ? false : (effectCode & 1);

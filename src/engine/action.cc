@@ -303,16 +303,24 @@ bool action::setParameter(string buffer)
 		tempOnHold = t();
 		return true;
 	} else if (t.current() == "Distort") {
-		distortion = make_shared<force>();
-		distortSpawn = stoi(t("\t:- \n"));
+		int type = stoi(t("\t:- ]n"));
+		switch(type)
+		{
+			case 0: distortion = make_shared<globalForce>(); break;
+			case 1: distortion = make_shared<linearDecay>(); break;
+			case 2: distortion = make_shared<halfLifeDecay>(); break;
+			case 3: distortion = make_shared<cutoffDecay>(); break;
+		    case 4: return true;
+		}
+		distortSpawn = stoi(t());
 		distortion->length = stoi(t());
 		distortion->length -= distortSpawn;
 		distortion->x = stoi(t("\t: \n"));
 		distortion->y = stoi(t());
+
 		return true;
-	} else if (t.current() == "AttractorType") {
+	} else if (t.current() == "Radius") {
 		if(!distortion) return true;
-		distortion->type = stoi(t("\t: \n"));
 		distortion->radius = stoi(t());
 		return true;
 	} else if (t.current() == "EventHorizon") {

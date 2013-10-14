@@ -6,7 +6,7 @@ using std::move;
 
 environment::environment()
 {
-	auto gravity = make_shared<force>();
+	auto gravity = make_shared<globalForce>();
 	gravity->x = 0;
 	gravity->y = -6;
 	gravity->type = 0;
@@ -58,8 +58,8 @@ void environment::airCheck(instance * a)
 
 void environment::enforce(instance * a)
 {
-	for(auto i:globals){
-		if(i->validate(a)) i->enforce(a);
+	for(auto& i:globals){
+		if(i->validate(a)) i->enforce(*a);
 		else std::cout << i->y << ": " << a->pick()->name << '\n';
 	}
 }
