@@ -13,6 +13,7 @@ class instance{
 public:
 	instance();
 	instance(avatar*);
+	int cancelState(); 
 	virtual ~instance();
 	virtual avatar * pick() { return v; }
 

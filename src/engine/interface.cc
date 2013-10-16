@@ -456,7 +456,7 @@ void SaltAndBone::resolveCombos()
 			case 0:
 				if(killTimer && !freeze){ 
 					P[i]->current.meter[0] = 600;
-					if(combo[i] == 0 && P[(i+1)%2]->current.move->state[0].b.neutral){
+					if(combo[i] == 0 && P[(i+1)%2]->cancelState() & 1){
 						P[(i+1)%2]->current.meter[1] = 300;
 						P[(i+1)%2]->current.meter[4] = 0;
 					}
@@ -1336,7 +1336,7 @@ void SaltAndBone::resolveHits()
 								if(m < 2){
 									if(things[i]->current.counter > 0){
 										counterHit[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
-									} else if(!(things[m]->current.move->state[things[m]->current.connect].i & 513) && !combo[things[i]->ID-1] && !things[m]->current.counter){
+									} else if(!(things[m]->cancelState() & 513) && !combo[things[i]->ID-1] && !things[m]->current.counter){
 										punish[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
 									}
 								}
@@ -1402,7 +1402,7 @@ void SaltAndBone::resolveHits()
 			}
 			if(!things[i]->current.aerial){
 				for(int j = 0; j < 6; j++){
-					if(2 << j & things[i]->current.move->state[things[i]->current.hit].i || s[i].autoCorrects){
+					if(2 << j & things[i]->cancelState() || s[i].autoCorrects){
 						P[i]->checkFacing(P[(things[i]->ID)%2]);
 						break;
 					}
