@@ -303,16 +303,18 @@ bool action::setParameter(string buffer)
 		tempOnHold = t();
 		return true;
 	} else if (t.current() == "Distort") {
-		distortion = make_shared<force>();
+		int type = stoi(t("\t: \n"));
+		distortion = makeForce(type);
 		distortSpawn = stoi(t("\t:- \n"));
+		distortion->type = type; //This is kind of stupid. But we need to be able to make copies of the right derived force somehow...
 		distortion->length = stoi(t());
 		distortion->length -= distortSpawn;
 		distortion->x = stoi(t("\t: \n"));
 		distortion->y = stoi(t());
+
 		return true;
-	} else if (t.current() == "AttractorType") {
+	} else if (t.current() == "Radius") {
 		if(!distortion) return true;
-		distortion->type = stoi(t("\t: \n"));
 		distortion->radius = stoi(t());
 		return true;
 	} else if (t.current() == "EventHorizon") {

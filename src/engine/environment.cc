@@ -6,7 +6,7 @@ using std::move;
 
 environment::environment()
 {
-	auto gravity = make_shared<force>();
+	auto gravity = make_shared<globalForce>();
 	gravity->x = 0;
 	gravity->y = -6;
 	gravity->type = 0;
@@ -58,7 +58,7 @@ void environment::airCheck(instance * a)
 
 void environment::enforce(instance * a)
 {
-	for(auto i:physics){
+	for(auto& i:physics){
 		if(a->validate(i->ID, i->effectCode)) i->enforce(a);
 	}
 }
