@@ -1,5 +1,9 @@
 info/doc/
 *.swp
+*.orig
+salt
+bmpout
+*.o
 bin/
 .data/
 .config/
