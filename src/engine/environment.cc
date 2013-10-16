@@ -13,8 +13,8 @@ environment::environment()
 	gravity->ID = 0;
 	gravity->radius = 0;
 	gravity->effectCode = 3;
-	gravity->posX = 0;
-	gravity->posY = 0;
+	gravity->current.posX = 0;
+	gravity->current.posY = 0;
 	gravity->length = -1;
 	physics.push_back(gravity);
 }
@@ -59,7 +59,7 @@ void environment::airCheck(instance * a)
 void environment::enforce(instance * a)
 {
 	for(auto& i:physics){
-		if(a->validate(i->ID, i->effectCode)) i->enforce(a);
+		if(a->validate(i->ID, i->effectCode)) i->enforce(*a);
 	}
 }
 

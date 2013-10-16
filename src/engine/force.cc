@@ -30,21 +30,19 @@ tuple<SDL_Rect, SDL_Rect, float, bool> force::enforceBegin(const instance& a)
 	else midpoint = a.current.posX + a.current.facing*a.current.move->collision[a.current.frame].x + a.current.facing*a.collision.w/2 + a.collision.w%2;
 	resultant.x = x; resultant.y = y;
 
-	xDist = abs(midpoint - posX);
-	yDist = abs(a.collision.y + a.collision.h/2 - posY);
+	xDist = abs(midpoint - current.posX);
+	yDist = abs(a.collision.y + a.collision.h/2 - current.posY);
 	totalDist = sqrt(pow(xDist, 2) + pow(yDist, 2));
 
 	if(!a.current.aerial) resultant.y = 0;
 
-	if(midpoint > posX) directionX = 1;
-	else if(midpoint < posX) directionX = -1;
+	if(midpoint > current.posX) directionX = 1;
+	else if(midpoint < current.posX) directionX = -1;
 
 
-	if(a.collision.y + a.collision.h/2 > posY) directionY = 1;
-	else if(a.collision.y + a.collision.h/2 < posY) directionY = -1;
-	
+	if(a.collision.y + a.collision.h/2 > current.posY) directionY = 1;
+	else if(a.collision.y + a.collision.h/2 < current.posY) directionY = -1;
 
-	
 	bool stop = (totalDist < eventHorizon && eventHorizon > 0 && grip);
 	SDL_Rect intermediate;
 	intermediate.x = xDist; intermediate.y = yDist;
@@ -58,8 +56,8 @@ void force::enforceStop(instance& a, SDL_Rect& resultant)
 	resultant.x = 0;
 	resultant.y = 0;
 	a.current.deltaX = 0; a.current.deltaY = 0;
-	a.current.posX = posX - a.collision.w/2;
-	a.current.posY = posY - a.collision.h/2;
+	a.current.posX = current.posX - a.collision.w/2;
+	a.current.posY = current.posY - a.collision.h/2;
 	grip--;
 	a.momentum.clear();
 }
@@ -121,5 +119,4 @@ void cutoffDecay::enforce(instance & a)
 		}
 	}
 	a.momentum.push_back(resultant);
-}
 }

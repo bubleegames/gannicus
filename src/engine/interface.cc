@@ -541,7 +541,7 @@ void SaltAndBone::resolveInputs()
 		for(instance *i:things){
 			bool d = 0;
 			if(i)
-				i->getMove(currentFrame[i->ID - 1].buttons, false);
+				i->getMove(currentFrame[i->ID - 1].buttons, d);
 		}
 	}
 	for(unsigned int i = 0; i < P.size(); i++){
