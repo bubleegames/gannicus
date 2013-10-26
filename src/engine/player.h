@@ -99,6 +99,7 @@ public:
 	bool slide;
 	bool stick;
 	int hover;
+	int opponent;
 
 	string name;
 

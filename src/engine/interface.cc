@@ -119,6 +119,7 @@ void SaltAndBone::createPlayers()
 		things.push_back(P[i]);
 		P[i]->boxen = true;
 		P[i]->sprite = false;
+		P[i]->opponent = i+1%2;
 	}
 }
 
@@ -448,27 +449,27 @@ void SaltAndBone::resolveCombos()
 		if(!roundEnd){
 			switch (P[i]->pick()->comboState(things[i]->current.move)){
 			case -2:
-				illegit[(i+1)%2] = 1;
-				counterHit[(i+1)%2] = 0;
-				punish[(i+1)%2] = 0;
+				illegit[P[i]->opponent] = 1;
+				counterHit[P[i]->opponent] = 0;
+				punish[P[i]->opponent] = 0;
 				blockFail[i] = 0;
 				break;
 			case 0:
 				if(killTimer && !freeze){ 
 					P[i]->current.meter[0] = 600;
-					if(combo[i] == 0 && P[(i+1)%2]->cancelState() & 1){
-						P[(i+1)%2]->current.meter[1] = 300;
-						P[(i+1)%2]->current.meter[4] = 0;
+					if(combo[i] == 0 && P[P[i]->opponent]->cancelState() & 1){
+						P[P[i]->opponent]->current.meter[1] = 300;
+						P[P[i]->opponent]->current.meter[4] = 0;
 					}
 				}
-				combo[(i+1)%2] = 0;
-				damage[(i+1)%2] = 0;
-				prorate[(i+1)%2] = 1.0;
+				combo[P[i]->opponent] = 0;
+				damage[P[i]->opponent] = 0;
+				prorate[P[i]->opponent] = 1.0;
 				P[i]->elasticX = 0;
 				P[i]->elasticY = 0;
-				illegit[(i+1)%2] = 0;
-				counterHit[(i+1)%2] = 0;
-				punish[(i+1)%2] = 0;
+				illegit[P[i]->opponent] = 0;
+				counterHit[P[i]->opponent] = 0;
+				punish[P[i]->opponent] = 0;
 				blockFail[i] = 0;
 				break;
 			}
@@ -508,15 +509,11 @@ void SaltAndBone::resolveInputs()
 		for(unsigned int i = 0; i < P.size(); i++){
 			if(timer == 106 * 60) things[i]->inputBuffer[0] = 0;
 			else if(timer == 106 * 60 - 1) things[i]->inputBuffer[0] = i;
-			else if(timer == 106 * 60 - 2) things[i]->inputBuffer[0] = selection[(i+1)%2] / 10;
-			else if(timer == 106 * 60 - 3) things[i]->inputBuffer[0] = selection[(i+1)%2] % 10;
+			else if(timer == 106 * 60 - 2) things[i]->inputBuffer[0] = selection[P[i]->opponent] / 10;
+			else if(timer == 106 * 60 - 3) things[i]->inputBuffer[0] = selection[P[i]->opponent] % 10;
 			else if(timer == 106 * 60 - 4) things[i]->inputBuffer[0] = 0;
 			else(things[i]->inputBuffer[0] = 5);
-/*			if(currentFrame[i].buttons[1] == 1 && !counter[i]){
-				P[i]->current.mode = P[i]->current.mode == 1 ? 2 : 1;
-				counter[i] = 10;
-			}
-*/			for(int &j:currentFrame[i].buttons) j = 0;
+			for(int &j:currentFrame[i].buttons) j = 0;
 		}
 	} else {
 		int flop[2] = {0, 0};
@@ -532,10 +529,10 @@ void SaltAndBone::resolveInputs()
 			bool test = 1;
 			P[i]->getMove(currentFrame[i].buttons, test);
 			if(!test && !P[i]->current.aerial){ 
-				P[i]->checkFacing(P[(i+1)%2]);
+				P[i]->checkFacing(P[P[i]->opponent]);
 			}
-			P[i]->current.prox.y = P[(i+1)%2]->current.aerial;
-			P[i]->current.prox.x = P[(i+1)%2]->current.throwInvuln;
+			P[i]->current.prox.y = P[P[i]->opponent]->current.aerial;
+			P[i]->current.prox.x = P[P[i]->opponent]->current.throwInvuln;
 			if(P[0]->current.facing == P[1]->current.facing) P[i]->current.prox.x = 1;
 		}
 		for(instance *i:things){
@@ -770,7 +767,7 @@ void SaltAndBone::processInput(SDL_Event &event)
 	/*Do stuff with event*/
 	for(unsigned int i = 0; i < p.size(); i++){
 		int t = p[i]->tap(event);
-		if(t == 0) t = p[(i+1)%2]->tap(event);
+		if(t == 0) t = p[P[i]->opponent]->tap(event);
 		if((t < 1 || t > 8) && (t < 512) && event.type != SDL_JOYHATMOTION){
 			if(p[i]->same(event)){
 				if(configMenu[i] > 1 && configMenu[i] < 7){
@@ -915,7 +912,7 @@ void SaltAndBone::cSelectMenu()
 		SDL_GL_SwapBuffers();
 		for(unsigned int i = 0; i < P.size(); i++){
 			P[i]->characterSelect(selection[i]);
-			//P[i]->enemySelect(selection[(i+1)%2]);
+			//P[i]->enemySelect(selection[P[i]->opponent]);
 		}
 		loadAssets();
 		if(analytics){
@@ -1280,7 +1277,7 @@ void SaltAndBone::resolveThrows()
 	bool isThrown[2] = {false, false};
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(things[i]->current.move->arbitraryPoll(28, things[i]->current.frame)){ 
-			isThrown[(i+1)%2] = true;
+			isThrown[P[i]->opponent] = true;
 		}
 	}
 	if(isThrown[0] || isThrown[1]){
@@ -1296,10 +1293,10 @@ void SaltAndBone::resolveThrows()
 	} else {
 		for(unsigned int i = 0; i < P.size(); i++){
 			if(isThrown[i]){
-				P[i]->checkFacing(P[(i+1)%2]);
+				P[i]->checkFacing(P[P[i]->opponent]);
 				P[i]->updateRects();
-				P[i]->getThrown(things[(i+1)%2]->current.move, things[(i+1)%2]->current.posX*things[(i+1)%2]->current.facing, things[(i+1)%2]->current.posY);
-				P[i]->checkFacing(P[(i+1)%2]);
+				P[i]->getThrown(things[P[i]->opponent]->current.move, things[P[i]->opponent]->current.posX*things[P[i]->opponent]->current.facing, things[P[i]->opponent]->current.posY);
+				P[i]->checkFacing(P[P[i]->opponent]);
 			}
 		}
 	}
@@ -1385,12 +1382,12 @@ void SaltAndBone::resolveHits()
 					P[things[hitBy[i]]->ID-1]->takeHit(combo[i], parryHit);
 					s[hitBy[i]].pause = 0;
 				}
-				if(s[hitBy[i]].stun) combo[(i+1)%2] += hit[hitBy[i]];
+				if(s[hitBy[i]].stun) combo[P[i]->opponent] += hit[hitBy[i]];
 			}
-			env.enforceFloor(P[(i+1)%2]);
-			P[(i+1)%2]->checkCorners(bg.x + env.wall, bg.x + screenWidth - env.wall);
+			env.enforceFloor(P[P[i]->opponent]);
+			P[P[i]->opponent]->checkCorners(bg.x + env.wall, bg.x + screenWidth - env.wall);
 			if(things[i]->current.facing * things[hitBy[i]]->current.facing == 1) things[i]->invertVectors(1);
-			if(i < P.size()) damage[(i+1)%2] += health - P[i]->current.meter[0];
+			if(i < P.size()) damage[P[i]->opponent] += health - P[i]->current.meter[0];
 		}
 	}
 
@@ -1428,14 +1425,14 @@ void SaltAndBone::resolveHits()
 					break;
 				}
 			} else { 
-				if(things[(i+1)%2]->current.aerial){
-					if(P[(i+1)%2]->current.rCorner || P[(i+1)%2]->current.lCorner) residual.x -= abs(combo[i]);
-					if(P[(i+1)%2]->stick) residual.x -= s[i].push/2 + abs(combo[i]);
+				if(things[P[i]->opponent]->current.aerial){
+					if(P[P[i]->opponent]->current.rCorner || P[P[i]->opponent]->current.lCorner) residual.x -= abs(combo[i]);
+					if(P[P[i]->opponent]->stick) residual.x -= s[i].push/2 + abs(combo[i]);
 					residual.x -= 2;
 				} else {
 					if(combo[i] > 1) residual.x = -3*(abs(combo[i]-1));
-					if(things[(i+1)%2]->particleType == -2) residual.x -= push[i];
-					else if(P[(i+1)%2]->current.rCorner || P[(i+1)%2]->current.lCorner){
+					if(things[P[i]->opponent]->particleType == -2) residual.x -= push[i];
+					else if(P[P[i]->opponent]->current.rCorner || P[P[i]->opponent]->current.lCorner){
 						residual.x -= 2;
 						residual.x -= s[i].push/2;
 						residual.x -= abs(combo[i]);
@@ -1470,8 +1467,8 @@ void SaltAndBone::doSuperFreeze()
 
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(go[i] > 0){
-			P[(i+1)%2]->checkBlocking();
-			things[(i+1)%2]->current.freeze += go[i] - go[(i+1)%2];
+			P[P[i]->opponent]->checkBlocking();
+			things[P[i]->opponent]->current.freeze += go[i] - go[P[i]->opponent];
 			if(things[i]->current.move->arbitraryPoll(32, 0)){
 				for(unsigned int j = 2; j < things.size(); j++) things[j]->current.freeze += go[i];
 			}
