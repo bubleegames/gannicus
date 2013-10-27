@@ -82,6 +82,7 @@ public:
 	int rounds;		//How many rounds has this player won this match?
 //	int padding[400];	//More magic. Do not touch
 	virtual void characterSelect(int);
+	virtual void step();
 	virtual void enemySelect(int);
 	virtual bool stuck();
 	virtual bool validate(int, int);
