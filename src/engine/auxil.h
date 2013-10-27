@@ -76,5 +76,6 @@ struct status{
 	bool dead:1;
 	int throwInvuln;
 	bool reversalFlag:1;
+	instance * opponent;
 };
 #endif

@@ -50,6 +50,7 @@ public:
 	virtual void pushInput(deque<int>);
 	virtual int passSignal(int);
 	virtual int dragBG(int, int);
+	virtual void follow();
 	virtual void follow(instance*);
 	virtual void loadAssets();
 	virtual bool checkHit(SDL_Rect, SDL_Rect);
@@ -110,7 +111,6 @@ public:
 	int wins;
 	bool search:1;
 	script * record;
-	instance * opponent;
 private:
 	character * v;
 };

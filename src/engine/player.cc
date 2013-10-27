@@ -575,6 +575,11 @@ void instance::land()
 	}
 }
 
+void instance::follow()
+{
+	follow(current.opponent);
+}
+
 void instance::follow(instance *other){
 	if(current.frame >= current.move->followStart && current.frame <= current.move->followEnd){
 		if(abs(other->current.posX - current.posX) > current.move->followXRate){ 

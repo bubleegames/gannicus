@@ -121,7 +121,7 @@ void SaltAndBone::createPlayers()
 		P[i]->sprite = false;
 	}
 	for(int i = 0; i < 2; i++){
-		P[i]->opponent = P[(i+1)%2];
+		P[i]->current.opponent = P[(i+1)%2];
 	}
 }
 
@@ -459,9 +459,9 @@ void SaltAndBone::resolveCombos()
 			case 0:
 				if(killTimer && !freeze){ 
 					P[i]->current.meter[0] = 600;
-					if(combo[i] == 0 && P[i]->opponent->cancelState() & 1){
-						P[i]->opponent->current.meter[1] = 300;
-						P[i]->opponent->current.meter[4] = 0;
+					if(combo[i] == 0 && P[i]->current.opponent->cancelState() & 1){
+						P[i]->current.opponent->current.meter[1] = 300;
+						P[i]->current.opponent->current.meter[4] = 0;
 					}
 				}
 				combo[(i+1)%2] = 0;
@@ -531,10 +531,10 @@ void SaltAndBone::resolveInputs()
 			bool test = 1;
 			P[i]->getMove(currentFrame[i].buttons, test);
 			if(!test && !P[i]->current.aerial){ 
-				P[i]->checkFacing(P[i]->opponent);
+				P[i]->checkFacing(P[i]->current.opponent);
 			}
-			P[i]->current.prox.y = P[i]->opponent->current.aerial;
-			P[i]->current.prox.x = P[i]->opponent->current.throwInvuln;
+			P[i]->current.prox.y = P[i]->current.opponent->current.aerial;
+			P[i]->current.prox.x = P[i]->current.opponent->current.throwInvuln;
 			if(P[0]->current.facing == P[1]->current.facing) P[i]->current.prox.x = 1;
 		}
 		for(instance *i:things){
@@ -914,7 +914,7 @@ void SaltAndBone::cSelectMenu()
 		SDL_GL_SwapBuffers();
 		for(unsigned int i = 0; i < P.size(); i++){
 			P[i]->characterSelect(selection[i]);
-			//P[i]->enemySelect(selection[P[i]->opponent]);
+			//P[i]->enemySelect(selection[P[i]->current.opponent]);
 		}
 		loadAssets();
 		if(analytics){
@@ -1295,10 +1295,10 @@ void SaltAndBone::resolveThrows()
 	} else {
 		for(unsigned int i = 0; i < P.size(); i++){
 			if(isThrown[i]){
-				P[i]->checkFacing(P[i]->opponent);
+				P[i]->checkFacing(P[i]->current.opponent);
 				P[i]->updateRects();
-				P[i]->getThrown(P[i]->opponent->current.move, P[i]->opponent->current.posX*P[i]->opponent->current.facing, P[i]->opponent->current.posY);
-				P[i]->checkFacing(P[i]->opponent);
+				P[i]->getThrown(P[i]->current.opponent->current.move, P[i]->current.opponent->current.posX*P[i]->current.opponent->current.facing, P[i]->current.opponent->current.posY);
+				P[i]->checkFacing(P[i]->current.opponent);
 			}
 		}
 	}
@@ -1386,8 +1386,8 @@ void SaltAndBone::resolveHits()
 				}
 				if(s[hitBy[i]].stun) combo[(i+1)%2] += hit[hitBy[i]];
 			}
-			env.enforceFloor(P[i]->opponent);
-			env.checkCorners(bg.x, bg.x + screenWidth, P[i]->opponent);
+			env.enforceFloor(P[i]->current.opponent);
+			env.checkCorners(bg.x, bg.x + screenWidth, P[i]->current.opponent);
 			if(things[i]->current.facing * things[hitBy[i]]->current.facing == 1) things[i]->invertVectors(1);
 			if(i < P.size()) damage[(i+1)%2] += health - P[i]->current.meter[0];
 		}
@@ -1427,14 +1427,14 @@ void SaltAndBone::resolveHits()
 					break;
 				}
 			} else { 
-				if(P[i]->opponent->current.aerial){
-					if(P[i]->opponent->current.rCorner || P[i]->opponent->current.lCorner) residual.x -= abs(combo[i]);
-					if(P[i]->opponent->current.stick) residual.x -= s[i].push/2 + abs(combo[i]);
+				if(P[i]->current.opponent->current.aerial){
+					if(P[i]->current.opponent->current.rCorner || P[i]->current.opponent->current.lCorner) residual.x -= abs(combo[i]);
+					if(P[i]->current.opponent->current.stick) residual.x -= s[i].push/2 + abs(combo[i]);
 					residual.x -= 2;
 				} else {
 					if(combo[i] > 1) residual.x = -3*(abs(combo[i]-1));
-					if(P[i]->opponent->particleType == -2) residual.x -= push[i];
-					else if(P[i]->opponent->current.rCorner || P[i]->opponent->current.lCorner){
+					if(P[i]->current.opponent->particleType == -2) residual.x -= push[i];
+					else if(P[i]->current.opponent->current.rCorner || P[i]->current.opponent->current.lCorner){
 						residual.x -= 2;
 						residual.x -= s[i].push/2;
 						residual.x -= abs(combo[i]);
@@ -1469,8 +1469,8 @@ void SaltAndBone::doSuperFreeze()
 
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(go[i] > 0){
-			P[i]->opponent->checkBlocking();
-			P[i]->opponent->current.freeze += go[i] - go[(i+1)%2];
+			P[i]->current.opponent->checkBlocking();
+			P[i]->current.opponent->current.freeze += go[i] - go[(i+1)%2];
 			if(things[i]->current.move->arbitraryPoll(32, 0)){
 				for(unsigned int j = 2; j < things.size(); j++) things[j]->current.freeze += go[i];
 			}

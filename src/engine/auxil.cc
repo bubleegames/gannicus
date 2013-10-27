@@ -381,6 +381,7 @@ status::status()
 	slide = false;
 	stick = false;
 	hover = 0;
+	opponent = nullptr;
 }
 
 status::status(const status & o) 
@@ -411,5 +412,6 @@ status::status(const status & o)
 	slide = o.slide;
 	stick = o.stick;
 	hover = o.hover;
+	opponent = o.opponent;
 }
 
