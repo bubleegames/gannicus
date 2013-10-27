@@ -28,13 +28,13 @@ SaltAndBone::SaltAndBone()
 	ifstream read;
 
 	/*Initialize some pseudo-constants*/
-	screenWidth = 1600; /*screen{Width,Height} describe the size of the window holding the game.*/
-	screenHeight = 900;
-	screen = nullptr; /*The screen gives a partial view of the background, which is the area available for character movement.*/
-	bg.w = 3200;
-	bg.h = 1800;
+	env.screenWidth = 1600; /*screen{Width,Height} describe the size of the window holding the game.*/
+	env.screenHeight = 900;
+	screen = nullptr; /*The screen gives a partial view of the env.background, which is the area available for character movement.*/
+	env.bg.w = 3200;
+	env.bg.h = 1800;
 	env.floor = 50; /*Value of the env.floor. This is the maximum distance downward that characters can travel.*/
-	env.wall = 50; /*The size of the offset at which characters start to scroll the background, and get stuck.*/
+	env.wall = 50; /*The size of the offset at which characters start to scroll the env.background, and get stuck.*/
 	menuMusic = nullptr;
 
 	read.open(".config/settings.conf");
@@ -127,28 +127,28 @@ void SaltAndBone::createPlayers()
 
 void SaltAndBone::loadMatchBackground()
 {
-	if(!killTimer && scalingFactor > .8) background = aux::load_texture("content/stages/" + to_string(selection[0]) + "/bg.png");
+	if(!killTimer && scalingFactor > .8) env.background = aux::load_texture("content/stages/" + to_string(selection[0]) + "/bg.png");
 	else {
 		switch (selection[0]){
 		case 1: 
-			bgR = 1.0;
-			bgG = 0.0;
-			bgB = 0.0;
+			env.bgR = 1.0;
+			env.bgG = 0.0;
+			env.bgB = 0.0;
 			break;
 		case 2:
-			bgR = 1.0;
-			bgG = 1.0;
-			bgB = 0.0;
+			env.bgR = 1.0;
+			env.bgG = 1.0;
+			env.bgB = 0.0;
 			break;
 		case 3:
-			bgR = 0.0;
-			bgG = 0.0;
-			bgB = 0.0;
+			env.bgR = 0.0;
+			env.bgG = 0.0;
+			env.bgB = 0.0;
 			break;
 		case 4:
-			bgR = 1.0;
-			bgG = 0.5;
-			bgB = 0.0;
+			env.bgR = 1.0;
+			env.bgG = 0.5;
+			env.bgB = 0.0;
 			break;
 		}
 	}
@@ -206,7 +206,7 @@ void SaltAndBone::loadMisc()
 /*Initialize SDL and openGL, creating a window, among other things*/
 bool fightingGame::screenInit()
 {
-	w = screenWidth*sf; h = screenHeight*sf;
+	w = env.screenWidth*sf; h = env.screenHeight*sf;
 	if(screen){
 		SDL_FreeSurface(screen);
 		screen = nullptr;
@@ -238,12 +238,12 @@ void fightingGame::initialConfig(int ID)
 		for(unsigned int i = 0; i < p[ID]->inputName.size(); i++){
 			glClear(GL_COLOR_BUFFER_BIT);
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			glRectf(0.0f, 0.0f, (GLfloat)screenWidth, (GLfloat)screenHeight);
+			glRectf(0.0f, 0.0f, (GLfloat)env.screenWidth, (GLfloat)env.screenHeight);
 			glEnable( GL_TEXTURE_2D );
 			glColor4f(0.1f, 0.1f, 0.1f, 1.0f);
-			drawGlyph("Player " + to_string(ID + 1), 0, screenWidth, 300, 80, 1);
-			drawGlyph("Please enter a", 0, screenWidth, 400, 80, 1);
-			drawGlyph("command for " + p[ID]->inputName[i], 0, screenWidth, 500, 80, 1);
+			drawGlyph("Player " + to_string(ID + 1), 0, env.screenWidth, 300, 80, 1);
+			drawGlyph("Please enter a", 0, env.screenWidth, 400, 80, 1);
+			drawGlyph("command for " + p[ID]->inputName[i], 0, env.screenWidth, 500, 80, 1);
 			SDL_GL_SwapBuffers();
 			glDisable( GL_TEXTURE_2D );
 			glClear(GL_COLOR_BUFFER_BIT);
@@ -253,7 +253,7 @@ void fightingGame::initialConfig(int ID)
 	glPopMatrix();
 }
 
-	/*This functions sets things up for a new match. Initializes some things and draws the background*/
+	/*This functions sets things up for a new match. Initializes some things and draws the env.background*/
 void SaltAndBone::matchInit()
 {
 	SDL_Event event;
@@ -270,15 +270,15 @@ void SaltAndBone::matchInit()
 	while (SDL_PollEvent(&event));
 }
 
-/*Sets stuff up for a new round. This initializes the characters, the timer, and the background.*/
+/*Sets stuff up for a new round. This initializes the characters, the timer, and the env.background.*/
 void SaltAndBone::roundInit()
 {
 	roundEnd = false;
 	while(things.size() > P.size())
 		things.pop_back();
 	env.roundInit();
-	bg.x = 800;
-	bg.y = -900;
+	env.bg.x = 800;
+	env.bg.y = -900;
 
 	for(player* i:P){
 		i->current.posY = env.floor;
@@ -409,7 +409,7 @@ void fightingGame::print()
 	for(player* i:P) i->print();
 }
 
-/*Main function for a frame. This resolves character spritions, background scrolling, and hitboxes*/
+/*Main function for a frame. This resolves character spritions, env.background scrolling, and hitboxes*/
 void SaltAndBone::resolve()
 {
 	if(!select[0] || !select[1]) cSelectMenu();
@@ -464,6 +464,7 @@ void SaltAndBone::resolveCombos()
 						P[i]->current.opponent->current.meter[4] = 0;
 					}
 				}
+				P[i]->current.opponent->current.rebound = false;
 				combo[(i+1)%2] = 0;
 				damage[(i+1)%2] = 0;
 				prorate[(i+1)%2] = 1.0;
@@ -481,15 +482,15 @@ void SaltAndBone::resolveCombos()
 
 void SaltAndBone::resolveCamera()
 {
-	/*Really rudimentary camera logic. Really just scrolls the background (Which characters are drawn relative to)
+	/*Really rudimentary camera logic. Really just scrolls the env.background (Which characters are drawn relative to)
 	 *appropriately, attempting to adjust to approximately be looking at the point in the middle of the two characters.
 	 */
-	int dx = things[1]->dragBG(bg.x + env.wall, bg.x + screenWidth - env.wall) + things[0]->dragBG(bg.x + env.wall, bg.x + screenWidth - env.wall);
+	int dx = things[1]->dragBG(env.bg.x + env.wall, env.bg.x + env.screenWidth - env.wall) + things[0]->dragBG(env.bg.x + env.wall, env.bg.x + env.screenWidth - env.wall);
 	int dy = 900;
 
 	/*If a character leaves the camera boundaries, follow them immediately*/
 	if(!dx){
-		dx = -(((bg.x + screenWidth/2) - things[0]->current.posX) + ((bg.x + screenWidth/2) - things[1]->current.posX));
+		dx = -(((env.bg.x + env.screenWidth/2) - things[0]->current.posX) + ((env.bg.x + env.screenWidth/2) - things[1]->current.posX));
 		dx /= 10;
 		/*Otherwise follow the middle at a rate of (disparity from middle view)/10.
 		 *Chosen by trial and error, this rate feels most natural
@@ -499,10 +500,10 @@ void SaltAndBone::resolveCamera()
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(dy < things[i]->current.posY + things[i]->collision.h){
 			dy = things[i]->current.posY + things[i]->collision.h;
-			if(dy > bg.h) dy = bg.h;
+			if(dy > env.bg.h) dy = env.bg.h;
 		}
 	}
-	bg.y = dy - bg.h;
+	env.bg.y = dy - env.bg.h;
 }
 
 void SaltAndBone::resolveInputs()
@@ -571,7 +572,7 @@ void SaltAndBone::cleanup()
 {
 	if(select[0] && select[1] && !pMenu){
 		for(instance *i:things){
-			if(i->current.posX > bg.w + 300 || i->current.posX < -300 || i->current.posY < -300 || i->current.posY > bg.h){
+			if(i->current.posX > env.bg.w + 300 || i->current.posX < -300 || i->current.posY < -300 || i->current.posY > env.bg.h){
 				i->pick()->die->execute(i->current);
 				i->current.move = i->pick()->die;
 			}
@@ -651,8 +652,8 @@ void SaltAndBone::resolveSummons()
 						y = things[(things[i]->ID)-1]->current.posY;
 					x += things[i]->current.move->arbitraryPoll(54, things[i]->current.frame)*f;
 					y += things[i]->current.move->arbitraryPoll(55, things[i]->current.frame);
-					if(x > bg.w + 100) x = bg.w + 100;
-					if(y > bg.h - 50) y = bg.h - 50;
+					if(x > env.bg.w + 100) x = env.bg.w + 100;
+					if(y > env.bg.h - 50) y = env.bg.h - 50;
 					if(x < -100) x = -100;
 					larva->current.facing = f;
 					larva->setPosition(x, y);
@@ -1039,9 +1040,9 @@ void SaltAndBone::keyConfig(int ID)
 
 void SaltAndBone::dragBG(int dx)
 {
-	bg.x += dx;
-	if(bg.x < 0) bg.x = 0;
-	else if(bg.x > bg.w - screenWidth) bg.x = bg.w - screenWidth;
+	env.bg.x += dx;
+	if(env.bg.x < 0) env.bg.x = 0;
+	else if(env.bg.x > env.bg.w - env.screenWidth) env.bg.x = env.bg.w - env.screenWidth;
 }
 
 void SaltAndBone::pauseMenu()
@@ -1195,6 +1196,7 @@ void SaltAndBone::resolveCollision()
 	vector<int> dx;
 	for(player *i:P){
 		env.enforceFloor(i);
+		env.enforceBounds(i);
 		temp.push_back(i->collision);
 		dx.push_back(i->current.deltaX);
 		temp.back().x -= dx.back();
@@ -1214,7 +1216,7 @@ void SaltAndBone::resolveCollision()
 						j[i] = 0;
 					}
 				}
-				for(player *i:P) env.checkCorners(bg.x, bg.x + screenWidth, i);
+				for(player *i:P) env.checkCorners(i);
 				unitCollision(P[0], P[1]);
 				for(unsigned int i = 0; i < P.size(); i++){
 					if(localMaximum < abs(dx[i]) - j[i]){
@@ -1257,7 +1259,8 @@ void SaltAndBone::resolveCollision()
 
 	for(player *i:P){
 		env.enforceFloor(i);
-		env.checkCorners(bg.x, bg.x + screenWidth, i);
+		env.enforceBounds(i);
+		env.checkCorners(i);
 	}
 
 	//Some issues arise if you don't have this second pass
@@ -1302,7 +1305,7 @@ void SaltAndBone::resolveHits()
 	vector<bool> taken(things.size());
 	vector<int> hitBy(things.size());
 	int push[2];
-	for(player *i:P) env.checkCorners(bg.x, bg.x + screenWidth, i);
+	for(player *i:P) env.checkCorners(i);
 	for(unsigned int i = 0; i < things.size(); i++){
 		taken[i] = 0;
 		hit[i] = 0;
@@ -1376,8 +1379,9 @@ void SaltAndBone::resolveHits()
 				}
 				if(s[hitBy[i]].stun) combo[(i+1)%2] += hit[hitBy[i]];
 			}
-//			env.enforceFloor(P[i]->current.opponent);
-//			env.checkCorners(bg.x, bg.x + screenWidth, P[i]->current.opponent);
+			env.enforceFloor(P[i]->current.opponent);
+			env.enforceBounds(P[i]->current.opponent);
+			env.checkCorners(P[i]->current.opponent);
 			if(things[i]->current.facing * things[hitBy[i]]->current.facing == 1) things[i]->invertVectors(1);
 			if(i < P.size()) damage[(i+1)%2] += health - P[i]->current.meter[0];
 		}

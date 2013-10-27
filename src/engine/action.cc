@@ -578,6 +578,10 @@ void action::parseProperties(string buffer, bool counter)
 			if(counter) CHStats[ch].floorBounce = 1;
 			else stats[ch].floorBounce = 1;
 			break;
+		case 'A':
+			if(counter) CHStats[ch].ceilingBounce = 1;
+			else stats[ch].ceilingBounce = 1;
+			break;
 		case '_':
 			if(counter) CHStats[ch].slide = 1;
 			else stats[ch].slide = 1;
@@ -767,6 +771,7 @@ hStat action::pollStats(int f, bool CH)
 			s.stick = CHStats[c].stick;
 			s.ghostHit = CHStats[c].ghostHit;
 			s.prorate = CHStats[c].prorate;
+			s.ceilingBounce = CHStats[c].ceilingBounce;
 		} else {
 			s.launch = stats[c].launch;
 			s.hover = stats[c].hover;
@@ -776,6 +781,7 @@ hStat action::pollStats(int f, bool CH)
 			s.stick = stats[c].stick;
 			s.ghostHit = stats[c].ghostHit;
 			s.prorate = stats[c].prorate;
+			s.ceilingBounce = stats[c].ceilingBounce;
 		}
 		s.hitsProjectile = stats[c].hitsProjectile;
 		s.turnsProjectile = stats[c].turnsProjectile;

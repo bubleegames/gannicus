@@ -611,8 +611,6 @@ void instance::step()
 	}
 	if(pick()->death(current)) current.dead = true;
 	if(current.connect < 0) current.connect = 0;
-	if(current.posX > 4200 || current.posX < -1000 || current.posY < -1000 || current.posY > 3000) current.age = pick()->lifespan - 1;
-	else if(current.posX > 3200 || current.posX < 0 || current.posY < 0 || current.posY > 2000) current.age = pick()->lifespan - 240;
 	if(!current.freeze){ 
 		if(current.move->flip == current.frame) flip();
 		current.age++;
@@ -931,6 +929,7 @@ int player::takeHit(int combo, hStat & s)
 		else current.elasticY = false;
 		if(current.aerial && s.slide) current.slide = true;
 		else current.slide = false;
+		if(s.ceilingBounce) current.rebound = true;
 		if(current.aerial && s.stick) current.stick = true;
 		else current.stick = false;
 	}

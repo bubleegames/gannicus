@@ -26,11 +26,10 @@ public:
 	virtual void print();
 
 	vector<player*> P;
-	int screenHeight, screenWidth;
 	float prorate[2];
 	bool pauseEnabled:1;
-	bool scripting:1;
 	float scalingFactor, sf;
+	bool scripting:1;
 	bool initd:1;
 	environment env;
 };
@@ -95,8 +94,6 @@ public:
 	int configMenu[2];
 	int rMenu;
 	int pMenu;
-	float bgR, bgG, bgB;
-	SDL_Rect bg;
 	bool firstFrame:1;
 	bool shortcut:1;
 	bool continuous:1;
@@ -105,7 +102,6 @@ public:
 	chart *stats;
 	int numRounds;
 
-	GLuint background;
 	int musicVolume;
 	Mix_Music *matchMusic;
 	Mix_Music *menuMusic;

@@ -15,7 +15,12 @@ public:
 	void airCheck(instance *);
 	void enforce(instance *);
 	void enforceFloor(instance *);
-	void checkCorners(int, int, instance*);
+	void checkCorners(instance*);
+	void enforceBounds(instance*);
+	int screenWidth, screenHeight;
+	SDL_Rect bg;
+	GLuint background;
+	float bgR, bgG, bgB;
 	int floor, wall;
 };
 #endif
