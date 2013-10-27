@@ -14,7 +14,8 @@ public:
 	void roundInit();
 	void airCheck(instance *);
 	void enforce(instance *);
-	void enforceFloor(player *);
+	void enforceFloor(instance *);
+	void checkCorners(int, int, instance*);
 	int floor, wall;
 };
 #endif

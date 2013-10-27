@@ -67,6 +67,12 @@ struct status{
 	vector <instance*> offspring;
 	int connect, hit, counter;
 	int drawX, drawY;
+	bool elasticX;
+	bool elasticY;
+	bool slide;
+	bool stick;
+	int hover;
+
 	bool dead:1;
 	int throwInvuln;
 	bool reversalFlag:1;

@@ -624,16 +624,21 @@ int avatar::acceptTarget(action * c, int f)
 	return 1;
 }
 
+void avatar::land(status& current)
+{
+	current.move = current.move->land(current);
+	if(!current.move){
+		neutral->execute(current);
+		current.move = neutral;
+	}
+}
+
 void character::land(status& current)
 {
 	if(current.move->allowed.b.block && current.counter < 0){
 		current.move = standBlock;
 	} else {
-		current.move = current.move->land(current);
-		if(!current.move){
-			neutral->execute(current);
-			current.move = neutral;
-		}
+		avatar::land(current);
 	}
 	resetAirOptions(current.meter);
 }

@@ -143,13 +143,13 @@ void player::roundInit()
 		delete record;
 		record = nullptr;
 	}
-	elasticX = 0;
-	elasticY = 0;
+	current.elasticX = 0;
+	current.elasticY = 0;
 	blockType = 0;
 	iterator = 0;
-	slide = 0;
-	stick = 0;
-	hover = 0;
+	current.slide = 0;
+	current.stick = 0;
+	current.hover = 0;
 	current.throwInvuln = 0;
 	particleLife = 0;
 	particleType = 0;
@@ -494,72 +494,85 @@ void player::checkBlocking()
 	}
 }
 
-void player::checkCorners(int left, int right)
+bool instance::stuck()
 {
-	/*Walls, or "Left and Right" corners
-	This not only keeps the characters within the stage boundaries, but flags them as "in the corner"
-	so we can specialcase collision checks for when one player is in the corner.*/
+	return (current.counter < 0);
+}
 
-	/*Offset variables. I could do these calculations on the fly, but it's easier this way.
-	Essentially, this represents the offset between the sprite and the collision box, since
-	even though we're *checking* collision, we're still *moving* spr*/
-	int lOffset = current.posX - collision.x;
-	int rOffset = current.posX - (collision.x + collision.w);
-	updateRects();
-	if(collision.x <= left){
-		if(elasticX){
-			current.lCorner = 0;
-			if(current.deltaX < 0) current.deltaX = -current.deltaX;
-			elasticX = false;
-		}
-		if(collision.x <= 50){
-			if(current.facing == 1) current.lCorner = 1;
-			else current.posX++;
-			if (stick) {
-				if(current.move == pick()->untech || current.move == pick()->die){
-					current.deltaX = 0;
-					current.deltaY = 0;
-					momentum.clear();
-				} else stick = 0;
-			}
-		}
-		if(collision.x < left)
-			current.posX = left + lOffset;
-	} else current.lCorner = 0;
-	if(collision.x + collision.w >= right){
-		if(elasticX){
+bool player::stuck()
+{
+	return (current.move == pick()->untech || current.move == pick()->die);
+}
+
+void instance::encounterWall(bool side)
+{
+	if(side) {
+		if(current.elasticX){
 			current.rCorner = 0;
 			if(current.deltaX > 0) current.deltaX = -current.deltaX; 
-			elasticX = false;
+			current.elasticX = false;
 		}
-		if(collision.x + collision.w >= 3150){
+		if(collision.x + collision.w >= 3150){ //TODO: This is obviously kludgey to hardcode
 			if(current.facing == -1) current.rCorner = 1;
 			else {
 				current.posX--;
 			}
-			if (stick) {
-				if(current.move == pick()->untech || current.move == pick()->die){
+			if (current.stick) {
+				if(stuck()){
 					current.deltaX = 0;
 					current.deltaY = 0;
 					momentum.clear();
-				} else stick = 0;
+				} else current.stick = 0;
 			}
 		}
-		if(collision.x + collision.w > right){
-			current.posX = right + rOffset;
+	} else {
+		if(current.elasticX){
+			current.lCorner = 0;
+			if(current.deltaX < 0) current.deltaX = -current.deltaX;
+			current.elasticX = false;
 		}
-	} else current.rCorner = 0;
-	updateRects(); //Update rectangles or the next collision check will be wrong.
+		if(collision.x <= 50){ //TODO: This is obviously kludgey to hardcode
+			if(current.facing == 1) current.lCorner = 1;
+			else current.posX++;
+			if (current.stick) {
+				if(stuck()){
+					current.deltaX = 0;
+					current.deltaY = 0;
+					momentum.clear();
+				} else current.stick = 0;
+			}
+		}
+	}
 }
 
-void player::land()
+void instance::land()
 {
-	for(unsigned int i = 0; i < momentum.size(); i++){
-		if(momentum[i].y > 0) momentum.erase(momentum.begin()+i);
+	if(current.elasticY){
+		current.deltaY = -current.deltaY;
+		current.elasticY = false;
+	} else if (current.slide) {
+		current.deltaY = 0;
+		if(stuck()){ 
+			if(current.deltaX < 0) current.deltaX++;
+			else if(current.deltaX > 0) current.deltaX--;
+			current.aerial = 1;
+		} else {
+			current.deltaX = 0;
+			current.slide = 0;
+		}
+	} else {
+		if(current.aerial == 1){
+			for(unsigned int i = 0; i < momentum.size(); i++){
+				if(momentum[i].y > 0) momentum.erase(momentum.begin()+i);
+			}
+			pick()->land(current);
+			current.reversal = nullptr;
+			current.aerial = false;
+			updateRects();
+			current.deltaX = 0;
+		}
+		current.deltaY = 0;
 	}
-	pick()->land(current);
-	current.reversal = nullptr;
-	current.aerial = false;
 }
 
 void instance::follow(instance *other){
@@ -871,7 +884,7 @@ int player::takeHit(int combo, hStat & s)
 	}
 	s.untech -= combo;
 	int f;
-	if(slide) s.lift += 15 - abs(s.lift)/4;
+	if(current.slide) s.lift += 15 - abs(s.lift)/4;
 	f = instance::takeHit(combo, s);
 	current.freeze = f;
 	if(particleType != 1){
@@ -906,16 +919,16 @@ int player::takeHit(int combo, hStat & s)
 			current.meter[4] = 0;
 		}
 		momentum.push_back(v);
-		if(current.aerial && s.hover) hover = s.hover;
-		else hover = 0;
-		if(current.aerial && s.wallBounce) elasticX = true;
-		else elasticX = false;
-		if(current.aerial && s.floorBounce) elasticY = true;
-		else elasticY = false;
-		if(current.aerial && s.slide) slide = true;
-		else slide = false;
-		if(current.aerial && s.stick) stick = true;
-		else stick = false;
+		if(current.aerial && s.hover) current.hover = s.hover;
+		else current.hover = 0;
+		if(current.aerial && s.wallBounce) current.elasticX = true;
+		else current.elasticX = false;
+		if(current.aerial && s.floorBounce) current.elasticY = true;
+		else current.elasticY = false;
+		if(current.aerial && s.slide) current.slide = true;
+		else current.slide = false;
+		if(current.aerial && s.stick) current.stick = true;
+		else current.stick = false;
 	}
 	current.prox = tempProx;
 	if(current.move == pick()->die){

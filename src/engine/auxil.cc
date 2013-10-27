@@ -376,6 +376,11 @@ status::status()
 	freeze = 0;
 	aerial = false;
 	dead = false;
+	elasticX = false;
+	elasticY = false;
+	slide = false;
+	stick = false;
+	hover = 0;
 }
 
 status::status(const status & o) 
@@ -401,5 +406,10 @@ status::status(const status & o)
 	mode = o.mode;
 	prox = o.prox;
 	absorbedHits = o.absorbedHits;
+	elasticX = o.elasticX;
+	elasticY = o.elasticY;
+	slide = o.slide;
+	stick = o.stick;
+	hover = o.hover;
 }
 

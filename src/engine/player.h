@@ -40,10 +40,12 @@ public:
 	virtual void updateRects();
 	virtual void draw(GLint);
 	virtual instance* spawn();
+	virtual bool stuck();
 	virtual void drawBoxen();
 	virtual void combineDelta();
 	virtual bool spriteCheck();
 	virtual void connect(int, hStat&);
+	virtual void checkBlocking() {}
 	virtual void pushInput(unsigned int);
 	virtual void pushInput(deque<int>);
 	virtual int passSignal(int);
@@ -51,6 +53,8 @@ public:
 	virtual void follow(instance*);
 	virtual void loadAssets();
 	virtual bool checkHit(SDL_Rect, SDL_Rect);
+	virtual void land();
+	virtual void encounterWall(bool);
 	void enforceForce(force&);
 	int middle();
 	void flip();
@@ -78,11 +82,11 @@ public:
 //	int padding[400];	//More magic. Do not touch
 	virtual void characterSelect(int);
 	virtual void enemySelect(int);
+	virtual bool stuck();
 	virtual bool validate(int, int);
 	virtual void drawHitParticle();
 
 	virtual void readEvent(SDL_Event &, frame &);
-	virtual void land();
 	virtual void readScripts();
 	virtual void drawMeters(int);
 	virtual void roundInit();
@@ -94,26 +98,19 @@ public:
 	void setKey(int);
 	bool setKey(int, SDL_Event);
 
-	bool elasticX;
-	bool elasticY;
-	bool slide;
-	bool stick;
-	int hover;
-	int opponent;
-
 	string name;
 
 	int particleLife;
 
 	/*Helper functions for "resolve" tick*/
 	virtual void checkBlocking();
-	virtual void checkCorners(int, int);
 	virtual void getThrown(action*, int, int);
 
 	virtual void init();
 	int wins;
 	bool search:1;
 	script * record;
+	instance * opponent;
 private:
 	character * v;
 };

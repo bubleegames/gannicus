@@ -63,34 +63,41 @@ void environment::enforce(instance * a)
 	}
 }
 
-void environment::enforceFloor(player * a)
+void environment::enforceFloor(instance * a)
 {
 	/*Floor, or "Bottom corner"*/
 
 	if (a->collision.y < floor){
-		if(a->elasticY){
-			a->current.deltaY = -a->current.deltaY;
-			a->elasticY = false;
-		} else if (a->slide) {
-			a->current.deltaY = 0;
-			if(a->current.move == a->pick()->untech || a->current.move == a->pick()->die){ 
-				if(a->current.deltaX < 0) a->current.deltaX++;
-				else if(a->current.deltaX > 0) a->current.deltaX--;
-				a->current.aerial = 1;
-			} else {
-				a->current.deltaX = 0;
-				a->slide = 0;
-			}
-		} else {
-			if(a->current.aerial == 1){
-				a->land();
-				a->updateRects();
-				a->current.deltaX = 0;
-			}
-			a->current.deltaY = 0;
-		}
+		a->land();
 		a->current.posY = floor - a->current.move->collision[a->current.frame].y;
+		a->updateRects();
 	}
-	a->updateRects();
 }
+
+void environment::checkCorners(int left, int right, instance * a)
+{
+	left += wall; right -= wall;
+	/*Walls, or "Left and Right" corners
+	This not only keeps the characters within the stage boundaries, but flags them as "in the corner"
+	so we can specialcase a->collision checks for when one player is in the corner.*/
+
+	/*Offset variables. I could do these calculations on the fly, but it's easier this way.
+	Essentially, this represents the offset between the sprite and the a->collision box, since
+	even though we're *checking* a->collision, we're still *moving* spr*/
+	int lOffset = a->current.posX - a->collision.x;
+	int rOffset = a->current.posX - (a->collision.x + a->collision.w);
+	a->updateRects();
+	if(a->collision.x <= left){
+		a->encounterWall(0);
+		if(a->collision.x < left)
+			a->current.posX = left + lOffset;
+	} else a->current.lCorner = 0;
+	if(a->collision.x + a->collision.w >= right){
+		a->encounterWall(1);
+		if(a->collision.x + a->collision.w > right)
+			a->current.posX = right + rOffset;
+	} else a->current.rCorner = 0;
+	a->updateRects(); //Update rectangles or the next a->collision check will be wrong.
+}
+
 
