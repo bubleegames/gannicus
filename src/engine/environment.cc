@@ -82,8 +82,6 @@ void environment::enforceBounds(instance * a)
 		a->current.rebound = false;
 		a->updateRects();
 	}
-	if(a->current.posX > 4200 || a->current.posX < -1000 || a->current.posY < -1000 || a->current.posY > 3000) a->current.age = a->pick()->lifespan - 1;
-	else if(a->current.posX > screenWidth || a->current.posX < 0 || a->current.posY < 0 || a->current.posY > 2*screenHeight) a->current.age = a->pick()->lifespan - 240;
 }
 
 void environment::checkCorners(instance * a)
