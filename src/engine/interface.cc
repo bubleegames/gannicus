@@ -503,6 +503,7 @@ void SaltAndBone::resolveCamera()
 			if(dy > env.bg.h) dy = env.bg.h;
 		}
 	}
+	for(instance *i:things) env.enforceBounds(i);
 	env.bg.y = dy - env.bg.h;
 }
 
