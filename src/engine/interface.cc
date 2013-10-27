@@ -531,7 +531,7 @@ void SaltAndBone::resolveInputs()
 			bool test = 1;
 			P[i]->getMove(currentFrame[i].buttons, test);
 			if(!test && !P[i]->current.aerial){ 
-				P[i]->checkFacing(P[i]->current.opponent);
+				P[i]->checkFacing();
 			}
 			P[i]->current.prox.y = P[i]->current.opponent->current.aerial;
 			P[i]->current.prox.x = P[i]->current.opponent->current.throwInvuln;
@@ -553,17 +553,15 @@ void SaltAndBone::resolveInputs()
 
 void SaltAndBone::resolvePhysics()
 {
-	for(unsigned int i = 0; i < things.size(); i++){
-		if(!things[i]->current.freeze){
-			if(things[i]->ID) things[i]->follow(things[(things[i]->ID)%2]);
-			if(!(things[i]->current.move->stop & 4)){
-				things[i]->pullVolition();
-				things[i]->combineDelta();
-				env.airCheck(things[i]);
-				if(i < 2){
-					if (P[i]->current.hover > 0 && P[i]->current.deltaY < 0) P[i]->momentum.push_back({0, (Sint16)(-P[i]->current.deltaY), 0, 0});
-				}
-				env.enforce(things[i]);
+	for(instance *i:things){
+		if(!i->current.freeze){
+			if(i->ID) i->follow(things[i->ID%2]);
+			if(!(i->current.move->stop & 4)){
+				i->pullVolition();
+				i->combineDelta();
+				env.airCheck(i);
+				if(i->current.hover > 0 && i->current.deltaY < 0) i->momentum.push_back({0, (Sint16)(-i->current.deltaY), 0, 0});
+				env.enforce(i);
 			}
 		}
 	}
@@ -572,16 +570,10 @@ void SaltAndBone::resolvePhysics()
 void SaltAndBone::cleanup()
 {
 	if(select[0] && select[1] && !pMenu){
-		for(unsigned int i = 0; i < P.size(); i++) {
-			if(!P[i]->current.freeze){
-				P[i]->current.throwInvuln--;
-				P[i]->current.hover--;
-			}
-		}
-		for(unsigned int i = 2; i < things.size(); i++){
-			if(things[i]->current.posX > bg.w + 300 || things[i]->current.posX < -300 || things[i]->current.posY < -300 || things[i]->current.posY > bg.h){
-				things[i]->pick()->die->execute(things[i]->current);
-				things[i]->current.move = things[i]->pick()->die;
+		for(instance *i:things){
+			if(i->current.posX > bg.w + 300 || i->current.posX < -300 || i->current.posY < -300 || i->current.posY > bg.h){
+				i->pick()->die->execute(i->current);
+				i->current.move = i->pick()->die;
 			}
 		}
 		if(!rMenu && select[0] && select[1]){
@@ -600,7 +592,7 @@ void SaltAndBone::cleanup()
 		}
 	}
 
-	for(unsigned int i = 0; i < P.size(); i++){
+	for(unsigned int i = 0; i < currentFrame.size(); i++){
 		if(currentFrame[i].n.raw.Start && counter[i] <= 0){
 			if(pauseEnabled && !roundEnd){
 				if(pMenu) pMenu = 0;
@@ -609,7 +601,7 @@ void SaltAndBone::cleanup()
 		}
 	}
 
-	for(unsigned int i = 0; i < P.size(); i++){
+	for(unsigned int i = 0; i < currentFrame.size(); i++){
 		for(unsigned int j = 0; j < currentFrame[i].buttons.size(); j++){
 			if(currentFrame[i].buttons[j] != 0) currentFrame[i].buttons[j]++;
 		}
@@ -633,12 +625,15 @@ void SaltAndBone::resolveSummons()
 					switch (things[i]->current.move->arbitraryPoll(56, things[i]->current.frame)){
 					case 0:
 						larva->ID = 0;
+						larva->current.opponent = P[(things[i]->ID)%2];
 						break;
 					case 1:
 						larva->ID = things[i]->ID;
+						larva->current.opponent = P[(things[i]->ID)%2];
 						break;
 					case 2:
 						larva->ID = (things[i]->ID)%2+1;
+						larva->current.opponent = P[(things[i]->ID)-1];
 						break;
 					}
 					if(things[i]->current.move->arbitraryPoll(51, things[i]->current.frame)){
@@ -768,12 +763,12 @@ void SaltAndBone::processInput(SDL_Event &event)
 {
 	/*Do stuff with event*/
 	for(unsigned int i = 0; i < p.size(); i++){
-		int t = P[i]->tap(event);
-		if(t == 0) t = P[(i+1)%2]->tap(event);
+		int t = p[i]->tap(event);
+		if(t == 0) t = p[(i+1)%2]->tap(event);
 		if((t < 1 || t > 8) && (t < 512) && event.type != SDL_JOYHATMOTION){
-			if(P[i]->same(event)){
+			if(p[i]->same(event)){
 				if(configMenu[i] > 1 && configMenu[i] < 7){
-					P[i]->swapKey(1 << (configMenu[i]+2), event);
+					p[i]->swapKey(1 << (configMenu[i]+2), event);
 					configMenu[i]++;
 					counter[i] = 10;
 				}
@@ -800,8 +795,8 @@ void SaltAndBone::readInput()
 						if(i->record) r = true;
 						i->macroCheck(events[j]);
 						if(i->record){
-							if(!r) j = events.size();
 							i->search = false;
+							if(!r) break;
 						}
 					}
 				}
@@ -824,7 +819,7 @@ void SaltAndBone::readInput()
 	if(scripting || oldReplay) genInput();
 	for(SDL_Event i:events){
 		for(unsigned int j = 0; j < p.size(); j++){
-			if(!p[j]->currentMacro) P[j]->readEvent(i, currentFrame[j]);
+			if(!P[j]->currentMacro) P[j]->readEvent(i, currentFrame[j]);
 		}
 	}
 }
@@ -980,7 +975,7 @@ void SaltAndBone::mainMenu(int ID)
 			case 6:
 				if(pauseEnabled)
 					pauseEnabled = false;
-				else{
+				else {
 					scripting = false;
 					pauseEnabled = true;
 				}
@@ -1167,12 +1162,12 @@ void fightingGame::unitCollision(instance *a, instance *b)
 
 	/*Collision between players. Unfortunately a lot of specialcasing necessary here.*/
 
-	int rLOffset = right->current.posX - right->collision.x;
-	int rROffset = right->current.posX - (right->collision.x + right->collision.w);
-	int lLOffset = left->current.posX - left->collision.x;
-	int lROffset = left->current.posX - (left->collision.x + left->collision.w);
-	int dOffset = (left->current.deltaX - right->current.deltaX) % 2;
-	int totalMiddle = (right->collision.x + left->collision.x + left->collision.w)/2;
+	int rLOffset = right->current.posX - right->collision.x,
+	    rROffset = right->current.posX - (right->collision.x + right->collision.w),
+	    lLOffset = left->current.posX - left->collision.x,
+	    lROffset = left->current.posX - (left->collision.x + left->collision.w),
+	    dOffset = (left->current.deltaX - right->current.deltaX) % 2,
+	    totalMiddle = (right->collision.x + left->collision.x + left->collision.w)/2;
 	if(abs(left->current.deltaX) > abs(right->current.deltaX)) totalMiddle += dOffset;
 
 	if(left->current.lCorner){ 
@@ -1283,22 +1278,17 @@ void SaltAndBone::resolveThrows()
 		}
 	}
 	if(isThrown[0] || isThrown[1]){
-		for(player *i:P){
-			for(player *j:P){
-				if(i != j) i->checkFacing(j);
-			}
-		}
+		for(player *i:P) i->checkFacing();
 	}
 	if(isThrown[0] && isThrown[1]){
-		things[0]->current.move = P[0]->pick()->throwBreak;
-		things[1]->current.move = P[1]->pick()->throwBreak;
+		for(player *i:P) i->current.move = i->pick()->throwBreak;
 	} else {
 		for(unsigned int i = 0; i < P.size(); i++){
 			if(isThrown[i]){
-				P[i]->checkFacing(P[i]->current.opponent);
+				P[i]->checkFacing();
 				P[i]->updateRects();
 				P[i]->getThrown(P[i]->current.opponent->current.move, P[i]->current.opponent->current.posX*P[i]->current.opponent->current.facing, P[i]->current.opponent->current.posY);
-				P[i]->checkFacing(P[i]->current.opponent);
+				P[i]->checkFacing();
 			}
 		}
 	}
@@ -1319,9 +1309,9 @@ void SaltAndBone::resolveHits()
 		connect[i] = 0;
 		hitBy[i] = -1;
 	}
-	for(unsigned int i = 0; i < things.size(); i++){
-		if(!things[i]->hitbox.empty()){
-			if(!freeze) P[(things[i]->ID)%2]->checkBlocking();
+	for(instance *i:things){
+		if(!i->hitbox.empty()){
+			if(!freeze) i->current.opponent->checkBlocking();
 		}
 	}
 	for(unsigned int i = 0; i < things.size(); i++){
@@ -1386,8 +1376,8 @@ void SaltAndBone::resolveHits()
 				}
 				if(s[hitBy[i]].stun) combo[(i+1)%2] += hit[hitBy[i]];
 			}
-			env.enforceFloor(P[i]->current.opponent);
-			env.checkCorners(bg.x, bg.x + screenWidth, P[i]->current.opponent);
+//			env.enforceFloor(P[i]->current.opponent);
+//			env.checkCorners(bg.x, bg.x + screenWidth, P[i]->current.opponent);
 			if(things[i]->current.facing * things[hitBy[i]]->current.facing == 1) things[i]->invertVectors(1);
 			if(i < P.size()) damage[(i+1)%2] += health - P[i]->current.meter[0];
 		}
@@ -1403,7 +1393,7 @@ void SaltAndBone::resolveHits()
 			if(!things[i]->current.aerial){
 				for(int j = 0; j < 6; j++){
 					if(2 << j & things[i]->cancelState() || s[i].autoCorrects){
-						P[i]->checkFacing(P[(things[i]->ID)%2]);
+						P[i]->checkFacing();
 						break;
 					}
 				}
@@ -1449,11 +1439,11 @@ void SaltAndBone::resolveHits()
 		//resolveCollision();
 	}
 */
-	for(unsigned int i = 0; i < P.size(); i++) {
-		if(things[i]->current.meter[0] <= 0 && endTimer >= 5 * 60){ 
-			i = 2;
-			for(unsigned int j = 0; j < things.size(); j++)
-				things[j]->current.freeze = 30;
+	for(instance * i:P) {
+		if(i->current.meter[0] <= 0 && endTimer >= 5 * 60){ 
+			for(instance *j:things)
+				j->current.freeze = 30;
+			break;
 		}
 	}
 }

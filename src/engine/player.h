@@ -16,13 +16,13 @@ public:
 	int cancelState(); 
 	virtual ~instance();
 	virtual avatar * pick() { return v; }
-
 	SDL_Rect collision;
 	vector<SDL_Rect> hitbox, hitreg, momentum;
 	vector<SDL_Rect> hitLocation;
 	int selectedPalette;
 	int ID;
 	deque<int> inputBuffer;
+	void checkFacing();
 	void checkFacing(instance*);
 	virtual hStat pollStats();
 	virtual void neutralize();

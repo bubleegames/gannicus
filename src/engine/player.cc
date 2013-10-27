@@ -575,6 +575,11 @@ void instance::land()
 	}
 }
 
+void instance::checkFacing()
+{
+	checkFacing(current.opponent);
+}
+
 void instance::follow()
 {
 	follow(current.opponent);
@@ -595,19 +600,17 @@ void instance::follow(instance *other){
 
 void instance::print()
 {
-	cout << "Player" << ID << ": " << current.move->name << ": " << current.frame << '\n';
+	cout << "Player" << ID << "(" << pick()->name << "): " << current.move->name << "[" << current.frame << "]\n";
 }
 
 void instance::step()
 {
-	action * m = current.move;
+	if(!current.freeze){
+		current.throwInvuln--;
+		current.hover--;
+	}
 	if(pick()->death(current)) current.dead = true;
 	if(current.connect < 0) current.connect = 0;
-	if(m != current.move){
-		current.frame = 0;
-		current.connect = 0;
-		current.hit = 0;
-	}
 	if(current.posX > 4200 || current.posX < -1000 || current.posY < -1000 || current.posY > 3000) current.age = pick()->lifespan - 1;
 	else if(current.posX > 3200 || current.posX < 0 || current.posY < 0 || current.posY > 2000) current.age = pick()->lifespan - 240;
 	if(!current.freeze){ 
@@ -629,16 +632,12 @@ void instance::step()
 		} else {
 			if(current.move->next) current.move = current.move->next;
 			else neutralize();
-			current.frame = 0;
-			current.connect = 0;
-			current.hit = 0;
 		}
 	}
 	if(current.reversalTimer)
 		current.reversalTimer--;
-	else {
+	else
 		current.reversal = nullptr;
-	}
 }
 
 void instance::neutralize()

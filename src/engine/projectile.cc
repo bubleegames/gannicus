@@ -100,6 +100,7 @@ bool projectile::death(status &current)
 		}
 	}
 	if(current.move != die && lifespan > 0 && current.age > lifespan){
+		die->execute(current);
 		current.move = die;
 	}
 	return false;
