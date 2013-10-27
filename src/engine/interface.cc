@@ -1380,6 +1380,7 @@ void SaltAndBone::resolveHits()
 				if(s[hitBy[i]].stun) combo[(i+1)%2] += hit[hitBy[i]];
 			}
 			env.enforceFloor(P[i]->current.opponent);
+			env.enforceBounds(P[i]->current.opponent);
 			env.checkCorners(P[i]->current.opponent);
 			if(things[i]->current.facing * things[hitBy[i]]->current.facing == 1) things[i]->invertVectors(1);
 			if(i < P.size()) damage[(i+1)%2] += health - P[i]->current.meter[0];

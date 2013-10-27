@@ -638,6 +638,12 @@ void instance::step()
 		current.reversal = nullptr;
 }
 
+void player::step()
+{
+	lifespan = -1;
+	instance::step();
+}
+
 void instance::neutralize()
 {
 	current.move = pick()->neutralize(current);
