@@ -640,7 +640,8 @@ void instance::step()
 
 void player::step()
 {
-	lifespan = -1;
+	pick()->lifespan = -1;
+	current.age = timer;
 	instance::step();
 }
 
