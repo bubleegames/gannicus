@@ -464,12 +464,12 @@ void SaltAndBone::resolveCombos()
 						P[i]->current.opponent->current.meter[4] = 0;
 					}
 				}
-				P[i]->current.opponent->current.rebound = false;
 				combo[(i+1)%2] = 0;
 				damage[(i+1)%2] = 0;
 				prorate[(i+1)%2] = 1.0;
 				P[i]->current.elasticX = 0;
 				P[i]->current.elasticY = 0;
+				P[i]->current.rebound = 0;
 				illegit[(i+1)%2] = 0;
 				counterHit[(i+1)%2] = 0;
 				punish[(i+1)%2] = 0;
