@@ -1,4 +1,5 @@
 /*Copyright Somnambulant Studios 2012-2013*/
+#include "character.h"
 #include "../charlist.h"
 #include "controller.h"
 #include <deque>
