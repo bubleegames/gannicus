@@ -12,10 +12,7 @@ action * airMove::land(status &current)
 {
 	if(landing){
 		if(landing->check(current)) {
-			current.frame = 0;
-			current.connect = 0;
-			current.hit = 0;
-			return landing;
+			return landing->execute(current);
 		}
 	}
 	return nullptr;

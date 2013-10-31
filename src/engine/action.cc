@@ -843,11 +843,13 @@ void action::step(status &current)
 		basis.frame++;
 		if(basis.move && basis.frame >= basis.move->frames){
 			if(basis.move->next)
-				basis.move = basis.move->next->execute(current);
-			else basis.move = nullptr;
-			basis.frame = 0;
-			basis.connect = 0;
-			basis.hit = 0;
+				basis.move = basis.move->next->execute(basis);
+			else {
+				basis.move = nullptr;
+				basis.frame = 0;
+				basis.connect = 0;
+				basis.hit = 0;
+			}
 		}
 	}
 }
@@ -1013,6 +1015,7 @@ hStat::hStat(const hStat& o)
 	this->ghostHit = o.ghostHit;
 	this->wallBounce = o.wallBounce;
 	this->floorBounce = o.floorBounce;
+	this->ceilingBounce = o.ceilingBounce;
 	this->slide = o.slide;
 	this->stick = o.stick;
 	this->hitsProjectile = o.hitsProjectile;

@@ -86,8 +86,7 @@ int pet::takeHit(status &current, hStat &s, int blockType, int &hitType)
 int projectile::takeHit(status &current, hStat &s, int blockType, int &hitType)
 {
 	if(s.killsProjectile || current.move->hittable){ 
-		die->execute(current);
-		current.move = die;
+		current.move = die->execute(current);
 		return 1;
 	} else return 0;
 }
@@ -100,8 +99,7 @@ bool projectile::death(status &current)
 		}
 	}
 	if(current.move != die && lifespan > 0 && current.age > lifespan){
-		die->execute(current);
-		current.move = die;
+		current.move = die->execute(current);
 	}
 	return false;
 }

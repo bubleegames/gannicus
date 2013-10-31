@@ -45,8 +45,7 @@ void avatar::checkReversal(status &current, bool dryrun)
 {
 	if(current.move && current.reversal){
 		if(*current.reversal > current){
-			if(!dryrun) current.reversal->execute(current);
-			current.move = current.reversal;
+			current.move = dryrun ? current.reversal : current.reversal->execute(current);
 			current.reversalFlag = true;
 			if(!dryrun){
 				current.reversal = nullptr;
@@ -84,40 +83,40 @@ void avatar::getReversal(status &current, deque<int> inputBuffer, vector<int> bu
 
 void avatar::executeBuffer(status &current, bool dryrun)
 {
-	if(!dryrun) current.bufferedMove->execute(current);
-	current.move = current.bufferedMove;
-	if(!dryrun) current.bufferedMove = nullptr;
+	if(!dryrun){ 
+		current.move = current.bufferedMove->execute(current);
+		current.bufferedMove = nullptr;
+	} else current.move = current.bufferedMove;
 }
 
 void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> buttons, bool dryrun)
 {
 	checkReversal(current, dryrun);
-	action * t = nullptr;
-	t = hook(current, inputBuffer, buttons);
-	if(!t){
+	action * ret = nullptr;
+	ret = hook(current, inputBuffer, buttons);
+	if(!ret){
 		if(current.move->followupSpan.end && current.move->followupSpan == current.frame);
 		if(current.move->window(current.frame)){
 			if(current.move->attempt->check(current)){
-				t = current.move->attempt;
+				ret = current.move->attempt;
 			}
 		}
 		else if(current.move->holdFrame == current.frame){
 			if(current.move->onHold->patternMatch(buttons, current.move->holdCheck, 0, 0) && current.move->onHold->check(current)){
-				t = current.move->onHold;
+				ret = current.move->onHold;
 			}
 		}
 		if (current.bufferedMove && current.freeze <= 0) executeBuffer(current, dryrun);
 		else getReversal(current, inputBuffer, buttons);
 	}
-	if(t){
+	if(ret){
 		current.reversalFlag = false;
 		if(current.freeze > 0){
-			if(current.bufferedMove == nullptr){ 
+			if(current.bufferedMove == nullptr){
 				if(!dryrun) current.bufferedMove = t;
 			}
 		} else {
-			if(!dryrun) t->execute(current);
-			current.move = t;
+			current.move = dryrun ? t : t->execute(current);
 		}
 	}
 }
@@ -141,19 +140,16 @@ action * avatar::moveSignal(int)
 action * avatar::neutralize(status &current)
 {
 	current.reversalFlag = false;
-	neutral->execute(current);
-	return neutral;
+	return neutral->execute(current);
 }
 
 action * character::neutralize(status &current)
 {
 	current.reversalFlag = false;
 	if(current.aerial){ 
-		airNeutral->execute(current);
-		return airNeutral;
+		return airNeutral->execute(current);
 	} else {
-		neutral->execute(current);
-		return neutral;
+		return neutral->execute(current);
 	}
 }
 
@@ -233,7 +229,7 @@ void avatar::build(string directory, string file)
 	read.get(buffer, 50); read.ignore(100, '\n');
 
 	while(!read.eof()){
-		read.get(buffer, 100, '\n'); read.ignore(100, '\n');
+		read.get(buffer, 101, '\n'); read.ignore(100, '\n');
 		dealWithMove(buffer);
 	}
 	read.close();
@@ -496,16 +492,16 @@ void character::block(status &current, int st, bool high)
 	current.counter = -st;
 	if(current.aerial){
 		if(*airBlock > current) {
-			current.move = airBlock;
+			current.move = airBlock->execute(current);
 		}
 	} else {
 		if(high){
 			if(*standBlock > current) {
-				current.move = standBlock;
+				current.move = standBlock->execute(current);
 			}
 		} else {
 			if(*crouchBlock > current) {
-				current.move = crouchBlock;
+				current.move = crouchBlock->execute(current);
 			}
 		}
 	}
@@ -527,14 +523,14 @@ int character::assessStun(status &current, hStat &s)
 {
 	if(current.move->armor(current)) return 0;
 	else if(current.aerial){
-		current.move = untech;
+		current.move = untech->execute(current);
 		resetAirOptions(current.meter);
 		return -(s.stun+s.untech);
 	} else if(current.move->crouch) {
-		current.move = crouchReel;
+		current.move = crouchReel->execute(current);
 		return -(s.stun + s.stun/5);
 	} else {
-		current.move = reel;
+		current.move = reel->execute(current);
 		return -(s.stun);
 	}
 }
@@ -562,8 +558,7 @@ int character::takeHit(status &current, hStat &s, int blockType, int &hitType)
 	}
 	if(dead == true){
 		current.counter = -(s.stun+s.untech);
-		die->execute(current);
-		current.move = die;
+		current.move = die->execute(current);
 		current.aerial = true;
 	} else if(hitType == 1) {
 		if(s.stun != 0){
@@ -628,8 +623,7 @@ void avatar::land(status& current)
 {
 	current.move = current.move->land(current);
 	if(!current.move){
-		neutral->execute(current);
-		current.move = neutral;
+		current.move = neutralize(current);
 	}
 }
 
