@@ -56,8 +56,7 @@ void force::enforceStop(instance& a, SDL_Rect& resultant)
 	resultant.x = 0;
 	resultant.y = 0;
 	a.current.deltaX = 0; a.current.deltaY = 0;
-	a.current.posX = current.posX - a.collision.w/2;
-	a.current.posY = current.posY - a.collision.h/2;
+	a.setPosition(current.posX, current.posY);
 	grip--;
 	a.momentum.clear();
 }
