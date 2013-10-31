@@ -68,7 +68,7 @@ public:
 	//Okay so, hopefully the idea here is that we can init()
 	//the action we're cancelling out of in the usual case, and, well
 	//Do other stuff sometimes.
-	virtual void execute(status&);
+	virtual action * execute(status&);
 	virtual void playSound(int);
 	virtual bool patternMatch(vector<int>, int, int, int); //Check to see if the action is possible right now.
 	virtual bool activate(status &, vector<int>, int, int, int); //Check to see if the action is possible right now.
@@ -293,7 +293,7 @@ public:
 	airUtility() {}
 	airUtility(string, string);
 	virtual bool check(const status&); //Check to see if the action is possible right now.
-	virtual void execute(status&);
+	virtual action * execute(status&);
 };
 
 class airLooping : public airMove, public looping {

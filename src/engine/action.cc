@@ -842,7 +842,8 @@ void action::step(status &current)
 	if(modifier && basis.move){
 		basis.frame++;
 		if(basis.move && basis.frame >= basis.move->frames){
-			if(basis.move->next) basis.move = basis.move->next;
+			if(basis.move->next)
+				basis.move = basis.move->next->execute(current);
 			else basis.move = nullptr;
 			basis.frame = 0;
 			basis.connect = 0;
@@ -890,7 +891,7 @@ void action::playSound(int channel)
 	Mix_PlayChannel(channel, soundClip, 0);
 }
 
-void action::execute(status &current)
+action * action::execute(status &current)
 {
 	current.absorbedHits = 0;
 	current.meter[1] -= cost;
@@ -905,6 +906,7 @@ void action::execute(status &current)
 	current.frame = 0;
 	current.connect = 0;
 	current.hit = 0;
+	return this;
 }
 
 void action::feed(action * c, int code, int i)

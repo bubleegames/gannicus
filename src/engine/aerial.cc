@@ -62,10 +62,10 @@ bool airUtility::check(const status& current) //Check to see if the action is po
 	return action::check(current);
 }
 
-void airUtility::execute(status &current){
+action * airUtility::execute(status &current){
 	if(abs(delta[0][0].y) > abs(delta[0][0].x)) current.meter[2]--;
 	else if(abs(delta[0][0].y) < abs(delta[0][0].x)) current.meter[3]--;
-	action::execute(current);
+	return action::execute(current);
 }
 
 airLooping::airLooping(string dir, string file)

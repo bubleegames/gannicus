@@ -19,7 +19,7 @@ public:
 	flashStep();
 	flashStep(string, string);
 	bool check(const status&);
-	void execute(status&);
+	action * execute(status&);
 private:
 	int flashMeterCost;
 };
@@ -29,7 +29,7 @@ public:
 	flashSummon();
 	flashSummon(string, string);
 	bool check(const status&);
-	void execute(status&);
+	action * execute(status&);
 	bool setParameter(string);
 	virtual void zero();
 	void step(status&);

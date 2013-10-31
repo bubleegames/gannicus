@@ -631,7 +631,7 @@ void instance::step()
 			current.hit = current.move->basis.hit;
 			current.move = current.move->basis.move;
 		} else {
-			if(current.move->next) current.move = current.move->next;
+			if(current.move->next) current.move = current.move->next->execute(current);
 			else neutralize();
 		}
 	}
@@ -639,13 +639,6 @@ void instance::step()
 		current.reversalTimer--;
 	else
 		current.reversal = nullptr;
-}
-
-void player::step()
-{
-	pick()->lifespan = -1;
-	current.age = 1;
-	instance::step();
 }
 
 void instance::neutralize()
@@ -931,7 +924,9 @@ int player::takeHit(int combo, hStat & s)
 			current.meter[4] = 0;
 		}
 		momentum.push_back(v);
-		if(current.aerial && s.hover) current.hover = s.hover;
+		if(current.aerial && s.hover){
+			current.hover = s.hover;
+		}
 		else current.hover = 0;
 		if(current.aerial && s.wallBounce) current.elasticX = true;
 		else current.elasticX = false;

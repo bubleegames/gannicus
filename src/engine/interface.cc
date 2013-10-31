@@ -562,7 +562,8 @@ void SaltAndBone::resolvePhysics()
 				i->pullVolition();
 				i->combineDelta();
 				env.airCheck(i);
-				if(i->current.hover > 0 && i->current.deltaY < 0) i->momentum.push_back({0, (Sint16)(-i->current.deltaY), 0, 0});
+				if(i->current.hover > 0 && i->current.deltaY < 0)
+					i->momentum.push_back({0, (Sint16)(-i->current.deltaY), 0, 0});
 				env.enforce(i);
 			}
 		}

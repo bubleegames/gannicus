@@ -137,21 +137,21 @@ bool flashSummon::check(const status &current)
 	return ret;
 }
 
-void flashSummon::execute(status &current)
+action * flashSummon::execute(status &current)
 {
 	current.mode = (current.mode & 1) ? 0 : 1;
 	int temp = cost;
 	if(current.mode & 1) cost = 0;
 	cost = temp;
-	action::execute(current);
+	return action::execute(current);
 }
 
-void flashStep::execute(status &current)
+action * flashStep::execute(status &current)
 {
 	current.meter[5] -= 10;
 	if(current.meter[5] > 540) current.meter[5] = 540;
 	else if(current.meter[5] < 0) current.meter[5] = -360;
-	action::execute(current);
+	return action::execute(current);
 }
 
 void flashSummon::step(status &current)
