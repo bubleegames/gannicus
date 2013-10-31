@@ -691,7 +691,7 @@ void SaltAndBone::summonForces()
 			avec->eventHorizon = tvec->eventHorizon;
 			avec->grip = tvec->grip;
 			if(things[i]->current.facing == 1) avec->current.posX = things[i]->collision.x + things[i]->collision.w / 2;
-			else avec->current.posX = things[i]->collision.x + things[i]->collision.w / 2 + things[i]->collision.w % 2;
+			else avec->current.posX = things[i]->collision.x - things[i]->collision.w / 2 + things[i]->collision.w % 2;
 			avec->current.posY = things[i]->collision.y + things[i]->collision.h/2;
 			if(avec->type == 0) avec->x *= things[i]->current.facing;
 			switch(tvec->ID){
