@@ -619,7 +619,7 @@ void instance::step()
 		if(current.offspring[i]->current.posX > 3700 || current.offspring[i]->current.posX < -500 || 
 		   current.offspring[i]->current.posY < -200 || current.offspring[i]->current.posY > 2500) 
 			current.offspring[i]->current.age = current.offspring[i]->pick()->lifespan - 240;
-		if(current.offspring[i]->current.move == current.offspring[i]->pick()->die->execute(current.offspring[i]->current){
+		if(current.offspring[i]->current.move == current.offspring[i]->pick()->die){
 			current.offspring.erase(current.offspring.begin()+i--);
 		}
 	}

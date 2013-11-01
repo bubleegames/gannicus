@@ -113,10 +113,10 @@ void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> butt
 		current.reversalFlag = false;
 		if(current.freeze > 0){
 			if(current.bufferedMove == nullptr){
-				if(!dryrun) current.bufferedMove = t;
+				if(!dryrun) current.bufferedMove = ret;
 			}
 		} else {
-			current.move = dryrun ? t : t->execute(current);
+			current.move = dryrun ? ret : ret->execute(current);
 		}
 	}
 }
