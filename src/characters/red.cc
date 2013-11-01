@@ -64,12 +64,12 @@ bool redCancel::check(const status &current)
 	return special::check(current);
 }
 
-void redCancel::execute(status &current)
+action * redCancel::execute(status &current)
 {
 	current.meter[2] = 1;
 	current.meter[3] = 1;
 	current.meter[6] = 16;
-	action::execute(current);
+	return action::execute(current);
 }
 
 int redCancel::arbitraryPoll(int q, int f)

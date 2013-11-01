@@ -71,6 +71,7 @@ struct status{
 	bool elasticY;
 	bool slide;
 	bool stick;
+	bool rebound;
 	int hover;
 
 	bool dead:1;

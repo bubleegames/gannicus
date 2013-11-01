@@ -37,7 +37,7 @@ void environment::cleanup()
 			if (!physics[i]->length) {
 				physics.erase(physics.begin()+i);
 				i--;
-			} else physics[i]->length--;
+			} else if (physics[i]->length > -1) physics[i]->length--;
 		}
 	}
 }
@@ -74,9 +74,20 @@ void environment::enforceFloor(instance * a)
 	}
 }
 
-void environment::checkCorners(int left, int right, instance * a)
+void environment::enforceBounds(instance * a)
 {
-	left += wall; right -= wall;
+	if(a->current.rebound && a->current.posY + a->collision.h >= screenHeight){
+		a->current.posY = screenHeight - a->collision.h;
+		a->current.deltaY = -a->current.deltaY;
+		a->current.rebound = false;
+		a->updateRects();
+	}
+}
+
+void environment::checkCorners(instance * a)
+{
+	int left = bg.x + wall,
+	    right = bg.x + screenWidth - wall;
 	/*Walls, or "Left and Right" corners
 	This not only keeps the characters within the stage boundaries, but flags them as "in the corner"
 	so we can specialcase a->collision checks for when one player is in the corner.*/
@@ -84,8 +95,8 @@ void environment::checkCorners(int left, int right, instance * a)
 	/*Offset variables. I could do these calculations on the fly, but it's easier this way.
 	Essentially, this represents the offset between the sprite and the a->collision box, since
 	even though we're *checking* a->collision, we're still *moving* spr*/
-	int lOffset = a->current.posX - a->collision.x;
-	int rOffset = a->current.posX - (a->collision.x + a->collision.w);
+	int lOffset = a->current.posX - a->collision.x,
+	    rOffset = a->current.posX - (a->collision.x + a->collision.w);
 	a->updateRects();
 	if(a->collision.x <= left){
 		a->encounterWall(0);

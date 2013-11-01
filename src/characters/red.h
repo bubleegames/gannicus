@@ -20,7 +20,7 @@ public:
 	redCancel(string, string);
 	bool check(const status&);
 	int arbitraryPoll(int, int);
-	void execute(status&);
+	action * execute(status&);
 };
 
 class redSuper : virtual public special{

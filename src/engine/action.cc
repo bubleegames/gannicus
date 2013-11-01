@@ -578,6 +578,10 @@ void action::parseProperties(string buffer, bool counter)
 			if(counter) CHStats[ch].floorBounce = 1;
 			else stats[ch].floorBounce = 1;
 			break;
+		case 'A':
+			if(counter) CHStats[ch].ceilingBounce = 1;
+			else stats[ch].ceilingBounce = 1;
+			break;
 		case '_':
 			if(counter) CHStats[ch].slide = 1;
 			else stats[ch].slide = 1;
@@ -767,6 +771,7 @@ hStat action::pollStats(int f, bool CH)
 			s.stick = CHStats[c].stick;
 			s.ghostHit = CHStats[c].ghostHit;
 			s.prorate = CHStats[c].prorate;
+			s.ceilingBounce = CHStats[c].ceilingBounce;
 		} else {
 			s.launch = stats[c].launch;
 			s.hover = stats[c].hover;
@@ -776,6 +781,7 @@ hStat action::pollStats(int f, bool CH)
 			s.stick = stats[c].stick;
 			s.ghostHit = stats[c].ghostHit;
 			s.prorate = stats[c].prorate;
+			s.ceilingBounce = stats[c].ceilingBounce;
 		}
 		s.hitsProjectile = stats[c].hitsProjectile;
 		s.turnsProjectile = stats[c].turnsProjectile;
@@ -836,11 +842,14 @@ void action::step(status &current)
 	if(modifier && basis.move){
 		basis.frame++;
 		if(basis.move && basis.frame >= basis.move->frames){
-			if(basis.move->next) basis.move = basis.move->next;
-			else basis.move = nullptr;
-			basis.frame = 0;
-			basis.connect = 0;
-			basis.hit = 0;
+			if(basis.move->next)
+				basis.move = basis.move->next->execute(basis);
+			else {
+				basis.move = nullptr;
+				basis.frame = 0;
+				basis.connect = 0;
+				basis.hit = 0;
+			}
 		}
 	}
 }
@@ -884,7 +893,7 @@ void action::playSound(int channel)
 	Mix_PlayChannel(channel, soundClip, 0);
 }
 
-void action::execute(status &current)
+action * action::execute(status &current)
 {
 	current.absorbedHits = 0;
 	current.meter[1] -= cost;
@@ -899,6 +908,7 @@ void action::execute(status &current)
 	current.frame = 0;
 	current.connect = 0;
 	current.hit = 0;
+	return this;
 }
 
 void action::feed(action * c, int code, int i)
@@ -1005,6 +1015,7 @@ hStat::hStat(const hStat& o)
 	this->ghostHit = o.ghostHit;
 	this->wallBounce = o.wallBounce;
 	this->floorBounce = o.floorBounce;
+	this->ceilingBounce = o.ceilingBounce;
 	this->slide = o.slide;
 	this->stick = o.stick;
 	this->hitsProjectile = o.hitsProjectile;

@@ -380,6 +380,7 @@ status::status()
 	elasticY = false;
 	slide = false;
 	stick = false;
+	rebound = false;
 	hover = 0;
 	opponent = nullptr;
 }
@@ -411,6 +412,7 @@ status::status(const status & o)
 	elasticY = o.elasticY;
 	slide = o.slide;
 	stick = o.stick;
+	rebound = o.rebound;
 	hover = o.hover;
 	opponent = o.opponent;
 }

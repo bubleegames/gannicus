@@ -565,9 +565,9 @@ void instance::land()
 			for(unsigned int i = 0; i < momentum.size(); i++){
 				if(momentum[i].y > 0) momentum.erase(momentum.begin()+i);
 			}
+			current.aerial = false;
 			pick()->land(current);
 			current.reversal = nullptr;
-			current.aerial = false;
 			updateRects();
 			current.deltaX = 0;
 		}
@@ -611,13 +611,14 @@ void instance::step()
 	}
 	if(pick()->death(current)) current.dead = true;
 	if(current.connect < 0) current.connect = 0;
-	if(current.posX > 4200 || current.posX < -1000 || current.posY < -1000 || current.posY > 3000) current.age = pick()->lifespan - 1;
-	else if(current.posX > 3200 || current.posX < 0 || current.posY < 0 || current.posY > 2000) current.age = pick()->lifespan - 240;
 	if(!current.freeze){ 
 		if(current.move->flip == current.frame) flip();
 		current.age++;
 	}
 	for(unsigned int i = 0; i < current.offspring.size(); i++){
+		if(current.offspring[i]->current.posX > 3700 || current.offspring[i]->current.posX < -500 || 
+		   current.offspring[i]->current.posY < -200 || current.offspring[i]->current.posY > 2500) 
+			current.offspring[i]->current.age = current.offspring[i]->pick()->lifespan - 240;
 		if(current.offspring[i]->current.move == current.offspring[i]->pick()->die){
 			current.offspring.erase(current.offspring.begin()+i--);
 		}
@@ -630,7 +631,7 @@ void instance::step()
 			current.hit = current.move->basis.hit;
 			current.move = current.move->basis.move;
 		} else {
-			if(current.move->next) current.move = current.move->next;
+			if(current.move->next) current.move = current.move->next->execute(current);
 			else neutralize();
 		}
 	}
@@ -647,13 +648,13 @@ void instance::neutralize()
 
 void instance::flip()
 {
-		if(current.facing == -1){
-			current.posX += collision.x - (current.posX + (current.posX - collision.x - collision.w));
-			current.facing = 1;
-		} else { 
-			current.posX += (collision.w + collision.x) - current.posX*2 + collision.x;
-			current.facing = -1;
-		}
+	if(current.facing == -1){
+		current.posX += collision.x - (current.posX + (current.posX - collision.x - collision.w));
+		current.facing = 1;
+	} else { 
+		current.posX += (collision.w + collision.x) - current.posX*2 + collision.x;
+		current.facing = -1;
+	}
 }
 
 void instance::checkFacing(instance * other)
@@ -688,10 +689,7 @@ int instance::passSignal(int sig)
 		action * a; 
 		a = pick()->moveSignal(current.age);
 		if(a != nullptr){
-			current.move = a;
-			current.frame = 0;
-			current.connect = 0;
-			current.hit = 0;
+			current.move = a->execute(current);
 			return 1;
 		} else return 0;
 		break;
@@ -923,7 +921,9 @@ int player::takeHit(int combo, hStat & s)
 			current.meter[4] = 0;
 		}
 		momentum.push_back(v);
-		if(current.aerial && s.hover) current.hover = s.hover;
+		if(current.aerial && s.hover){
+			current.hover = s.hover;
+		}
 		else current.hover = 0;
 		if(current.aerial && s.wallBounce) current.elasticX = true;
 		else current.elasticX = false;
@@ -931,15 +931,13 @@ int player::takeHit(int combo, hStat & s)
 		else current.elasticY = false;
 		if(current.aerial && s.slide) current.slide = true;
 		else current.slide = false;
+		if(s.ceilingBounce) current.rebound = true;
 		if(current.aerial && s.stick) current.stick = true;
 		else current.stick = false;
 	}
 	current.prox = tempProx;
 	if(current.move == pick()->die){
 		current.bufferedMove = nullptr;
-		current.frame = 0;
-		current.connect = 0;
-		current.hit = 0;
 	}
 	updateRects();
 	if(s.ghostHit) return 0;
