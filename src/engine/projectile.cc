@@ -86,7 +86,9 @@ int pet::takeHit(status &current, hStat &s, int blockType, int &hitType)
 int projectile::takeHit(status &current, hStat &s, int blockType, int &hitType)
 {
 	if(s.killsProjectile || current.move->hittable){ 
-		current.move = die->execute(current);
+		if (current.move->takeHit(s, blockType, current) == 1){
+			current.move = die->execute(current);
+		}
 		return 1;
 	} else return 0;
 }
