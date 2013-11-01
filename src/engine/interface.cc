@@ -1298,6 +1298,14 @@ void SaltAndBone::resolveThrows()
 	}
 }
 
+void SaltAndBone::scaleDamage(int &d, int ID)
+{
+	bool actuallyDoesDamage = (d != 0);
+	d *= prorate[ID];
+	d -= combo[ID];
+	if(actuallyDoesDamage && d == 0) d = 1;
+}
+
 void SaltAndBone::resolveHits()
 {
 	vector<hStat> s(things.size());
@@ -1352,9 +1360,7 @@ void SaltAndBone::resolveHits()
 	for(unsigned int i = 0; i < things.size(); i++){ 
 		if(taken[i]){
 			int health = things[things[i]->ID-1]->current.meter[0];
-			bool actuallyDoesDamage = (s[hitBy[i]].damage != 0);
-			s[hitBy[i]].damage *= prorate[things[hitBy[i]]->ID-1];
-			if(actuallyDoesDamage && s[hitBy[i]].damage == 0) s[hitBy[i]].damage = 1;
+			scaleDamage(s[hitBy[i]].damage, things[hitBy[i]]->ID-1);
 			action * b = things[i]->current.move;
 			bool wasair = things[i]->current.aerial;
 			hit[hitBy[i]] = things[i]->takeHit(combo[things[hitBy[i]]->ID-1], s[hitBy[i]]);
@@ -1367,13 +1373,14 @@ void SaltAndBone::resolveHits()
 					}
 				}
 				if(things[i]->particleType == -2){
+
 					hStat parryHit;
 					parryHit.damage = s[hitBy[i]].chip ? s[hitBy[i]].chip : s[hitBy[i]].damage/5;
 					parryHit.ghostHit = true;
 					parryHit.stun = 0;
 					parryHit.push = s[hitBy[i]].push;
 					if(things[i]->current.aerial){
-						parryHit.push += (P[things[hitBy[i]]->ID-1]->current.aerial) ? s[hitBy[i]].blowback*5 : s[hitBy[i]].blowback;
+						parryHit.push += (P[things[hitBy[i]]->ID-1]->current.aerial) ? s[hitBy[i]].blowback : s[hitBy[i]].blowback*5;
 					}
 					P[things[hitBy[i]]->ID-1]->takeHit(combo[i], parryHit);
 					s[hitBy[i]].pause = 0;

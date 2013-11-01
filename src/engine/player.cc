@@ -880,10 +880,6 @@ int player::takeHit(int combo, hStat & s)
 	SDL_Rect v = {0, 0, 1, 0};
 	action * temp = nullptr;
 	current.reversal = nullptr;
-	if(s.damage > 0){
-		if(combo >= s.damage) s.damage = 1;
-		else s.damage -= combo;
-	}
 	s.untech -= combo;
 	int f;
 	if(current.slide) s.lift += 15 - abs(s.lift)/4;

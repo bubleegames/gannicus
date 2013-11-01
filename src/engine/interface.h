@@ -18,6 +18,7 @@ public:
 	virtual bool screenInit(int, int);
 	virtual void processInput(SDL_Event&);
 	virtual void initialConfig(int);
+	virtual void scaleDamage(int&, int) {}
 	virtual void unitCollision(instance*, instance*);
 	virtual void genInput();
 	virtual int drawGlyph(string, int, int, int, int, int);
@@ -44,6 +45,7 @@ public:
 	virtual void initShaders();
 	virtual void loadAssets();
 	virtual void handleArgs(vector<string>);
+	virtual void scaleDamage(int&, int);
 	void processInput(SDL_Event&);
 	void createPlayers();
 	void createPlayers(string);
