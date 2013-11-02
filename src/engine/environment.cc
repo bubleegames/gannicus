@@ -58,6 +58,8 @@ void environment::airCheck(instance * a)
 
 void environment::enforce(instance * a)
 {
+	if(a->current.hover > 0)
+		a->momentum.push_back({0, (Sint16)(a->current.deltaY <= 0 ? -a->current.deltaY - physics[0]->y : 0), 0, 0});
 	for(auto& i:physics){
 		if(a->validate(i->ID, i->effectCode)) i->enforce(*a);
 	}
