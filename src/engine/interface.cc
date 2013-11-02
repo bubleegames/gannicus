@@ -1300,10 +1300,12 @@ void SaltAndBone::resolveThrows()
 
 void SaltAndBone::scaleDamage(int &d, int ID)
 {
-	bool actuallyDoesDamage = (d != 0);
+	bool actuallyDoesDamage = (d > 0);
 	d *= prorate[ID];
-	d -= combo[ID];
-	if(actuallyDoesDamage && d == 0) d = 1;
+	if(actuallyDoesDamage){
+		d -= combo[ID];
+		if(d < 1) d = 1;
+	}
 }
 
 void SaltAndBone::resolveHits()
