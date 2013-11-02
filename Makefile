@@ -5,7 +5,7 @@ default: salt
 all: bmpout salt 
 salt: gannicus characters src/game.cc
 	$(CC) $(CFLAGS) $(LINKER) *.o src/game.cc -o salt
-bmpout: characters gannicus src/bmp.cc
+bmpout: gannicus src/bmp.cc
 	$(CC) $(CFLAGS) $(LINKER) *.o src/bmp.cc -o bmpout
 characters: src/characters/*.cc src/charlist.h
 	$(CC) $(CFLAGS) $(LINKER) -c src/characters/*.cc 
