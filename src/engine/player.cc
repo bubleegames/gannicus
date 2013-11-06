@@ -474,6 +474,7 @@ void instance::combineDelta()
 		}
 		else momentum[i].w--;
 	}
+	if(current.hover > 0 && current.deltaY < 0) current.deltaY = 0;
 	current.posX += current.deltaX;
 	current.posY += current.deltaY;
 
