@@ -28,13 +28,7 @@ SaltAndBone::SaltAndBone()
 	ifstream read;
 
 	/*Initialize some pseudo-constants*/
-	env.screenWidth = 1600; /*screen{Width,Height} describe the size of the window holding the game.*/
-	env.screenHeight = 900;
 	screen = nullptr; /*The screen gives a partial view of the env.background, which is the area available for character movement.*/
-	env.bg.w = 3200;
-	env.bg.h = 1800;
-	env.floor = 50; /*Value of the env.floor. This is the maximum distance downward that characters can travel.*/
-	env.wall = 50; /*The size of the offset at which characters start to scroll the env.background, and get stuck.*/
 	menuMusic = nullptr;
 
 	read.open(".config/settings.conf");
@@ -130,7 +124,7 @@ void SaltAndBone::loadMatchBackground()
 	if(!killTimer && scalingFactor > .8) env.background = aux::load_texture("content/stages/" + to_string(selection[0]) + "/bg.png");
 	else {
 		switch (selection[0]){
-		case 1: 
+		case 1:
 			env.bgR = 1.0;
 			env.bgG = 0.0;
 			env.bgB = 0.0;

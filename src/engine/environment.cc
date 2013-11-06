@@ -3,9 +3,11 @@
 #include <utility>
 
 using std::move;
+using std::ifstream;
 
 environment::environment()
 {
+	load("world");
 	auto gravity = make_shared<globalForce>();
 	gravity->x = 0;
 	gravity->y = -6;
@@ -17,6 +19,37 @@ environment::environment()
 	gravity->current.posY = 0;
 	gravity->length = -1;
 	physics.push_back(gravity);
+}
+
+void environment::load(string name)
+{
+	ifstream read;
+	read.open("content/stages/"+name+"/"+name+".st");
+	char buffer[1024];
+	do {
+		read.getline(buffer, 1000);
+		setParameter(buffer);
+	} while(!read.eof());
+	buffer[0] = '\0';
+}
+
+void environment::setParameter(string param)
+{
+	tokenizer t(param, "\t:\n");
+	if(t() == "Name"){
+	} else if (t.current() == "Camera") {
+		screenWidth = stoi(t(" x:\n\t"));
+		screenHeight = stoi(t());
+		return;
+	} else if(t.current() == "Bounds") {
+		wall = stoi(t(" x:\n\t"));
+		floor = stoi(t());
+		return;
+	} else if (t.current() == "Size") {
+		bg.w = stoi(t(" x:\n\t"));
+		bg.h = stoi(t());
+		return;
+	}
 }
 
 void environment::cleanup()
@@ -110,5 +143,4 @@ void environment::checkCorners(instance * a)
 	} else a->current.rCorner = 0;
 	a->updateRects(); //Update rectangles or the next a->collision check will be wrong.
 }
-
 

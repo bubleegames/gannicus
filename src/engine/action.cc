@@ -153,7 +153,6 @@ void action::build(string dir, string n)
 	fileName = n;
 	ifstream read;
 	char buffer[1024];
-	char savedBuffer[1024];
 	buffer[0] = '\0';
 
 	read.open("content/characters/"+dir+"/"+fileName+".mv");
@@ -165,7 +164,7 @@ void action::build(string dir, string n)
 
 	do {
 		read.getline(buffer, 1000);
-		strcpy(savedBuffer, buffer);
+		savedBuffer = buffer;
 	} while (setParameter(buffer));
 
 	for(int i = 0; i < frames; i++){
@@ -222,9 +221,9 @@ void action::loadMisc(string dir)
 //	soundClip = Mix_LoadWAV(string("content/characters/"+dir+"/"+fileName+".ogg").c_str());
 }
 
-bool action::setParameter(string buffer)
+bool action::setParameter(string param)
 {
-	tokenizer t(buffer, "\t:+\n");
+	tokenizer t(param, "\t:+\n");
 	if(t() == "Name"){;
 		name += t();
 		return true;
@@ -262,10 +261,10 @@ bool action::setParameter(string buffer)
 		maxHold = stoi(t());
 		return true;
 	} else if (t.current() == "Properties") {
-		parseProperties(buffer, false);
+		parseProperties(param, false);
 		return true;
 	} else if (t.current() == "Counterhit") {
-		parseProperties(buffer, true);
+		parseProperties(param, true);
 		return true;
 	} else if (t.current() == "Hits") {
 		hits = stoi(t("\t: \n"));
@@ -379,14 +378,14 @@ bool action::setParameter(string buffer)
 		return true;
 	} else if (t.current() == "Damage") {
 		for(int i = 0; i < hits; i++){
-			if(buffer[0] == '+')
+			if(param[0] == '+')
 				CHStats[i].damage = stoi(t("\t: \n"));
 			else stats[i].damage = stoi(t("\t: \n"));
 		}
 		return true;
 	} else if (t.current() == "Connects") {
 		for(int i = 0; i < hits; i++){
-			if(buffer[0] == '+')
+			if(param[0] == '+')
 				CHStats[i].connect = stoi(t("\t: \n"));
 			else stats[i].connect = stoi(t("\t: \n"));
 		}
@@ -398,42 +397,42 @@ bool action::setParameter(string buffer)
 		return true;
 	} else if (t.current() == "Prorate") {
 		for(int i = 0; i < hits; i++){
-			if(buffer[0] == '+')
+			if(param[0] == '+')
 				CHStats[i].prorate = stof(t("\t: \n"));
 			else stats[i].prorate = stof(t("\t: \n"));
 		}
 		return true;
 	} else if (t.current() == "Push") {
 		for(int i = 0; i < hits; i++){
-			if(buffer[0] == '+') 
+			if(param[0] == '+') 
 				CHStats[i].push = stoi(t("\t: \n"));
 			else stats[i].push = stoi(t("\t: \n"));
 		}
 		return true;
 	} else if (t.current() == "Lift") {
 		for(int i = 0; i < hits; i++){
-			if(buffer[0] == '+')
+			if(param[0] == '+')
 				CHStats[i].lift = stoi(t("\t: \n"));
 			else stats[i].lift = stoi(t("\t: \n"));
 		}
 		return true;
 	} else if (t.current() == "Float") {
 		for(int i = 0; i < hits; i++){
-			if(buffer[0] == '+')
+			if(param[0] == '+')
 				CHStats[i].hover = stoi(t("\t: \n"));
 			else stats[i].hover = stoi(t("\t: \n"));
 		}
 		return true;
 	} else if (t.current() == "Blowback") {
 		for(int i = 0; i < hits; i++){
-			if(buffer[0] == '+')
+			if(param[0] == '+')
 				CHStats[i].blowback = stoi(t("\t: \n"));
 			else stats[i].blowback = stoi(t("\t: \n"));
 		}
 		return true;
 	} else if (t.current() == "Stun") {
 		for(int i = 0; i < hits; i++){
-			if(buffer[0] == '+')
+			if(param[0] == '+')
 				CHStats[i].stun = stoi(t("\t: \n"));
 			else {
 				stats[i].stun = stoi(t("\t: \n"));
@@ -443,7 +442,7 @@ bool action::setParameter(string buffer)
 		return true;
 	} else if (t.current() == "Pause") {
 		for(int i = 0; i < hits; i++){
-			if(buffer[0] == '+')
+			if(param[0] == '+')
 				CHStats[i].pause = stoi(t("\t: \n"));
 			else {
 				stats[i].pause = stoi(t("\t: \n"));
@@ -452,7 +451,7 @@ bool action::setParameter(string buffer)
 		return true;
 	} else if (t.current() == "Launch") {
 		for(int i = 0; i < hits; i++){
-			if(buffer[0] == '+')
+			if(param[0] == '+')
 				CHStats[i].initialLaunch = stoi(t("\t: \n"));
 			else{
 				stats[i].initialLaunch = stoi(t("\t: \n"));
@@ -462,7 +461,7 @@ bool action::setParameter(string buffer)
 		return true;
 	} else if (t.current() == "Untech") {
 		for(int i = 0; i < hits; i++){
-			if(buffer[0] == '+')
+			if(param[0] == '+')
 				CHStats[i].untech = stoi(t("\t: \n"));
 			else{
 				stats[i].untech = stoi(t("\t: \n"));
@@ -555,13 +554,13 @@ bool action::setParameter(string buffer)
 	} else return 0;
 }
 
-void action::parseProperties(string buffer, bool counter)
+void action::parseProperties(string properties, bool counter)
 {
 	int ch = 0;
 	unsigned int i = 0;
-	while(buffer[i++] != ':'); i++;
-	for(; i < buffer.size(); i++){
-		switch(buffer[i]){
+	while(properties[i++] != ':'); i++;
+	for(; i < properties.size(); i++){
+		switch(properties[i]){
 		case 'a':
 			if(counter) CHStats[ch].autoCorrects = 1;
 			else stats[ch].autoCorrects = 1;
