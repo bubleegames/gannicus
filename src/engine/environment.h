@@ -17,7 +17,7 @@ public:
 	void enforceFloor(instance *);
 	void checkCorners(instance*);
 	void enforceBounds(instance*);
-	void readConfig(string);
+	void load(string);
 	void setParameter(string);
 	int screenWidth, screenHeight;
 	SDL_Rect bg;

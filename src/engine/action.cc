@@ -164,7 +164,6 @@ void action::build(string dir, string n)
 
 	do {
 		read.getline(buffer, 1000);
-		savedBuffer = buffer;
 	} while (setParameter(buffer));
 
 	for(int i = 0; i < frames; i++){
