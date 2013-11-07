@@ -323,41 +323,41 @@ void SaltAndBone::drawHUD()
 			play(0);
 			//Mix_PlayChannel(3, announceRound[l - 1], 0);
 		}
-		drawGlyph("Round " + to_string(currentRound), 0, 1600, 375, 150, 1);
+		drawGlyph("Round " + to_string(currentRound), 0, env.screenWidth, 375, 150, 1);
 	}
 	if(timer > 99 * 60 && timer < 99 * 60 + 31){ 
-		drawGlyph("FIGHT", 0, 1600, 375, 150, 1);
+		drawGlyph("FIGHT", 0, env.screenWidth, 375, 150, 1);
 		if(timer == 99 * 60 + 30)
 			Mix_PlayChannel(3, announceFight, 0);
 	}
 	if(roundEnd && endTimer > 5 * 60 - 31){ 
 		if(things[0]->current.meter[0] > 0 && things[1]->current.meter[0] > 0){
-			drawGlyph("TIME OUT", 0, 1600, 300, 200, 1);
+			drawGlyph("TIME OUT", 0, env.screenWidth, 300, 200, 1);
 			if(endTimer == 5 * 60 - 1)
 				Mix_PlayChannel(3, announceEnd[0], 0);
 		} else {
-			drawGlyph("DOWN", 0, 1600, 375, 150, 1);
+			drawGlyph("DOWN", 0, env.screenWidth, 375, 150, 1);
 			if(endTimer == 5 * 60 - 1)
 				Mix_PlayChannel(3, announceEnd[1], 0);
 		}
 	}
 	if(endTimer > 3 * 60 + 29 && endTimer < 4 * 60){ 
 		if(things[0]->current.meter[0] > things[1]->current.meter[0]){ 
-			drawGlyph(P[0]->pick()->name, 0, 1600, 300, 150, 1);
-			drawGlyph("Wins", 0, 1600, 450, 150, 1);
+			drawGlyph(P[0]->pick()->name, 0, env.screenWidth, 300, 150, 1);
+			drawGlyph("Wins", 0, env.screenWidth, 450, 150, 1);
 			if(endTimer == 4 * 60 - 1)
 				Mix_PlayChannel(3, announceWinner[selection[0]], 0);
 		} else if(things[1]->current.meter[0] > things[0]->current.meter[0]){
-			drawGlyph(P[1]->pick()->name, 0, 1600, 300, 150, 1);
-			drawGlyph("Wins", 0, 1600, 450, 150, 1);
+			drawGlyph(P[1]->pick()->name, 0, env.screenWidth, 300, 150, 1);
+			drawGlyph("Wins", 0, env.screenWidth, 450, 150, 1);
 			if(endTimer == 4 * 60 - 1)
 				Mix_PlayChannel(3, announceWinner[selection[1]], 0);
 		} else if(things[0]->current.meter[0] <= 0){ 
-			drawGlyph("Double KO", 0, 1600, 375, 150, 1);
+			drawGlyph("Double KO", 0, env.screenWidth, 375, 150, 1);
 			if(endTimer == 4 * 60 - 1)
 				Mix_PlayChannel(3, announceDraw[0], 0);
 		} else {
-		drawGlyph("Draw", 0, 1600, 375, 150, 1);
+		drawGlyph("Draw", 0, env.screenWidth, 375, 150, 1);
 		if(endTimer == 4 * 60 - 1)
 			Mix_PlayChannel(3, announceDraw[1], 0);
 		}
@@ -383,11 +383,11 @@ void SaltAndBone::drawPauseMenu()
 	glRectf(0.0, 0.0, (GLfloat)env.screenWidth, (GLfloat)env.screenHeight);
 	glEnable( GL_TEXTURE_2D );
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(pMenu == 1)*0.4);
-	drawGlyph("Unpause", 0, 1600, 360, 60, 1);
+	drawGlyph("Unpause", 0, env.screenWidth, 360, 60, 1);
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(pMenu == 2)*0.4);
-	drawGlyph("Character Select", 0, 1600, 420, 60, 1);
+	drawGlyph("Character Select", 0, env.screenWidth, 420, 60, 1);
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(pMenu == 3)*0.4);
-	drawGlyph("Quit Game", 0, 1600, 480, 60, 1);
+	drawGlyph("Quit Game", 0, env.screenWidth, 480, 60, 1);
 	glDisable( GL_TEXTURE_2D );
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
 }
@@ -398,11 +398,11 @@ void SaltAndBone::drawRematchMenu()
 	glRectf(0.0, 0.0, (GLfloat)env.screenWidth, (GLfloat)env.screenHeight);
 	glEnable( GL_TEXTURE_2D );
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(rMenu == 1)*0.4);
-	drawGlyph("Rematch", 0, 1600, 360, 60, 1);
+	drawGlyph("Rematch", 0, env.screenWidth, 360, 60, 1);
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(rMenu == 2)*0.4);
-	drawGlyph("Character Select", 0, 1600, 420, 60, 1);
+	drawGlyph("Character Select", 0, env.screenWidth, 420, 60, 1);
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(rMenu == 3)*0.4);
-	drawGlyph("Quit Game", 0, 1600, 480, 60, 1);
+	drawGlyph("Quit Game", 0, env.screenWidth, 480, 60, 1);
 	glDisable( GL_TEXTURE_2D );
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
 }

@@ -154,13 +154,7 @@ void player::roundInit()
 	particleLife = 0;
 	particleType = 0;
 	search = 0;
-	if(ID == 1){ 
-		current.facing = 1;
-		current.posX = 1400;
-	} else {
-		current.facing = -1;
-		current.posX = 1800;
-	}
+	current.facing = ID == 1 ? 1 : -1;
 	updateRects();
 }
 
@@ -505,7 +499,7 @@ bool player::stuck()
 	return (current.move == pick()->untech || current.move == pick()->die);
 }
 
-void instance::encounterWall(bool side)
+void instance::encounterWall(bool side, int wallPosition)
 {
 	if(side) {
 		if(current.elasticX){
@@ -513,7 +507,7 @@ void instance::encounterWall(bool side)
 			if(current.deltaX > 0) current.deltaX = -current.deltaX; 
 			current.elasticX = false;
 		}
-		if(collision.x + collision.w >= 3150){ //TODO: This is obviously kludgey to hardcode
+		if(collision.x + collision.w >= wallPosition){ //TODO: This is obviously kludgey to hardcode
 			if(current.facing == -1) current.rCorner = 1;
 			else {
 				current.posX--;
@@ -532,7 +526,7 @@ void instance::encounterWall(bool side)
 			if(current.deltaX < 0) current.deltaX = -current.deltaX;
 			current.elasticX = false;
 		}
-		if(collision.x <= 50){ //TODO: This is obviously kludgey to hardcode
+		if(collision.x <= wallPosition){ //TODO: This is obviously kludgey to hardcode
 			if(current.facing == 1) current.lCorner = 1;
 			else current.posX++;
 			if (current.stick) {

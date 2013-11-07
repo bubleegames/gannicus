@@ -271,12 +271,11 @@ void SaltAndBone::roundInit()
 	while(things.size() > P.size())
 		things.pop_back();
 	env.roundInit();
-	env.bg.x = 800;
-	env.bg.y = -900;
 
 	for(player* i:P){
-		i->current.posY = env.floor;
 		i->roundInit();
+		i->setPosition(env.screenWidth/2 + env.bg.x + i->collision.w * i->current.facing, env.floor);
+		i->updateRects();
 	}
 	/*Initialize input containers*/
 	initContainers();

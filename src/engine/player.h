@@ -56,7 +56,7 @@ public:
 	virtual void loadAssets();
 	virtual bool checkHit(SDL_Rect, SDL_Rect);
 	virtual void land();
-	virtual void encounterWall(bool);
+	virtual void encounterWall(bool, int);
 	void enforceForce(force&);
 	int middle();
 	void flip();

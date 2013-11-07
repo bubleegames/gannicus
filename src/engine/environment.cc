@@ -77,6 +77,8 @@ void environment::cleanup()
 
 void environment::roundInit()
 {
+	bg.x = bg.w/2 - screenWidth/2;
+	bg.y = -screenHeight;
 	while(physics.size() > 1)
 		physics.pop_back();
 }
@@ -132,12 +134,12 @@ void environment::checkCorners(instance * a)
 	    rOffset = a->current.posX - (a->collision.x + a->collision.w);
 	a->updateRects();
 	if(a->collision.x <= left){
-		a->encounterWall(0);
+		a->encounterWall(0, wall);
 		if(a->collision.x < left)
 			a->current.posX = left + lOffset;
 	} else a->current.lCorner = 0;
 	if(a->collision.x + a->collision.w >= right){
-		a->encounterWall(1);
+		a->encounterWall(1, wall);
 		if(a->collision.x + a->collision.w > right)
 			a->current.posX = right + rOffset;
 	} else a->current.rCorner = 0;
