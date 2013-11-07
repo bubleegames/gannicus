@@ -479,7 +479,7 @@ void SaltAndBone::resolveCamera()
 	 *appropriately, attempting to adjust to approximately be looking at the point in the middle of the two characters.
 	 */
 	int dx = things[1]->dragBG(env.bg.x + env.wall, env.bg.x + env.screenWidth - env.wall) + things[0]->dragBG(env.bg.x + env.wall, env.bg.x + env.screenWidth - env.wall);
-	int dy = 900;
+	int dy = env.screenHeight;
 
 	/*If a character leaves the camera boundaries, follow them immediately*/
 	if(!dx){
