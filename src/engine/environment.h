@@ -19,6 +19,9 @@ public:
 	void enforceBounds(instance*);
 	void load(string);
 	void setParameter(string);
+	int spawn(vector<instance*>);
+
+	vector<tuple<int,int>> spawnPoints;
 	int screenWidth, screenHeight;
 	SDL_Rect bg;
 	GLuint background;

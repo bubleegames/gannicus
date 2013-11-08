@@ -2,6 +2,7 @@
 #include "player.h"
 #include <utility>
 
+using std::get;
 using std::move;
 using std::ifstream;
 
@@ -19,6 +20,15 @@ environment::environment()
 	gravity->current.posY = 0;
 	gravity->length = -1;
 	physics.push_back(gravity);
+}
+
+int environment::spawn(vector <instance*> things)
+{
+	for(unsigned int i = 0; i < spawnPoints.size(); i++){
+		if(i >= things.size()) break;
+		things[i]->setPosition(get<0>(spawnPoints[i]), get<1>(spawnPoints[i]));
+	}
+	return things.size() - spawnPoints.size();
 }
 
 void environment::load(string name)
@@ -48,6 +58,13 @@ void environment::setParameter(string param)
 	} else if (t.current() == "Size") {
 		bg.w = stoi(t(" x:\n\t"));
 		bg.h = stoi(t());
+		return;
+	} else if (t.current() == "SpawnPoints") {
+		while(t().size()){
+			tokenizer coords(t.current(), " \t,x");
+			int x = stoi(coords()), y = stoi(coords());
+			spawnPoints.push_back(tuple<int,int>{x, y});
+		}
 		return;
 	}
 }
