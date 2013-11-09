@@ -357,9 +357,20 @@ void fightingGame::drawMeters()
 {
 	glDisable( GL_TEXTURE_2D );
 
+	vector<SDL_Rect> r (numRounds);
 	for(player *i:P){
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		i->drawMeters(numRounds);
+		for(int j = 0; j < numRounds; j++){
+			r[j].y = 24; r[j].w = 20; r[j].h = 10;
+			r[j].x = env.screenWidth / 2 + (i->ID == 1 ? -120 - 24 * j : 100 + 24 * j);
+		}
+		for(int	j = 0; j < numRounds; j++){
+			if(i->rounds > j) glColor4f(0.0f, 1.0f, 1.0f, 1.0f);
+			else glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+			glRectf((GLfloat)(r[j].x), (GLfloat)(r[j].y), (GLfloat)(r[j].x + r[j].w), (GLfloat)(r[j].y + r[j].h));
+		}
+		i->pick()->drawMeters(i->ID, i->current);
+		glFlush();
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	glEnable( GL_TEXTURE_2D );
@@ -395,30 +406,12 @@ void SaltAndBone::drawRematchMenu()
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
 }
 
-void player::drawMeters(int n)
+void character::drawMeters(int ID, status &current)
 {
-	vector<SDL_Rect> r (n);
-	for(int i = 0; i < n; i++){
-		r[i].y = 24; r[i].w = 20; r[i].h = 10;
-		if(ID == 1) r[i].x = 680 - 24 * i; 
-		else r[i].x = 900 + 24 * i;
-	}
-	for(int i = 0; i < n; i++){
-		if(rounds > i) glColor4f(0.0f, 1.0f, 1.0f, 1.0f);
-		else glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-		glRectf((GLfloat)(r[i].x), (GLfloat)(r[i].y), (GLfloat)(r[i].x + r[i].w), (GLfloat)(r[i].y + r[i].h));
-	}
-	glFlush();
-	int h = 0;
+	int hidden = 0;
 	if(current.move){
-		if(current.move->hidesMeter) h = current.move->cost;
+		hidden = current.move->hidesMeter ? current.move->cost : 0;
 	}
-	pick()->drawMeters(ID, h, current);
-	glFlush();
-}
-
-void character::drawMeters(int ID, int hidden, status &current)
-{
 	SDL_Rect m, h, g;
 	if(current.meter[0] >= 0) h.w = current.meter[0]; else h.w = 1; 
 

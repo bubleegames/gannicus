@@ -62,10 +62,10 @@ action * yellow::createMove(string key)
 	return m;
 }
 
-void yellow::drawMeters(int ID, int hidden, status &current)
+void yellow::drawMeters(int ID, status &current)
 {
 	int color;
-	character::drawMeters(ID, hidden, current);
+	character::drawMeters(ID, current);
 	SDL_Rect c1;
 	if(current.meter[5] >= 0){
 		c1.w = current.meter[5]/3*2; 

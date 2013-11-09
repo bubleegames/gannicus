@@ -69,7 +69,7 @@ public:
 	virtual int assessStun(status&, hStat&);
 	virtual int comboState(action *);
 	virtual action * neutralize(status&);
-	virtual void drawMeters(int, int, status&);
+	virtual void drawMeters(int, status&);
 	virtual void init(status&);
 	virtual int checkBlocking(status&, deque<int>);
 	virtual void block(status&, int, bool);

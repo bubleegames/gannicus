@@ -90,7 +90,6 @@ public:
 
 	virtual void readEvent(SDL_Event &, frame &);
 	virtual void readScripts();
-	virtual void drawMeters(int);
 	virtual void roundInit();
 	virtual void macroCheck(SDL_Event&);
 	virtual int takeHit(int, hStat&);
