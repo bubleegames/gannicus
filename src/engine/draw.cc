@@ -266,7 +266,7 @@ void SaltAndBone::drawHUD()
 	int currentRound = P[0]->rounds + P[1]->rounds + 1;
 	int timeSecs = timer / 60;
 	if(timeSecs < 10) glColor4f(1.0, 0.0, 0.0, 1.0);
-	drawGlyph((timeSecs > 99 ? "0" : "") + to_string(timeSecs > 99 ? 99 : timeSecs), 700, 200, 0, 90, 1);
+	drawGlyph((timeSecs < 10 ? "0" : "") + to_string(timeSecs > 99 ? 99 : timeSecs), 700, 200, 0, 90, 1);
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	for(unsigned int i = 0; i < P.size(); i++){
