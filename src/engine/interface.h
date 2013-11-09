@@ -15,6 +15,7 @@ public:
 	virtual void handleArgs(vector<string>) {}
 	virtual bool screenInit();
 	virtual void init();
+	virtual void drawMeters();
 	virtual bool screenInit(int, int);
 	virtual void processInput(SDL_Event&);
 	virtual void initialConfig(int);
@@ -32,6 +33,10 @@ public:
 	float scalingFactor, sf;
 	bool scripting:1;
 	bool initd:1;
+	vector<bool> select;
+	vector<int> selection;
+	int numRounds;
+	int numChars;
 	environment env;
 };
 
@@ -89,8 +94,6 @@ public:
 	void writeMatchupChart();
 	void writeImage(string, int, action*);
 
-	vector<bool> select;
-	vector<int> selection;
 	sample call[2];
 	int menu[2];
 	int configMenu[2];
@@ -102,7 +105,6 @@ public:
 	bool single:1;
 	bool analytics:1;
 	chart *stats;
-	int numRounds;
 
 	int musicVolume;
 	Mix_Music *matchMusic;
@@ -114,10 +116,8 @@ public:
 	Mix_Chunk *announceEnd[2];
 	Mix_Chunk *announceSelect;
 
-
 	script *replay;
 
-	int numChars;
 	GLuint selectScreen; 
 	SDL_Rect wheel;
 
