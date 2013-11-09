@@ -194,12 +194,12 @@ void SaltAndBone::drawGame()
 {
 	glPushMatrix();
 		glTranslatef(-env.bg.x, env.bg.y, 0);
-		if(killTimer || scalingFactor < .8 || env.background == 0){
+		//if(killTimer || scalingFactor < .8 || env.background == 0){
 			glColor4f(env.bgR, env.bgG, env.bgB, 0.5f);
 			glRectf(0, 0, env.bg.w, env.bg.h);
 			glEnable( GL_TEXTURE_2D );
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		} else {
+		/*} else {
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 			glEnable( GL_TEXTURE_2D );
 			glBindTexture(GL_TEXTURE_2D, env.background);
@@ -216,7 +216,7 @@ void SaltAndBone::drawGame()
 				glTexCoord2i(0, 1);
 				glVertex3f(0.0f, (GLfloat)(env.bg.h), 0.f);
 			glEnd();
-		}
+		}*/
 	glPopMatrix();
 	drawHUD();
 	glPushMatrix();

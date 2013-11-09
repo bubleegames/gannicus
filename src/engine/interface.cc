@@ -121,8 +121,8 @@ void SaltAndBone::createPlayers()
 
 void SaltAndBone::loadMatchBackground()
 {
-	if(!killTimer && scalingFactor > .8) env.background = aux::load_texture("content/stages/" + to_string(selection[0]) + "/bg.png");
-	else {
+	//if(!killTimer && scalingFactor >= 1.2)*/ env.background = aux::load_texture("content/stages/" + to_string(selection[0]) + "/bg.png");
+	//else {
 		switch (selection[0]){
 		case 1:
 			env.bgR = 1.0;
@@ -145,7 +145,7 @@ void SaltAndBone::loadMatchBackground()
 			env.bgB = 0.0;
 			break;
 		}
-	}
+	//}
 
 	if(selection[0] == selection[1]) 
 		matchMusic = Mix_LoadMUS("content/sound/Mirror.ogg");
@@ -1379,10 +1379,10 @@ void SaltAndBone::resolveHits()
 					s[hitBy[i]].pause = 0;
 				}
 				if(s[hitBy[i]].stun) combo[(i+1)%2] += hit[hitBy[i]];
+				env.enforceFloor(P[i]->current.opponent);
+				env.enforceBounds(P[i]->current.opponent);
+				env.checkCorners(P[i]->current.opponent);
 			}
-			env.enforceFloor(P[i]->current.opponent);
-			env.enforceBounds(P[i]->current.opponent);
-			env.checkCorners(P[i]->current.opponent);
 			if(things[i]->current.facing * things[hitBy[i]]->current.facing == 1) things[i]->invertVectors(1);
 			if(i < P.size()) damage[(i+1)%2] += health - P[i]->current.meter[0];
 		}
