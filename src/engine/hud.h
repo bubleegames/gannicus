@@ -28,7 +28,7 @@ public:
 
 	virtual void draw() {
 		glColor4f(R, G, B, A);
-		glRectf(x, y, (double)value / (double)maximum * w, h);
+		glRectf(x, y, x + (double)value / (double)maximum * w, y + h);
 	}
 
 	T value;
