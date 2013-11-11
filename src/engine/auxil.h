@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "span.h"
+#include "hud.h"
 
 #ifndef ___auxil
 #define ___auxil
@@ -50,7 +51,7 @@ class aux{
 struct status{
 	status();
 	status(const status&);
-	vector<int> meter;
+	vector<HUDMeter<int>> meter;
 	int mode;
 	SDL_Rect prox;
 	int posX, posY;

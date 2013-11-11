@@ -6,7 +6,7 @@ public:
 	red();
 	action * createMove(string);
 	void tick(status&);
-	vector<int> generateMeter();
+	vector<HUDMeter<int>> generateMeter();
 	void step(status&);
 	void init(status&);
 	vector<status> temporalBuffer;

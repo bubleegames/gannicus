@@ -320,7 +320,7 @@ void SaltAndBone::drawHUD()
 			Mix_PlayChannel(3, announceFight, 0);
 */	}
 	if(roundEnd && endTimer > 5 * 60 - 31){ 
-		if(things[0]->current.meter[0] > 0 && things[1]->current.meter[0] > 0){
+		if(things[0]->current.meter[0].value > 0 && things[1]->current.meter[0].value > 0){
 			drawGlyph("TIME OUT", 0, env.screenWidth, 300, 200, 1);
 /*			if(endTimer == 5 * 60 - 1)
 				Mix_PlayChannel(3, announceEnd[0], 0);
@@ -331,17 +331,17 @@ void SaltAndBone::drawHUD()
 */		}
 	}
 	if(endTimer > 3 * 60 + 29 && endTimer < 4 * 60){ 
-		if(things[0]->current.meter[0] > things[1]->current.meter[0]){ 
+		if(things[0]->current.meter[0].value > things[1]->current.meter[0].value){ 
 			drawGlyph(P[0]->pick()->name, 0, env.screenWidth, 300, 150, 1);
 			drawGlyph("Wins", 0, env.screenWidth, 450, 150, 1);
 /*			if(endTimer == 4 * 60 - 1)
 				Mix_PlayChannel(3, announceWinner[selection[0]], 0);
-*/		} else if(things[1]->current.meter[0] > things[0]->current.meter[0]){
+*/		} else if(things[1]->current.meter[0].value > things[0]->current.meter[0].value){
 			drawGlyph(P[1]->pick()->name, 0, env.screenWidth, 300, 150, 1);
 			drawGlyph("Wins", 0, env.screenWidth, 450, 150, 1);
 /*			if(endTimer == 4 * 60 - 1)
 				Mix_PlayChannel(3, announceWinner[selection[1]], 0);
-*/		} else if(things[0]->current.meter[0] <= 0){ 
+*/		} else if(things[0]->current.meter[0].value <= 0){ 
 			drawGlyph("Double KO", 0, env.screenWidth, 375, 150, 1);
 /*			if(endTimer == 4 * 60 - 1)
 				Mix_PlayChannel(3, announceDraw[0], 0);
@@ -358,19 +358,29 @@ void fightingGame::drawMeters()
 {
 	glDisable( GL_TEXTURE_2D );
 
-	vector<SDL_Rect> r (numRounds);
 	for(player *i:P){
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		vector<SDL_Rect> r (numRounds);
 		for(int j = 0; j < numRounds; j++){
 			r[j].y = 24; r[j].w = 20; r[j].h = 10;
 			r[j].x = env.screenWidth / 2 + (i->ID == 1 ? -120 - 24 * j : 100 + 24 * j);
 		}
-		for(int	j = 0; j < numRounds; j++){
+		for(int j = 0; j < numRounds; j++){
 			if(i->rounds > j) glColor4f(0.0f, 1.0f, 1.0f, 1.0f);
 			else glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 			glRectf((GLfloat)(r[j].x), (GLfloat)(r[j].y), (GLfloat)(r[j].x + r[j].w), (GLfloat)(r[j].y + r[j].h));
 		}
-		i->pick()->drawMeters(i->ID, i->current);
+		glPushMatrix();
+			glTranslatef(env.screenWidth/2, 0, 0);
+			glPushMatrix();
+				glScalef(env.screenWidth/2 * (i->ID == 1 ? -1 : 1), env.screenHeight, 0);
+				glDisable( GL_TEXTURE_2D );
+				for(HUDMeter <int> j:i->pick()->drawMeters(i->ID, i->current)){
+					j.draw();
+				}
+				glEnable( GL_TEXTURE_2D );
+			glPopMatrix();
+		glPopMatrix();
 		glFlush();
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	}
@@ -407,50 +417,42 @@ void SaltAndBone::drawRematchMenu()
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
 }
 
-void character::drawMeters(int ID, status &current)
+vector<HUDMeter<int>> character::drawMeters(int ID, status &current)
 {
+	vector<HUDMeter<int>> ret = current.meter;
 	int hidden = 0;
 	if(current.move){
 		hidden = current.move->hidesMeter ? current.move->cost : 0;
 	}
-	SDL_Rect m, h, g;
-	if(current.meter[0] >= 0) h.w = current.meter[0]; else h.w = 1; 
 
-	if(ID == 1) h.x = 100 + (600 - h.w); 
-	else h.x = 900;
-	h.h = 10;
-	h.y = 10;
+	ret[1].value += hidden;
+	if(hidden) ret[4].value = 0;
+	ret[4].x = ret[1].x + ret[1].w * (double)ret[1].value / (double)ret[1].maximum;
 
-	int R = 0, G = 255, B = 0;
-	if(current.meter[1] >= 0) m.w = (current.meter[1]+hidden)*2; else m.w = 0;
-	if(hidden) g.w = 0; else g.w = current.meter[4]*2;
-	if(ID == 1){ 
-		m.x = 100;
-		g.x = m.x + m.w;
-	} else {
-		m.x = 900 + (600 - m.w);
-		g.x = m.x - g.w;
-	}
-	m.h = 10; m.y = 860;
-	g.h = 10; g.y = 860;
+	ret[1].R = ret[1].value < ret[1].maximum / 2 ? 0.7 : 0;
+	ret[1].G = ret[1].value == ret[1].maximum ? 1.0 : 1.0 * ((ret[1].value / (ret[1].maximum / 4) % 2));
+	ret[1].B = ret[1].value < ret[1].maximum ? 1.0 : 0.0;
+	ret[4].R = ret[1].R;
+	ret[4].G = ret[1].G;
+	ret[4].B = ret[1].B;
 
-	G = (m.w == 600) ? 255 : ((m.w / 150) % 2);
-	if(m.w < 300) R = 191;
-	else if(m.w < 600) B = 255;
-	glColor4f(0.0f, 0.0f, 0.0f, 0.4f);
-	glRectf((GLfloat)(ID == 1 ? 100 : 900), (GLfloat)(h.y), (GLfloat)(ID == 1 ? 700 : 1500), (GLfloat)(h.y + h.h));
-	glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-	glRectf((GLfloat)(h.x), (GLfloat)(h.y), (GLfloat)(h.x + h.w), (GLfloat)(h.y + h.h));
-	glColor4f(0.0f, 0.0f, 0.0f, 0.4f);
-	glRectf((GLfloat)(ID == 1 ? 100 : 900), (GLfloat)(m.y), (GLfloat)(ID == 1 ? 700 : 1500), (GLfloat)(m.y + m.h));
-	glColor4f((float)R, (float)G, (float)B, 1.0f);
-	glRectf((GLfloat)(m.x), (GLfloat)(m.y), (GLfloat)(m.x + m.w), (GLfloat)(m.y + m.h));
-	glColor4f((float)R, (float)G, (float)B, 0.6f);
-	glRectf((GLfloat)(g.x), (GLfloat)(g.y), (GLfloat)(g.x + g.w), (GLfloat)(g.y + g.h));
+	ret[2] = ret[0];
+	ret[0].R = 0;
+	ret[0].G = 0;
+	ret[0].B = 0;
+	ret[0].A = .4;
+	ret[0].value = ret[0].maximum;
+
+	ret[3] = ret[1];
+	ret[1].R = 0;
+	ret[1].G = 0;
+	ret[1].B = 0;
+	ret[1].A = .4;
+	ret[1].value = ret[1].maximum;
+	return ret;
 }
 
 void instance::drawBoxen()
-			
 {
 	glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 	glPushMatrix();
@@ -460,9 +462,9 @@ void instance::drawBoxen()
 	for(unsigned int i = 0; i < hitreg.size(); i++){
 		glFlush();
 		glColor4f(0.0f, 1.0f, (GLfloat)(ID - 1.0f)/2.0f, 0.5f);
-		glNormal3f(0.0f, 0.0f, 1.0f);
+		glNormal3f(1.0f, 0.0f, 1.0f);
 		glPushMatrix();
-			glTranslatef(hitreg[i].x, -hitreg[i].y, 0);
+			glTranslatef(hitreg[i].x, -hitreg[i].y, 1);
 			glRectf(0.0f, 0.0f, (GLfloat)(hitreg[i].w), (GLfloat)(-hitreg[i].h));
 		glPopMatrix();
 	}

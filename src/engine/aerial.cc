@@ -54,14 +54,14 @@ airUtility::airUtility(string dir, string file)
 
 bool airUtility::check(const status& current) //Check to see if the action is possible right now.
 {
-	if(abs(delta[0][0].y) > abs(delta[0][0].x) && current.meter[2] < 1) return 0;
-	else if(abs(delta[0][0].y) < abs(delta[0][0].x) && current.meter[3] < 1) return 0;
+	if(abs(delta[0][0].y) > abs(delta[0][0].x) && current.meter[2].value < 1) return 0;
+	else if(abs(delta[0][0].y) < abs(delta[0][0].x) && current.meter[3].value < 1) return 0;
 	return action::check(current);
 }
 
 action * airUtility::execute(status &current){
-	if(abs(delta[0][0].y) > abs(delta[0][0].x)) current.meter[2]--;
-	else if(abs(delta[0][0].y) < abs(delta[0][0].x)) current.meter[3]--;
+	if(abs(delta[0][0].y) > abs(delta[0][0].x)) current.meter[2].value--;
+	else if(abs(delta[0][0].y) < abs(delta[0][0].x)) current.meter[3].value--;
 	return action::execute(current);
 }
 

@@ -26,9 +26,9 @@ looping::looping(string dir, string file)
 void looping::step(status &current)
 {
 	action::step(current);
-	if(current.frame && !current.meter[4]){
-		if(current.meter[1] + gain[0] < 300) current.meter[1] += gain[0];
-		else current.meter[1] = 300;
+	if(current.frame && !current.meter[4].value){
+		if(current.meter[1].value + gain[0] < 300) current.meter[1].value += gain[0];
+		else current.meter[1].value = 300;
 	}
 	if(current.frame >= frames) current.frame = 0;
 }

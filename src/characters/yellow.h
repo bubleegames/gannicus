@@ -4,13 +4,13 @@
 class yellow : public character {
 public:
 	yellow();
-	void resetAirOptions(vector<int>&);
+	void resetAirOptions(vector<HUDMeter<int>>&);
 	action * createMove(string);
 	int takeHit(status&, hStat&, int, int&);
-	void drawMeters(int, status&);
+	vector<HUDMeter<int>> drawMeters(int, status&);
 	void tick(status&);
 	void init(status&);
-	vector<int> generateMeter();
+	vector<HUDMeter<int>> generateMeter();
 	void step(status&);
 };
 

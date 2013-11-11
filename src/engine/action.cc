@@ -695,7 +695,7 @@ bool action::check(const status &current)
 				return 0;
 		}
 	}
-	if(cost && cost > current.meter[1])
+	if(cost && cost > current.meter[1].value)
 		return 0;
 	if(xRequisite > 0 && current.prox.w > xRequisite) 
 		return 0;
@@ -832,9 +832,9 @@ void action::step(status &current)
 {
 	if(current.connect == calcCurrentHit(current.frame)+1) 
 		current.connect += stats[current.connect-1].connect;
-	if(!current.frame && !current.meter[4]){
-		if(current.meter[1] + gain[0] < 300) current.meter[1] += gain[0];
-		else current.meter[1] = 300;
+	if(!current.frame && !current.meter[4].value){
+		if(current.meter[1].value + gain[0] < 300) current.meter[1].value += gain[0];
+		else current.meter[1].value = 300;
 	}
 	current.frame++;
 	if(modifier && basis.move){
@@ -861,15 +861,16 @@ int action::calcCurrentHit(int frame)
 	return b;
 }
 
-action * action::connect(vector<int> &meter, status &current)
+action * action::connect(status &current)
 {
-	if(modifier && basis.move) return basis.move->connect(meter, basis);
+	basis.meter = current.meter;
+	if(modifier && basis.move) return basis.move->connect(basis);
 	else if (hits == 0) return nullptr;
 	else {
 		current.connect = calcCurrentHit(current.frame)+1;
-		if(!meter[4]){
-			if(meter[1] + gain[current.connect] < 300) meter[1] += gain[current.connect];
-			else meter[1] = 300;
+		if(!current.meter[4].value){
+			if(current.meter[1].value + gain[current.connect] < 300) current.meter[1].value += gain[current.connect];
+			else current.meter[1].value = 300;
 		}
 		if(onConnect[current.connect-1] != nullptr){
 			return onConnect[current.connect-1];
@@ -894,8 +895,8 @@ void action::playSound(int channel)
 action * action::execute(status &current)
 {
 	current.absorbedHits = 0;
-	current.meter[1] -= cost;
-	current.meter[4] += cost;
+	current.meter[1].value -= cost;
+	current.meter[4].value += cost;
 	if(modifier){
 		if(current.move == nullptr) basis.move = nullptr;
 		basis.move = current.move;

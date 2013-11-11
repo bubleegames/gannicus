@@ -14,7 +14,7 @@ class avatar {
 public:
 	avatar() {}
 	virtual void setParam(int, int) {}
-	virtual vector<int> generateMeter();
+	virtual vector<HUDMeter<int>> generateMeter();
 	virtual void init(status&) = 0;
 	virtual action * moveSignal(int);
 	bool spriteCheck(action *&, int);
@@ -69,11 +69,11 @@ public:
 	virtual int assessStun(status&, hStat&);
 	virtual int comboState(action *);
 	virtual action * neutralize(status&);
-	virtual void drawMeters(int, status&);
+	virtual vector<HUDMeter<int>> drawMeters(int, status&);
 	virtual void init(status&);
 	virtual int checkBlocking(status&, deque<int>);
 	virtual void block(status&, int, bool);
-	virtual void resetAirOptions(vector<int>&);
+	virtual void resetAirOptions(vector<HUDMeter<int>>&);
 	virtual void land(status&);
 	virtual void sortMove(action *, string);
 	virtual int takeHit(status&, hStat&, int, int&);

@@ -451,10 +451,10 @@ void SaltAndBone::resolveCombos()
 				break;
 			case 0:
 				if(killTimer && !freeze){ 
-					P[i]->current.meter[0] = 600;
+					P[i]->current.meter[0].value = 600;
 					if(combo[i] == 0 && P[i]->current.opponent->cancelState() & 1){
-						P[i]->current.opponent->current.meter[1] = 300;
-						P[i]->current.opponent->current.meter[4] = 0;
+						P[i]->current.opponent->current.meter[1].value = 300;
+						P[i]->current.opponent->current.meter[4].value = 0;
 					}
 				}
 				combo[(i+1)%2] = 0;
@@ -706,12 +706,12 @@ void SaltAndBone::summonForces()
 /*Check if someone won*/
 void SaltAndBone::checkWin()
 {
-	if(P[0]->current.meter[0] == 0 || P[1]->current.meter[0] == 0 || timer == 0){
+	if(P[0]->current.meter[0].value == 0 || P[1]->current.meter[0].value == 0 || timer == 0){
 		roundEnd = true;
-		if(P[0]->current.meter[0] > P[1]->current.meter[0]) {
+		if(P[0]->current.meter[0].value > P[1]->current.meter[0].value) {
 			P[0]->rounds++;
 		}
-		else if(P[1]->current.meter[0] > P[0]->current.meter[0]) {
+		else if(P[1]->current.meter[0].value > P[0]->current.meter[0].value) {
 			P[1]->rounds++;
 		}
 		else {
@@ -1352,7 +1352,7 @@ void SaltAndBone::resolveHits()
 
 	for(unsigned int i = 0; i < things.size(); i++){ 
 		if(taken[i]){
-			int health = things[things[i]->ID-1]->current.meter[0];
+			int health = things[things[i]->ID-1]->current.meter[0].value;
 			scaleDamage(s[hitBy[i]].damage, things[hitBy[i]]->ID-1);
 			action * b = things[i]->current.move;
 			bool wasair = things[i]->current.aerial;
@@ -1384,7 +1384,7 @@ void SaltAndBone::resolveHits()
 				env.checkCorners(P[i]->current.opponent);
 			}
 			if(things[i]->current.facing * things[hitBy[i]]->current.facing == 1) things[i]->invertVectors(1);
-			if(i < P.size()) damage[(i+1)%2] += health - P[i]->current.meter[0];
+			if(i < P.size()) damage[(i+1)%2] += health - P[i]->current.meter[0].value;
 		}
 	}
 
@@ -1445,7 +1445,7 @@ void SaltAndBone::resolveHits()
 	}
 */
 	for(instance * i:P) {
-		if(i->current.meter[0] <= 0 && endTimer >= 5 * 60){ 
+		if(i->current.meter[0].value <= 0 && endTimer >= 5 * 60){ 
 			for(instance *j:things)
 				j->current.freeze = 30;
 			break;
