@@ -460,9 +460,9 @@ void instance::drawBoxen()
 	for(unsigned int i = 0; i < hitreg.size(); i++){
 		glFlush();
 		glColor4f(0.0f, 1.0f, (GLfloat)(ID - 1.0f)/2.0f, 0.5f);
-		glNormal3f(0.0f, 0.0f, 1.0f);
+		glNormal3f(1.0f, 0.0f, 1.0f);
 		glPushMatrix();
-			glTranslatef(hitreg[i].x, -hitreg[i].y, 0);
+			glTranslatef(hitreg[i].x, -hitreg[i].y, 1);
 			glRectf(0.0f, 0.0f, (GLfloat)(hitreg[i].w), (GLfloat)(-hitreg[i].h));
 		glPopMatrix();
 	}
