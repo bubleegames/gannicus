@@ -86,7 +86,7 @@ public:
 	virtual bool cancel(const status&); //Cancel allowed patternMatch. Essentially: is action Lvalue allowed given the current state of action Rvalue?
 	virtual void step(status&); //Step forward one frame. This only happens if we're not in freeze state
 	virtual action * land(status&) { return this; }
-	virtual action * connect(vector<int>&, status&);
+	virtual action * connect(status&);
 	virtual instance * spawn();
 	virtual int takeHit(hStat&, int, status&);
 	virtual bool canGuard(int);

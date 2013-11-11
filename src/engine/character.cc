@@ -440,7 +440,7 @@ instance * avatar::spawn(status &current)
 
 void avatar::connect(status &current)
 {
-	action * t = current.move->connect(current.meter, current);
+	action * t = current.move->connect(current);
 	if(t != nullptr){
 		current.bufferedMove = t;
 	}
@@ -545,15 +545,18 @@ int character::takeHit(status &current, hStat &s, int blockType, int &hitType)
 	} else freeze = s.pause;
 	current.absorbedHits++;
 	hitType = current.move->takeHit(s, blockType, current);
-	if(hitType == 1) current.meter[0] -= s.damage;
+
+
+
+	if(hitType == 1) current.meter[0].value -= s.damage;
 	else if(hitType > -2) {
-		current.meter[0] -= s.chip;
-		if(hitType == -1 && current.meter[0] <= 0){ 
-			current.meter[0] = 1;
+		current.meter[0].value -= s.chip;
+		if(hitType == -1 && current.meter[0].value <= 0){ 
+			current.meter[0].value = 1;
 		}
 	}
-	if(current.meter[0] <= 0){
-		current.meter[0] = 0;
+	if(current.meter[0].value <= 0){
+		current.meter[0].value = 0;
 		dead = true;
 	}
 	if(dead == true){
@@ -574,44 +577,66 @@ int character::takeHit(status &current, hStat &s, int blockType, int &hitType)
 			}
 		}
 	} else if (hitType == -1) {
-		if(!current.meter[4]){
-			if(current.meter[1] + 6 < 300) current.meter[1] += 12;
-			else current.meter[1] = 300;
+		if(!current.meter[4].value){
+			if(current.meter[1].value + 6 < 300) current.meter[1].value += 12;
+			else current.meter[1].value = 300;
 		}
 	}
 
 	if (hitType == 1){ 
-		if(!current.meter[4]){
-			current.meter[1] += 2;
+		if(!current.meter[4].value){
+			current.meter[1].value += 2;
 		}
 	} else if (hitType > -2) {
-		if(!current.meter[4]){
-			if(current.meter[1] + 1 < 300) current.meter[1] += 3;
-			else current.meter[1] = 300;
+		if(!current.meter[4].value){
+			if(current.meter[1].value + 1 < 300) current.meter[1].value += 3;
+			else current.meter[1].value = 300;
 		}
 	}
 	return freeze;
 }
 
-vector<int> avatar::generateMeter()
+vector<HUDMeter<int>> avatar::generateMeter()
 {
-	vector<int> meter(5);
+	vector<HUDMeter<int>> meter;
+	meter.push_back(HUDMeter<int>(600));
+	meter.push_back(HUDMeter<int>(300));
+	meter.push_back(HUDMeter<int>(10));
+	meter.push_back(HUDMeter<int>(10));
+	meter.push_back(HUDMeter<int>(300));
+
+	meter[0].y = 1.0/90.0 * 89.0;
+	meter[0].x = 1.0/8.0;
+	meter[0].h = 1.0/90.0;
+	meter[0].w = 1.0/8.0 * 6.0;
+	meter[0].R = 255; meter[0].G = 0; meter[0].B = 0; meter[0].A = 255;
+
+	meter[1].y = 1.0/90.0 * 3.0;
+	meter[1].x = 1.0/8.0;
+	meter[1].h = 1.0/90.0;
+	meter[1].w = 1.0/8.0 * 6.0;
+	meter[1].A = 255;
+
+	meter[4].A = 255 * 4 / 10;
+
+	meter[2].w = 0;
+	meter[3].w = 0;
 	return meter;
 }
 
 void character::init(status& current)
 {
-	current.meter[0] = 600;
-	current.meter[1] = 0;
+	current.meter[0].value = 600;
+	current.meter[1].value = 0;
 	resetAirOptions(current.meter);
-	current.meter[4] = 0;
+	current.meter[4].value = 0;
 	current.mode = 0;
 }
 
-void character::resetAirOptions(vector<int>& meter)
+void character::resetAirOptions(vector<HUDMeter<int>>& meter)
 {
-	meter[2] = 1;
-	meter[3] = 1;
+	meter[2].value = 1;
+	meter[3].value = 1;
 }
 
 int avatar::acceptTarget(action * c, int f)
@@ -646,5 +671,5 @@ void avatar::step(status &current)
 	} else {
 		current.freeze--;
 	}
-	if(current.meter[4] > 0) current.meter[4]--;
+	if(current.meter[4].value > 0) current.meter[4].value--;
 }

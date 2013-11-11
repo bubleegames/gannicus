@@ -1,24 +1,29 @@
+#ifndef HUD_ELEM
+#define HUD_ELEM
 class HUDElement{
 public:
+	HUDElement();
 	virtual void draw() = 0;
-	int x, y;
+	double x, y, w, h;
 	int R, G, B, A;
-}
+};
 
-template <T> meter : virtual public HUDElement
-class meter {
+template <typename T>
+class HUDMeter : virtual public HUDElement{
 public:
-	meter(T);
+	HUDMeter(T);
+	HUDMeter(const HUDMeter<T>&);
 	virtual void draw();
 	T value;
 	T maximum;
-}
-
+};
+/*
 class words : virtual public HUDElement {
 public:
 	void words(string);
 	virtual void draw();
 	string text;
+	int align;
 };
 
 template <T> counter : virtual public meter, virtual public words
@@ -30,3 +35,5 @@ public:
 	counter();
 	string postText;
 };
+*/
+#endif

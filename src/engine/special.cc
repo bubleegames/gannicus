@@ -21,7 +21,7 @@ void negNormal::zero()
 
 bool special::check(const status &current)
 {
-	if(cost > current.meter[1]) return 0;
+	if(cost > current.meter[1].value) return 0;
 	else return action::check(current);
 }
 
