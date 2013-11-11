@@ -372,10 +372,16 @@ void fightingGame::drawMeters()
 		}
 		glPushMatrix();
 			glTranslatef(env.screenWidth/2, 0, 0);
-			glScalef(env.screenWidth/2 * (i->ID == 1 ? -1 : 1), env.screenHeight, 0);
-			for(HUDMeter <int> j:i->pick()->drawMeters(i->ID, i->current)){
-				j.draw();
-			}
+			glPushMatrix();
+				glScalef(env.screenWidth/2 * (i->ID == 1 ? -1 : 1), env.screenHeight, 0);
+				glPushMatrix();
+				glDisable( GL_TEXTURE_2D );
+				for(HUDMeter <int> j:i->pick()->drawMeters(i->ID, i->current)){
+					j.draw();
+				}
+				glEnable( GL_TEXTURE_2D );
+				glPopMatrix();
+			glPopMatrix();
 		glPopMatrix();
 		glFlush();
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
