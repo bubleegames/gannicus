@@ -358,14 +358,14 @@ void fightingGame::drawMeters()
 {
 	glDisable( GL_TEXTURE_2D );
 
-	vector<SDL_Rect> r (numRounds);
 	for(player *i:P){
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		vector<SDL_Rect> r (numRounds);
 		for(int j = 0; j < numRounds; j++){
 			r[j].y = 24; r[j].w = 20; r[j].h = 10;
 			r[j].x = env.screenWidth / 2 + (i->ID == 1 ? -120 - 24 * j : 100 + 24 * j);
 		}
-		for(int	j = 0; j < numRounds; j++){
+		for(int j = 0; j < numRounds; j++){
 			if(i->rounds > j) glColor4f(0.0f, 1.0f, 1.0f, 1.0f);
 			else glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 			glRectf((GLfloat)(r[j].x), (GLfloat)(r[j].y), (GLfloat)(r[j].x + r[j].w), (GLfloat)(r[j].y + r[j].h));
@@ -374,13 +374,11 @@ void fightingGame::drawMeters()
 			glTranslatef(env.screenWidth/2, 0, 0);
 			glPushMatrix();
 				glScalef(env.screenWidth/2 * (i->ID == 1 ? -1 : 1), env.screenHeight, 0);
-				glPushMatrix();
 				glDisable( GL_TEXTURE_2D );
 				for(HUDMeter <int> j:i->pick()->drawMeters(i->ID, i->current)){
 					j.draw();
 				}
 				glEnable( GL_TEXTURE_2D );
-				glPopMatrix();
 			glPopMatrix();
 		glPopMatrix();
 		glFlush();
@@ -429,26 +427,28 @@ vector<HUDMeter<int>> character::drawMeters(int ID, status &current)
 
 	ret[1].value += hidden;
 	if(hidden) ret[4].value = 0;
-	ret[4].x = ret[1].x + ret[1].value / ret[1].maximum * ret[1].w;
+	ret[4].x = ret[1].x + ret[1].w * (double)ret[1].value / (double)ret[1].maximum;
 
-	ret[1].R = ret[1].value < ret[1].maximum / 2 ? 191 : 0;
-	ret[1].G = ret[1].value == ret[1].maximum ? 255 : 255 * ret[1].value / (ret[1].maximum / 4) % 2;
-	ret[1].B = ret[1].value < ret[1].maximum ? 255 : 0;
+	ret[1].R = ret[1].value < ret[1].maximum / 2 ? 0.7 : 0;
+	ret[1].G = ret[1].value == ret[1].maximum ? 1.0 : 1.0 * ((ret[1].value / (ret[1].maximum / 4) % 2));
+	ret[1].B = ret[1].value < ret[1].maximum ? 1.0 : 0.0;
 	ret[4].R = ret[1].R;
 	ret[4].G = ret[1].G;
 	ret[4].B = ret[1].B;
 
 	ret[2] = ret[0];
-	ret[2].R = 0;
-	ret[2].G = 0;
-	ret[2].B = 0;
-	ret[2].A = 255 * 4 / 10;
+	ret[0].R = 0;
+	ret[0].G = 0;
+	ret[0].B = 0;
+	ret[0].A = .4;
+	ret[0].value = ret[0].maximum;
 
 	ret[3] = ret[1];
-	ret[3].R = 0;
-	ret[3].G = 0;
-	ret[3].B = 0;
-	ret[3].A = 255 * 4 / 10;
+	ret[1].R = 0;
+	ret[1].G = 0;
+	ret[1].B = 0;
+	ret[1].A = .4;
+	ret[1].value = ret[1].maximum;
 	return ret;
 }
 

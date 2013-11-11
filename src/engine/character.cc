@@ -605,19 +605,22 @@ vector<HUDMeter<int>> avatar::generateMeter()
 	meter.push_back(HUDMeter<int>(10));
 	meter.push_back(HUDMeter<int>(300));
 
-	meter[0].y = 1.0/90.0 * 89.0;
+	meter[0].y = 1.0/90.0;
 	meter[0].x = 1.0/8.0;
 	meter[0].h = 1.0/90.0;
 	meter[0].w = 1.0/8.0 * 6.0;
-	meter[0].R = 255; meter[0].G = 0; meter[0].B = 0; meter[0].A = 255;
+	meter[0].R = 1.0; meter[0].G = 0.0; meter[0].B = 0.0; meter[0].A = 1.0;
 
-	meter[1].y = 1.0/90.0 * 3.0;
+	meter[1].y = 1.0/90.0 * 87;
 	meter[1].x = 1.0/8.0;
 	meter[1].h = 1.0/90.0;
 	meter[1].w = 1.0/8.0 * 6.0;
-	meter[1].A = 255;
+	meter[1].A = 1.0;
 
-	meter[4].A = 255 * 4 / 10;
+	meter[4].y = 1.0/90.0 * 87;
+	meter[4].h = 1.0/90.0;
+	meter[4].w = 1.0/8.0 * 6.0;
+	meter[4].A = .4;
 
 	meter[2].w = 0;
 	meter[3].w = 0;

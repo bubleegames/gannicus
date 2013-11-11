@@ -15,11 +15,11 @@ vector<HUDMeter<int>> yellow::generateMeter()
 {
 	vector<HUDMeter<int>> meter = character::generateMeter();
 	meter.push_back(HUDMeter<int>(360));
-	meter[5].y = 1.0/90.0 * 1.5;
+	meter[5].y = 1.0/90.0 * 88.5;
 	meter[5].x = .275;
 	meter[5].h = 1.0/90.0;
 	meter[5].w = .45;
-	meter[5].B = 0; meter[5].A = 255;
+	meter[5].B = 0; meter[5].A = 1.0;
 
 	return meter;
 }
@@ -73,8 +73,8 @@ vector<HUDMeter<int>> yellow::drawMeters(int ID, status &current)
 {
 	vector<HUDMeter<int>> ret = character::drawMeters(ID, current);
 	ret.push_back(current.meter[5]);
-	ret[5].R = 255;
-	ret[5].G = ret[5].value >= 0 ? 255 : 0;
+	ret[5].R = 1.0;
+	ret[5].G = ret[5].value >= 0 ? 1.0 : 0;
 	ret[5].value *= ret[5].value >= 0 ? 2.0 / 3.0 : 0.0;
 	return ret;
 }

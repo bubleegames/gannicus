@@ -8,7 +8,7 @@ public:
 	HUDElement();
 	virtual void draw() = 0;
 	double x, y, w, h;
-	int R, G, B, A;
+	float R, G, B, A;
 };
 
 template <typename T>
