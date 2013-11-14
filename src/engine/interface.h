@@ -20,9 +20,11 @@ public:
 	virtual void processInput(SDL_Event&);
 	virtual void initialConfig(int);
 	virtual void scaleDamage(int&, int) {}
+	words globalAnnounce;
 	virtual void unitCollision(instance*, instance*);
 	virtual void genInput();
-	virtual int drawGlyph(string, int, int, int, int, int);
+	virtual void drawGlyph(string, int, int, int, int, int);
+	virtual void drawGlyph(words);
 	script *oldReplay;
 	unsigned int replayIterator;
 	virtual void print();

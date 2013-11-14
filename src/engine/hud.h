@@ -2,7 +2,11 @@
 #define HUD_ELEM
 #include <SDL/SDL_opengl.h>
 #include <iostream>
+#include <vector>
+#include <string>
+using std::vector;
 using std::cout;
+using std::string;
 class HUDElement{
 public:
 	HUDElement();
@@ -34,15 +38,20 @@ public:
 	T value;
 	T maximum;
 };
-/*
+
 class words : virtual public HUDElement {
 public:
-	void words(string);
-	virtual void draw();
+	words();
+	words(string);
+	words(const words&);
+	virtual void draw() {}
+	virtual string operator()();
+	virtual string operator()(string);
+	virtual void clear();
 	string text;
 	int align;
 };
-
+/*
 template <T> counter : virtual public meter, virtual public words
 class counter {
 public:

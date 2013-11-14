@@ -26,6 +26,15 @@ SaltAndBone::SaltAndBone()
 	pauseEnabled = false;
 	single = false;
 	ifstream read;
+	globalAnnounce.x = 0.0;
+	globalAnnounce.y = 5.0 / 12.0;
+	globalAnnounce.w = 1.0;
+	globalAnnounce.h = 1.0 / 6.0;
+	globalAnnounce.R = 1.0;
+	globalAnnounce.G = 1.0;
+	globalAnnounce.B = 1.0;
+	globalAnnounce.A = 1.0;
+	globalAnnounce.align = 1;
 
 	/*Initialize some pseudo-constants*/
 	screen = nullptr; /*The screen gives a partial view of the env.background, which is the area available for character movement.*/

@@ -263,6 +263,7 @@ void SaltAndBone::drawHint(int i)
 
 void SaltAndBone::drawHUD()
 {
+	globalAnnounce.clear();
 	int currentRound = P[0]->rounds + P[1]->rounds + 1;
 	int timeSecs = timer / 60;
 	if(timeSecs < 10) glColor4f(1.0, 0.0, 0.0, 1.0);
@@ -307,50 +308,35 @@ void SaltAndBone::drawHUD()
 	}
 
 	if(timer > 100 * 60 && timer < 100 * 60 + 31){ 
-/*		if(timer == 100 * 60 + 30){
-			play(1);
-			play(0);
-			//Mix_PlayChannel(3, announceRound[l - 1], 0);
-		}
-*/		drawGlyph("Round " + to_string(currentRound), 0, env.screenWidth, 375, 150, 1);
+		globalAnnounce("Round " + to_string(currentRound));
 	}
 	if(timer > 99 * 60 && timer < 99 * 60 + 31){ 
-		drawGlyph("FIGHT", 0, env.screenWidth, 375, 150, 1);
-/*		if(timer == 99 * 60 + 30)
-			Mix_PlayChannel(3, announceFight, 0);
-*/	}
+		globalAnnounce("FIGHT");
+	}
 	if(roundEnd && endTimer > 5 * 60 - 31){ 
 		if(things[0]->current.meter[0].value > 0 && things[1]->current.meter[0].value > 0){
-			drawGlyph("TIME OUT", 0, env.screenWidth, 300, 200, 1);
-/*			if(endTimer == 5 * 60 - 1)
-				Mix_PlayChannel(3, announceEnd[0], 0);
-*/		} else {
-			drawGlyph("DOWN", 0, env.screenWidth, 375, 150, 1);
-/*			if(endTimer == 5 * 60 - 1)
-				Mix_PlayChannel(3, announceEnd[1], 0);
-*/		}
+			globalAnnounce("TIME OUT");
+		} else {
+			globalAnnounce("DOWN");
+		}
 	}
 	if(endTimer > 3 * 60 + 29 && endTimer < 4 * 60){ 
 		if(things[0]->current.meter[0].value > things[1]->current.meter[0].value){ 
 			drawGlyph(P[0]->pick()->name, 0, env.screenWidth, 300, 150, 1);
 			drawGlyph("Wins", 0, env.screenWidth, 450, 150, 1);
-/*			if(endTimer == 4 * 60 - 1)
-				Mix_PlayChannel(3, announceWinner[selection[0]], 0);
-*/		} else if(things[1]->current.meter[0].value > things[0]->current.meter[0].value){
+		} else if(things[1]->current.meter[0].value > things[0]->current.meter[0].value){
 			drawGlyph(P[1]->pick()->name, 0, env.screenWidth, 300, 150, 1);
 			drawGlyph("Wins", 0, env.screenWidth, 450, 150, 1);
-/*			if(endTimer == 4 * 60 - 1)
-				Mix_PlayChannel(3, announceWinner[selection[1]], 0);
-*/		} else if(things[0]->current.meter[0].value <= 0){ 
-			drawGlyph("Double KO", 0, env.screenWidth, 375, 150, 1);
-/*			if(endTimer == 4 * 60 - 1)
-				Mix_PlayChannel(3, announceDraw[0], 0);
-*/		} else {
-			drawGlyph("Draw", 0, env.screenWidth, 375, 150, 1);
-/*			if(endTimer == 4 * 60 - 1)
-				Mix_PlayChannel(3, announceDraw[1], 0);
-*/		}
+		} else if(things[0]->current.meter[0].value <= 0){ 
+			globalAnnounce("Double KO");
+		} else {
+			globalAnnounce("Draw");
+		}
 	}
+	glPushMatrix();
+		glScalef(env.screenWidth, env.screenHeight, 1.0);
+		drawGlyph(globalAnnounce);
+	glPopMatrix();
 	drawMeters();
 }
 
@@ -599,7 +585,60 @@ void avatar::draw(action *& cMove, int f, GLint p)
 	glUseProgram(0);
 }
 
-int fightingGame::drawGlyph(string s, int x, int totalSpace, int y, int height, int just)
+void fightingGame::drawGlyph(words s)
+{
+	int w, h;
+	float width = 0, padding = 0, totalWidth = 0;
+	float sl = 0.0;
+	if(s.align != 0){
+		for(char c : s()){
+			if(c == ' ') {
+				if(sl != 0.0) totalWidth += (float)w * sl / 2.0;
+			} else if(c == '\0');
+			else{
+				glBindTexture(GL_TEXTURE_2D, glyph[toupper(c)]);
+				glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
+				glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+				sl = s.h / (float)h;
+				totalWidth += (float)w * sl;
+			}
+		}
+		if(s.align == 2) padding = s.w - totalWidth;
+		else padding = (s.w - totalWidth) / 2.0;
+	}
+
+	for(char c : s()){
+		if(c == ' ') s.x += width / 2.0;
+		else if(c == '\0');
+		else{
+			glBindTexture(GL_TEXTURE_2D,glyph[toupper(c)]);
+
+			glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
+			glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+			sl = s.h / (float)h;
+			width = (float)w * sl;
+			glPushMatrix();
+				glTranslatef(padding + s.x, s.y, 0);
+				glBegin(GL_QUADS);
+				glTexCoord2i(0, 0);
+				glVertex3f(0, 0, 0);
+
+				glTexCoord2i(1, 0);
+				glVertex3f(width, 0, 0);
+
+				glTexCoord2i(1, 1);
+				glVertex3f(width, s.h, 0);
+
+				glTexCoord2i(0, 1);
+				glVertex3f(0, s.h, 0);
+				glEnd();
+			glPopMatrix();
+			s.x += width;
+		}
+	}
+}
+
+void fightingGame::drawGlyph(string s, int x, int totalSpace, int y, int height, int just)
 {
 	int w, h, width = 0, padding = 0, totalWidth = 0;
 	if(just != 0){
@@ -647,7 +686,6 @@ int fightingGame::drawGlyph(string s, int x, int totalSpace, int y, int height, 
 			x += (float)width;
 		}
 	}
-	return x;
 }
 
 void action::draw(int f, GLint p)
