@@ -26,7 +26,7 @@ SaltAndBone::SaltAndBone()
 	pauseEnabled = false;
 	single = false;
 	ifstream read;
-	globalAnnounce.x = 0.0;
+	globalAnnounce.x = 0;
 	globalAnnounce.y = 5.0 / 12.0;
 	globalAnnounce.w = 1.0;
 	globalAnnounce.h = 1.0 / 6.0;

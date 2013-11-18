@@ -589,18 +589,18 @@ void fightingGame::drawGlyph(words s)
 {
 	int w, h;
 	float width = 0, padding = 0, totalWidth = 0;
-	float sl = 0.0;
+	float scale = 0.0;
 	if(s.align != 0){
 		for(char c : s()){
 			if(c == ' ') {
-				if(sl != 0.0) totalWidth += (float)w * sl / 2.0;
+				if(sl != 0.0) totalWidth += (float)w * scale / 2.0;
 			} else if(c == '\0');
 			else{
 				glBindTexture(GL_TEXTURE_2D, glyph[toupper(c)]);
 				glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
 				glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
-				sl = s.h / (float)h;
-				totalWidth += (float)w * sl;
+				scale = s.h / (float)h;
+				totalWidth += (float)w * scale;
 			}
 		}
 		if(s.align == 2) padding = s.w - totalWidth;
@@ -615,8 +615,8 @@ void fightingGame::drawGlyph(words s)
 
 			glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
 			glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
-			sl = s.h / (float)h;
-			width = (float)w * sl;
+			scale = s.h / (float)h;
+			width = (float)w * scale;
 			glPushMatrix();
 				glTranslatef(padding + s.x, s.y, 0);
 				glBegin(GL_QUADS);
