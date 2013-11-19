@@ -74,7 +74,7 @@ int status::cancelState() const
 	if(hit > move->hits) return 0;
 	if(connect > move->hits) return 0;
 	if(connect < 0) return 0;
-	return move->state[connect].i 
-		+ (hit == connect ? move->stats[hit].hitState.i : 0);
+	return move->state[connect].i;
+//		+ (hit == connect ? move->stats[hit].hitState.i : 0);
 }
 

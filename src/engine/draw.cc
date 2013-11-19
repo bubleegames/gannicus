@@ -593,7 +593,7 @@ void fightingGame::drawGlyph(words s)
 	if(s.align != 0){
 		for(char c : s()){
 			if(c == ' ') {
-				if(sl != 0.0) totalWidth += (float)w * scale / 2.0;
+				if(scale != 0.0) totalWidth += (float)w * scale / 2.0;
 			} else if(c == '\0');
 			else{
 				glBindTexture(GL_TEXTURE_2D, glyph[toupper(c)]);
