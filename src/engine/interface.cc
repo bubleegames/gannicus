@@ -300,10 +300,6 @@ void SaltAndBone::roundInit()
 
 	timer = 60 * 101;
 	endTimer = 60 * 5;
-	for(player *i:P){
-		i->current.prox.w = 200;
-		i->current.prox.h = 0;
-	}
 	freeze = 0;
 }
 
@@ -461,7 +457,7 @@ void SaltAndBone::resolveCombos()
 			case 0:
 				if(killTimer && !freeze){ 
 					P[i]->current.meter[0].value = 600;
-					if(combo[i] == 0 && P[i]->current.opponent->cancelState() & 1){
+					if(combo[i] == 0 && P[i]->current.opponent->current.cancelState() & 1){
 						P[i]->current.opponent->current.meter[1].value = 300;
 						P[i]->current.opponent->current.meter[4].value = 0;
 					}
@@ -537,9 +533,6 @@ void SaltAndBone::resolveInputs()
 			if(!test && !P[i]->current.aerial){ 
 				P[i]->checkFacing();
 			}
-			P[i]->current.prox.y = P[i]->current.opponent->current.aerial;
-			P[i]->current.prox.x = P[i]->current.opponent->current.throwInvuln;
-			if(P[0]->current.facing == P[1]->current.facing) P[i]->current.prox.x = 1;
 		}
 		for(instance *i:things){
 			bool d = 0;
@@ -1243,11 +1236,6 @@ void SaltAndBone::resolveCollision()
 		}
 	}
 
-	for(player *i:P){
-		i->current.prox.w = abs(P[0]->current.posX - P[1]->current.posX);
-		i->current.prox.h = abs(P[0]->current.posY - P[1]->current.posY);
-	}
-
 	for(unsigned int i = 0; i < things.size(); i++){
 		if(things[i]->current.move->track){
 			things[i]->checkFacing(P[(things[i]->ID)%2]);
@@ -1267,10 +1255,6 @@ void SaltAndBone::resolveCollision()
 	//Some issues arise if you don't have this second pass
 	if (aux::checkCollision(P[0]->collision, P[1]->collision))
 		unitCollision(P[0], P[1]);
-	for(player *i:P){
-		i->current.prox.w = abs(P[0]->current.posX - P[1]->current.posX);
-		i->current.prox.h = abs(P[0]->current.posY - P[1]->current.posY);
-	}
 }
 
 void SaltAndBone::resolveThrows()
@@ -1340,7 +1324,7 @@ void SaltAndBone::resolveHits()
 								if(m < 2){
 									if(things[i]->current.counter > 0){
 										counterHit[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
-									} else if(!(things[m]->cancelState() & 513) && !combo[things[i]->ID-1] && !things[m]->current.counter){
+									} else if(!(things[m]->current.cancelState() & 513) && !combo[things[i]->ID-1] && !things[m]->current.counter){
 										punish[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
 									}
 								}
@@ -1406,7 +1390,7 @@ void SaltAndBone::resolveHits()
 			}
 			if(!things[i]->current.aerial){
 				for(int j = 0; j < 6; j++){
-					if(2 << j & things[i]->cancelState() || s[i].autoCorrects){
+					if(2 << j & things[i]->current.cancelState() || s[i].autoCorrects){
 						P[i]->checkFacing();
 						break;
 					}

@@ -30,15 +30,6 @@ bool player::validate(int id, int effect)
 	return (id != ID) && (effect & 1);
 }
 
-int instance::cancelState()
-{
-	if(!current.move) return 0;
-	if(current.hit > current.move->hits) return 0;
-	if(current.connect > current.move->hits) return 0;
-	if(current.connect < 0) return 0;
-	return current.move->state[current.connect].i;
-}
-
 bool instance::validate(int id, int effect)
 {
 	return (id != ID) && (effect & 2);
@@ -344,9 +335,9 @@ void controller::writeConfig(int ID)
 	write.close();
 }
 
-bool player::reversalPossible()
+bool player::reversalPossible() const
 {
-	if(cancelState() & 1) return false;
+	if(current.cancelState() & 1) return false;
 	if(current.move->linkable) return true;
 	if(current.counter < 0 && current.counter > -11) return true;
 	int f = current.move->frames;
@@ -482,7 +473,7 @@ void instance::loadAssets()
 
 void player::checkBlocking()
 {
-	if(cancelState() & 513){
+	if(current.cancelState() & 513){
 		blockType = -pick()->checkBlocking(current, inputBuffer);
 		if(blockType == 1) blockType = !current.move->canGuard(current.frame);
 		updateRects();
@@ -884,10 +875,10 @@ int player::takeHit(int combo, hStat & s)
 	if(particleType != 1){
 		temp = current.move->blockSuccess(s.stun, s.isProjectile);
 	}
-	SDL_Rect fake = {0, 0, 0, 0};
+/*	SDL_Rect fake = {0, 0, 0, 0};
 	SDL_Rect tempProx = current.prox;
 	current.prox = fake;
-	if(temp && temp != current.move && temp->check(current)){
+*/	if(temp && temp != current.move && temp->check(current)){
 		combo = 0;
 		current.bufferedMove = temp;
 		current.freeze = 0;
@@ -927,7 +918,6 @@ int player::takeHit(int combo, hStat & s)
 		if(current.aerial && s.stick) current.stick = true;
 		else current.stick = false;
 	}
-	current.prox = tempProx;
 	if(current.move == pick()->die){
 		current.bufferedMove = nullptr;
 	}
@@ -962,7 +952,7 @@ void instance::invertVectors(int operation)
 	}
 }
 
-int player::CHState()
+int player::CHState() const
 {
 	if(!hitbox.empty()) return true;
 	else return current.move->CHState(current.frame);

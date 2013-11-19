@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "span.h"
+#include "status.h"
 #include "hud.h"
 
 #ifndef ___auxil
@@ -12,9 +13,6 @@
 
 using std::string;
 using std::vector;
-
-class instance;
-class action;
 
 class vect{
 public:
@@ -47,37 +45,5 @@ class aux{
 		static bool checkCollision(SDL_Rect, SDL_Rect, SDL_Rect&);
 		static SDL_Rect collisionRect(SDL_Rect, SDL_Rect);
 		static vector<SDL_Rect> defineRectArray(string);
-};
-struct status{
-	status();
-	status(const status&);
-	vector<HUDMeter<int>> meter;
-	int mode;
-	SDL_Rect prox;
-	int posX, posY;
-	int age;
-	int facing;
-	int deltaX, deltaY; 
-	int frame;
-	int freeze;
-	int absorbedHits;
-	bool aerial;
-	bool rCorner, lCorner;
-	action *move, *bufferedMove, *reversal;
-	int reversalTimer;
-	vector <instance*> offspring;
-	int connect, hit, counter;
-	int drawX, drawY;
-	bool elasticX;
-	bool elasticY;
-	bool slide;
-	bool stick;
-	bool rebound;
-	int hover;
-
-	bool dead:1;
-	int throwInvuln;
-	bool reversalFlag:1;
-	instance * opponent;
 };
 #endif

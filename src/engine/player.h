@@ -6,15 +6,12 @@
 using std::deque;
 #ifndef ___player
 #define ___player
-
 class force;
-
 struct frame;
 class instance{
 public:
 	instance();
 	instance(avatar*);
-	int cancelState(); 
 	virtual ~instance();
 	virtual avatar * pick() { return v; }
 	SDL_Rect collision;
@@ -29,7 +26,7 @@ public:
 	virtual void neutralize();
 	virtual bool validate(int, int);
 	virtual bool acceptTarget(instance*);
-	virtual int CHState() { return 0; }
+	virtual int CHState() const { return 0; }
 	virtual void init();
 	virtual void step();
 
@@ -57,7 +54,6 @@ public:
 	virtual bool checkHit(SDL_Rect, SDL_Rect);
 	virtual void land();
 	virtual void encounterWall(bool, int);
-	void enforceForce(force&);
 	int middle();
 	void flip();
 	void print();
@@ -93,8 +89,8 @@ public:
 	virtual void roundInit();
 	virtual void macroCheck(SDL_Event&);
 	virtual int takeHit(int, hStat&);
-	virtual int CHState();
-	virtual bool reversalPossible();
+	virtual int CHState() const;
+	virtual bool reversalPossible() const;
 
 	void setKey(int);
 	bool setKey(int, SDL_Event);
