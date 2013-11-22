@@ -94,9 +94,9 @@ void SaltAndBone::createPlayers(string rep)
 		single = true;
 		analytics = false;
 		for(int i = 0; i < 2; i++){
-			selection[i] = oldReplay->selection[i];
-			select[i] = 1;
-			P[i]->characterSelect(selection[i]);
+			selection[i].value = oldReplay->selection[i].value;
+			selection[i].lock = 1;
+			P[i]->characterSelect(selection[i].value);
 			if(scripting) P[i]->readScripts();
 		}
 		loadMatchBackground();
@@ -109,8 +109,12 @@ void SaltAndBone::createPlayers()
 	for(int i = 0; i < 2; i++){
 		P.push_back(new player(i+1));
 		p.push_back(P[i]);
-		select.push_back(false);
-		selection.push_back(1+i);
+		selection.push_back("P");
+		selection.back().w = 1 / 8.0;
+		selection.back().h = 1 / 32.0;
+		selection.back().align = i*2;
+		selection.back().R = 0.0; selection.back().G = 0.3+i*0.3; selection.back().B = 0.3+(1-i)*0.3;
+		selection.back().value = i;
 		combo.push_back(0);
 		damage.push_back(0);
 		blockFail.push_back(0);
@@ -132,7 +136,7 @@ void SaltAndBone::loadMatchBackground()
 {
 	//if(!killTimer && scalingFactor >= 1.2)*/ env.background = aux::load_texture("content/stages/" + to_string(selection[0]) + "/bg.png");
 	//else {
-		switch (selection[0]){
+		switch (selection[0].value){
 		case 1:
 			env.bgR = 1.0;
 			env.bgG = 0.0;
@@ -156,10 +160,10 @@ void SaltAndBone::loadMatchBackground()
 		}
 	//}
 
-	if(selection[0] == selection[1]) 
+	if(selection[0].value == selection[1].value) 
 		matchMusic = Mix_LoadMUS("content/sound/Mirror.ogg");
 	else
-		matchMusic = Mix_LoadMUS(("content/sound/" + to_string(selection[1]) + ".ogg").c_str());
+		matchMusic = Mix_LoadMUS(("content/sound/" + to_string(selection[1].value) + ".ogg").c_str());
 }
 
 void SaltAndBone::startGame()
@@ -170,7 +174,7 @@ void SaltAndBone::startGame()
 	/*Start a match*/
 	//Mix_PlayChannel(3, announceSelect, 0);
 	matchInit();
-	if(select[0] && select[1]){ 
+	if(selection[0].lock && selection[1].lock){ 
 		roundInit();
 	}
 }
@@ -265,7 +269,7 @@ void SaltAndBone::matchInit()
 		i->rounds = 0;
 	}
 	pMenu = 0;
-	if(!select[0] || !select[1]){
+	if(!selection[0].lock || !selection[1].lockion){
 		Mix_VolumeMusic(musicVolume);
 		Mix_PlayMusic(menuMusic, -1);
 		//printf("\n");
@@ -313,7 +317,7 @@ void SaltAndBone::runTimer()
 	}
 	int plus;
 	for(unsigned int i = 0; i < P.size(); i++){
-		if(select[i] == true){
+		if(selection[i].lock == true){
 			if(things[i]->current.move != nullptr){
 				plus = (things[i]->current.move->arbitraryPoll(31, things[i]->current.frame));
 				if(plus != 0){
@@ -346,8 +350,8 @@ void SaltAndBone::runTimer()
 					}
 					if(P[0]->rounds == P[1]->rounds);
 					else{
-						if(P[0]->rounds == numRounds) stats->recordWin(selection[0], selection[1]);
-						else stats->recordWin(selection[1], selection[0]);
+						if(P[0]->rounds == numRounds) stats->recordWin(selection[0].value, selection[1].value);
+						else stats->recordWin(selection[1].value, selection[0].value);
 					}
 					//printf("Matchup: %f\n", stats->matchup(selection[0], selection[1]));
 				}
@@ -356,7 +360,7 @@ void SaltAndBone::runTimer()
 					if(!continuous){
 						for(unsigned int i = 0; i < P.size(); i++){
 							delete P[i]->pick();
-							select[i] = 0;
+							selection[i] = 0;
 						}
 					}
 					if(SDL_WasInit(SDL_INIT_VIDEO) != 0){
@@ -382,7 +386,7 @@ void SaltAndBone::runTimer()
 					if(single) gameover = true;
 					else{
 						matchInit();
-						if(select[0] && select[1]){
+						if(selection[0].lock && selection[1].lock){
 							if(analytics){
 								replay = new script;
 								replay->init(selection);
@@ -410,7 +414,7 @@ void fightingGame::print()
 /*Main function for a frame. This resolves character spritions, env.background scrolling, and hitboxes*/
 void SaltAndBone::resolve()
 {
-	if(!select[0] || !select[1]) cSelectMenu();
+	if(!selection[0].lock || !selection[1].lock) cSelectMenu();
 	else if(rMenu) rematchMenu();
 	else if(pMenu) pauseMenu();
 	else {
@@ -511,8 +515,8 @@ void SaltAndBone::resolveInputs()
 		for(unsigned int i = 0; i < P.size(); i++){
 			if(timer == 106 * 60) things[i]->inputBuffer[0] = 0;
 			else if(timer == 106 * 60 - 1) things[i]->inputBuffer[0] = i;
-			else if(timer == 106 * 60 - 2) things[i]->inputBuffer[0] = selection[(i+1)%2] / 10;
-			else if(timer == 106 * 60 - 3) things[i]->inputBuffer[0] = selection[(i+1)%2] % 10;
+			else if(timer == 106 * 60 - 2) things[i]->inputBuffer[0] = selection[(i+1)%2].value / 10;
+			else if(timer == 106 * 60 - 3) things[i]->inputBuffer[0] = selection[(i+1)%2].value % 10;
 			else if(timer == 106 * 60 - 4) things[i]->inputBuffer[0] = 0;
 			else(things[i]->inputBuffer[0] = 5);
 			for(int &j:currentFrame[i].buttons) j = 0;
@@ -565,14 +569,14 @@ void SaltAndBone::resolvePhysics()
 
 void SaltAndBone::cleanup()
 {
-	if(select[0] && select[1] && !pMenu){
+	if(selection[0].lock && selection[1].lock && !pMenu){
 		for(instance *i:things){
 			if(i->current.posX > env.bg.w + 300 || i->current.posX < -300 || i->current.posY < -300 || i->current.posY > env.bg.h){
 				i->pick()->die->execute(i->current);
 				i->current.move = i->pick()->die;
 			}
 		}
-		if(!rMenu && select[0] && select[1]){
+		if(!rMenu && selection[0].lock && selection[1].lock){
 			for(unsigned int i = 0; i < things.size(); i++){
 				things[i]->step();
 				if(i > 1 && things[i]->current.dead){ 
@@ -782,7 +786,7 @@ void SaltAndBone::readInput()
 		events.push_back(event);
 		processInput(event);
 	}
-	if(select[0] && select[1]){
+	if(selection[0].lock && selection[1].lock){
 		if(scripting){
 			for(player* i:P){
 				for(unsigned int j = 0; j < events.size(); j++){
@@ -858,30 +862,30 @@ void SaltAndBone::cSelectMenu()
 
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(numChars < 2){
-			select[i] = 1;
-			selection[i] = 1;
+			selection[i].lock = 1;
+			selection[i].value = 1;
 		} else {
 			if(!menu[i]){
-				if(currentFrame[i].axis[2] && !select[i] && counter[i] == 0){
-					selection[i]--;
-					if(selection[i] < 1) selection[i] = numChars;
+				if(currentFrame[i].axis[2] && !selection[i].lock && counter[i] == 0){
+					selection[i].value--;
+					if(selection[i].value < 1) selection[i].value = numChars;
 					counter[i] = 10;
 				}
-				if(currentFrame[i].axis[3] && !select[i] && counter[i] == 0){
-					selection[i]++;
-					if(selection[i] > numChars) selection[i] = 1;
+				if(currentFrame[i].axis[3] && !selection[i].lock && counter[i] == 0){
+					selection[i].value++;
+					if(selection[i].value > numChars) selection[i].value = 1;
 					counter[i] = 10;
 				}
 				for(int j = 0; j < 5; j++){
-					if(currentFrame[i].buttons[j] == 1 && !select[i]){
-						select[i] = 1;
+					if(currentFrame[i].buttons[j] == 1 && !selection[i].lock){
+						selection[i].lock = 1;
 						P[i]->selectedPalette = j;
 					}
 				}
 				if(currentFrame[i].n.raw.Start){
-					if(!select[i]) menu[i] = 3;
+					if(!selection[i].lock) menu[i] = 3;
 					else {
-						select[i] = 0;
+						selection[i].lock = 0;
 					}
 					counter[i] = 10;
 				}
@@ -894,9 +898,9 @@ void SaltAndBone::cSelectMenu()
 		else if(menu[i] > 0) mainMenu(i);
 	}
 
-	if(select[0] && select[1]){
+	if(selection[0].lock && selection[1].lock){
 		//cout << "2 6\n" << selection[0] << " " << selection[1] << '\n';
-		if(selection[0] == selection[1] && P[0]->selectedPalette == P[1]->selectedPalette){ 
+		if(selection[0].value == selection[1].value && P[0]->selectedPalette == P[1]->selectedPalette){ 
 			P[1]->selectedPalette = (P[1]->selectedPalette + 1) % 5;
 		}
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -904,13 +908,13 @@ void SaltAndBone::cSelectMenu()
 		drawLoadingScreen();
 		SDL_GL_SwapBuffers();
 		for(unsigned int i = 0; i < P.size(); i++){
-			P[i]->characterSelect(selection[i]);
+			P[i]->characterSelect(selection[i].value);
 			//P[i]->enemySelect(selection[P[i]->current.opponent]);
 		}
 		loadAssets();
 		if(analytics){
 			replay = new script;
-			replay->init(selection);
+			replay->init(selection[i].value);
 		}
 
 		Mix_HaltMusic();
@@ -1061,7 +1065,7 @@ void SaltAndBone::pauseMenu()
 				case 2:
 					for(unsigned int i = 0; i < P.size(); i++){
 						delete P[i]->pick();
-						select[i] = 0;
+						selection[i].lock = 0;
 						initCharacters();
 						things[i]->current.meter.clear();
 					}
@@ -1107,7 +1111,7 @@ void SaltAndBone::rematchMenu()
 				case 2:
 					for(unsigned int k = 0; k < P.size(); k++){
 						delete P[k]->pick();
-						select[k] = 0;
+						selection[k].lock = 0;
 						things[k]->current.meter.clear();
 					}
 					Mix_HaltMusic();
@@ -1131,7 +1135,7 @@ void SaltAndBone::rematchMenu()
 SaltAndBone::~SaltAndBone()
 {
 	for(unsigned int i = 0; i < P.size(); i++){
-		if(select[i] && P[i]->pick()) delete P[i]->pick();
+		if(selection[i].lock && P[i]->pick()) delete P[i]->pick();
 	}
 	if(menuMusic != nullptr) Mix_FreeMusic(menuMusic);
 	delete stats;

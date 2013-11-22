@@ -45,28 +45,7 @@ void words::clear()
 	text.clear();
 }
 
-/*
-void words::draw(string t)
+void words::draw()
 {
-	drawGlyph(text, x, w, y, h, align);
+	cout << text << '\n';
 }
-
-template <T> counter
-counter::counter(string a);
-{
-	text = a;
-}
-
-template <T> counter
-counter::counter(string a, string b);
-{
-	text = a;
-	postText = b;
-}
-
-template <T> counter
-void counter::draw()
-{
-	drawGlyph(text + to_string(value) + postText, x, w, y, h, align);
-}
-*/

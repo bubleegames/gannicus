@@ -21,7 +21,7 @@ void SaltAndBone::draw()
 	glPushMatrix();
 		glScalef(scalingFactor, scalingFactor, 0.0f);
 		glViewport(0, 0, env.screenWidth*scalingFactor, env.screenHeight*scalingFactor);
-		if(!select[0] || !select[1]) drawCSelect();
+		if(!selection[0].lock || !selection[1].lock) drawCSelect();
 		else drawGame();
 		if(rMenu != 0) drawRematchMenu();
 		else if(pMenu != 0) drawPauseMenu();
@@ -34,7 +34,6 @@ void SaltAndBone::drawCSelect()
 	int x, y;
 	glColor4f(0.1f, 0.1f, 0.1f, 1.0f);
 	glRectf(0.0f, 0.0f, (GLfloat)env.screenWidth, (GLfloat)env.screenHeight);
-
 	for(int i = 0; i < 2; i++){
 		if(configMenu[i]) drawConfigMenu(i);
 		else if (menu[i]) drawMainMenu(i);
@@ -56,14 +55,10 @@ void SaltAndBone::drawCSelect()
 		glTexCoord2i(0, 1);
 		glVertex3f(350.0f, 900.0f, 0.f);
 	glEnd();
-
-	for(int i = 0; i < 2; i++){
-		if(!menu[i]){
-			x = ((float)env.screenWidth/2.0 + ((float)env.screenHeight/3.0) * cos(((M_PI*2.0)/(float)numChars)*(float)selection[i]+M_PI/4.0+M_PI/2.0)) - 100.0;
-			y = ((float)env.screenHeight/2.0 + ((float)env.screenHeight/3.0) * sin(((M_PI*2.0)/(float)numChars)*(float)selection[i]+M_PI/4.0+M_PI/2.0));
-			glColor4f(0.0, 0.3+i*0.3, 0.3+(1-i)*0.3, 1.0-select[i]*0.5);
-			drawGlyph("P" + to_string(i+1), x, 200, y, 50, i*2);
-		}
+	for(cursor<int> i:selection){
+		i.x = (1.0/2.0 + 1.0/3.0 * cos(((M_PI*2.0)/(float)numChars)*(float)selection[i].value+M_PI/4.0+M_PI/2.0)) - 100.0;
+		i.y = (1.0/2.0 + 1.0/3.0 * sin(((M_PI*2.0)/(float)numChars)*(float)selection[i].value+M_PI/4.0+M_PI/2.0));
+		i.draw(glyph);
 	}
 
 	glDisable( GL_TEXTURE_2D );

@@ -34,8 +34,7 @@ public:
 	float scalingFactor, sf;
 	bool scripting:1;
 	bool initd:1;
-	vector<bool> select;
-	vector<int> selection;
+	vector<cursor<int>> selection;
 	int numRounds;
 	int numChars;
 	environment env;
