@@ -194,29 +194,10 @@ void SaltAndBone::drawGame()
 {
 	glPushMatrix();
 		glTranslatef(-env.bg.x, env.bg.y, 0);
-		//if(killTimer || scalingFactor < .8 || env.background == 0){
-			glColor4f(env.bgR, env.bgG, env.bgB, 0.5f);
-			glRectf(0, 0, env.bg.w, env.bg.h);
-			glEnable( GL_TEXTURE_2D );
-			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		/*} else {
-			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			glEnable( GL_TEXTURE_2D );
-			glBindTexture(GL_TEXTURE_2D, env.background);
-			glBegin(GL_QUADS);
-				glTexCoord2i(0, 0);
-				glVertex3f(0.0f, 0.0f, 0.f);
-
-				glTexCoord2i(1, 0);
-				glVertex3f((GLfloat)(env.bg.w), 0.0f, 0.f);
-
-				glTexCoord2i(1, 1);
-				glVertex3f((GLfloat)(env.bg.w), (GLfloat)(env.bg.h), 0.f);
-
-				glTexCoord2i(0, 1);
-				glVertex3f(0.0f, (GLfloat)(env.bg.h), 0.f);
-			glEnd();
-		}*/
+		glColor4f(env.bgR, env.bgG, env.bgB, 0.5f);
+		glRectf(0, 0, env.bg.w, env.bg.h);
+		glEnable( GL_TEXTURE_2D );
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glPopMatrix();
 	drawHUD();
 	glPushMatrix();
@@ -335,7 +316,7 @@ void SaltAndBone::drawHUD()
 	}
 	glPushMatrix();
 		glScalef(env.screenWidth, env.screenHeight, 1.0);
-		drawGlyph(globalAnnounce);
+		globalAnnounce.draw(glyph);
 	glPopMatrix();
 	drawMeters();
 }
@@ -585,57 +566,40 @@ void avatar::draw(action *& cMove, int f, GLint p)
 	glUseProgram(0);
 }
 
-void fightingGame::drawGlyph(words s)
+void words::draw(vector<GLuint> glyph)
 {
-	int w, h;
-	float width = 0, padding = 0, totalWidth = 0;
-	float scale = 0.0;
-	if(s.align != 0){
-		for(char c : s()){
-			if(c == ' ') {
-				if(scale != 0.0) totalWidth += (float)w * scale / 2.0;
-			} else if(c == '\0');
-			else{
-				glBindTexture(GL_TEXTURE_2D, glyph[toupper(c)]);
-				glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
-				glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
-				scale = s.h / (float)h;
-				totalWidth += (float)w * scale;
+	if(text.empty()) return;
+	glTranslatef(x, y, 0.0);
+	if(align)
+		glTranslatef((w - (double)(text.size()) * h * .6) * (align == 1 ? .5 : 1.0), 0, 0);
+	glPushMatrix();
+		glScalef(h * .6, h, 1);
+		glPushMatrix();
+			for(unsigned int i = 0; i < text.size(); i++){
+				if(text[i] == ' ') glTranslatef(1.0, 0.0, 0.0);
+				else if(text[i] == '\0');
+				else{
+					glBindTexture(GL_TEXTURE_2D,glyph[toupper(text[i])]);
+					glBegin(GL_QUADS);
+
+					glTexCoord2i(0, 0);
+					glVertex3f(0, 0, 0);
+
+					glTexCoord2i(1, 0);
+					glVertex3f(1, 0, 0);
+
+					glTexCoord2i(1, 1);
+					glVertex3f(1, 1, 0);
+
+					glTexCoord2i(0, 1);
+					glVertex3f(0, 1, 0);
+
+					glEnd();
+					glTranslatef(1.0, 0.0, 0.0);
+				}
 			}
-		}
-		if(s.align == 2) padding = s.w - totalWidth;
-		else padding = (s.w - totalWidth) / 2.0;
-	}
-
-	for(char c : s()){
-		if(c == ' ') s.x += width / 2.0;
-		else if(c == '\0');
-		else{
-			glBindTexture(GL_TEXTURE_2D,glyph[toupper(c)]);
-
-			glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
-			glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
-			scale = s.h / (float)h;
-			width = (float)w * scale;
-			glPushMatrix();
-				glTranslatef(padding + s.x, s.y, 0);
-				glBegin(GL_QUADS);
-				glTexCoord2i(0, 0);
-				glVertex3f(0, 0, 0);
-
-				glTexCoord2i(1, 0);
-				glVertex3f(width, 0, 0);
-
-				glTexCoord2i(1, 1);
-				glVertex3f(width, s.h, 0);
-
-				glTexCoord2i(0, 1);
-				glVertex3f(0, s.h, 0);
-				glEnd();
-			glPopMatrix();
-			s.x += width;
-		}
-	}
+		glPopMatrix();
+	glPopMatrix();
 }
 
 void fightingGame::drawGlyph(string s, int x, int totalSpace, int y, int height, int just)

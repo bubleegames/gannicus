@@ -24,7 +24,6 @@ public:
 	virtual void unitCollision(instance*, instance*);
 	virtual void genInput();
 	virtual void drawGlyph(string, int, int, int, int, int);
-	virtual void drawGlyph(words);
 	script *oldReplay;
 	unsigned int replayIterator;
 	virtual void print();

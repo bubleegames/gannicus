@@ -45,11 +45,12 @@ public:
 	words(string);
 	words(const words&);
 	virtual void draw() {}
+	virtual void draw(vector<GLuint>);
 	virtual string operator()();
 	virtual string operator()(string);
 	virtual void clear();
-	string text;
 	int align;
+	string text;
 };
 /*
 template <T> counter : virtual public meter, virtual public words
