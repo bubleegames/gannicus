@@ -201,7 +201,9 @@ public:
 	int particleSpawn;
 	int particleX, particleY;
 	int spawnFrame;
+	int carryPosX, carryPosY;
 	int spawnPosX, spawnPosY;
+	int werf;
 	int lifespan;
 	int allegiance;
 	bool unique:1;
@@ -319,8 +321,6 @@ public:
 	virtual bool setParameter(string);
 	virtual bool check(const status&); //Check to see if the action is possible right now.
 	virtual int arbitraryPoll(int, int);
-	int startPosX;
-	int startPosY;
 };
 
 class luftigeWerf : public airMove, public werf {

@@ -91,11 +91,11 @@ void action::zero()
 	modifier = false;
 	payload = nullptr;
 	spawnFrame = 0;
-	spawnTrackY = 0;
-	spawnTrackX = 0;
+	spawnTrackY = 0; spawnTrackX = 0;
 	spawnTrackFloor = 0;
-	spawnPosY = 0;
-	spawnPosX = 0;
+	spawnPosY = 0; spawnPosX = 0;
+	werf = 0;
+	carryPosX = 0; carryPosY = 0;
 	lifespan = -1;
 	allegiance = 1;
 	followStart = -1;
@@ -125,6 +125,13 @@ int action::arbitraryPoll(int q, int f)
 	case 2:
 		if(f == freezeFrame) return freezeLength;
 		else break;
+	case 28:
+		if(werf && f == 0) return 1;
+		break;
+	case 27:
+		return carryPosX;
+	case 26:
+		return carryPosY;
 	case 50:
 		if(f == spawnFrame) return 1;
 		else break;
@@ -369,6 +376,16 @@ bool action::setParameter(string param)
 		for(int i = 0; i < hits+1; i++){
 			state[i].i = stoi(t("\t: \n"));
 		}
+		return true;
+	} else if (t() == "Throw"){
+		for char c : t() {
+			if(c == "A") werf += 1;
+			if(c == "G") werf += 2;
+		}
+		return true;
+	} else if (t() == "Position"){
+		startPosX = stoi(t());
+		startPosY = stoi(t("\t: \n"));
 		return true;
 	} else if (t.current() == "HitAllows") {
 		for(int i = 0; i < hits; i++){
@@ -683,6 +700,12 @@ bool action::patternMatch(vector<int> inputs, int pattern, int t, int f)
 
 bool action::check(const status &current)
 {
+	if(werf){
+		if(current.opponent->current.throwInvuln > 0) return 0;
+		if(werf == 1 && current.opponent->current.aerial) return 0;
+		if(werf == 2 && !current.opponent->current.aerial) return 0;
+	}
+	if(current.opponent->current.throwInvuln > 0) return 0;
 	if(restrictedMode)
 		if(restrictedMode & current.mode)
 			return 0;
