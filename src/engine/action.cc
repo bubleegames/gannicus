@@ -378,14 +378,14 @@ bool action::setParameter(string param)
 		}
 		return true;
 	} else if (t() == "Throw"){
-		for char c : t() {
-			if(c == "A") werf += 1;
-			if(c == "G") werf += 2;
+		for (char c : t()) {
+			if(c == 'A') werf += 1;
+			if(c == 'G') werf += 2;
 		}
 		return true;
 	} else if (t() == "Position"){
-		startPosX = stoi(t());
-		startPosY = stoi(t("\t: \n"));
+		carryPosX = stoi(t());
+		carryPosY = stoi(t("\t: \n"));
 		return true;
 	} else if (t.current() == "HitAllows") {
 		for(int i = 0; i < hits; i++){

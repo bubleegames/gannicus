@@ -406,10 +406,6 @@ action * avatar::createMove(string key)
 	case '?':
 		m = new mash(name, token);
 		break;
-	case '_':
-		if(key[1] == 'j') m = new luftigeWerf(name, token);
-		else m = new werf(name, token);
-		break;
 	case '`':
 		m = new untechState(name, token);
 		break;

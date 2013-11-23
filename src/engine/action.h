@@ -314,23 +314,6 @@ public:
 	int buttons;
 };
 
-class werf : virtual public action {
-public:
-	werf() {}
-	werf(string d, string f) { build(d,f); }
-	virtual bool setParameter(string);
-	virtual bool check(const status&); //Check to see if the action is possible right now.
-	virtual int arbitraryPoll(int, int);
-};
-
-class luftigeWerf : public airMove, public werf {
-public:
-	luftigeWerf() {}
-	luftigeWerf(string d, string f) { build(d,f); }
-	virtual bool setParameter(string);
-	virtual bool check(const status&); //Check to see if the action is possible right now.
-};
-
 class releaseCheck : virtual public action {
 public:
 	releaseCheck() {}

@@ -16,9 +16,9 @@ TEMPLATE
 -jJQ = a57 a67 a47 a37 a27 a17
 -jwsh = a656 a956 a356
 -jqsh = a454 a754 a154
+throw = h6C
+backthrow = h4C
 ?NeutralTech = a
 ?BackTech = a4 a7 a1
 ?ForwardTech = a6 a9 a3
 ?StopTech = a8
-_throw = h6C
-_backthrow = h4C

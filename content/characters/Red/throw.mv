@@ -8,6 +8,7 @@ Damage: 0 : 7.5 : 22.5
 Stun: 16 : 20 : 10
 Untech: 0 : 0 : 30
 Push: 0 : 0 : 10
+Throw: G
 Lift: 0 : 24 -30 0
 Float: 0 : 17 : 0
 Blowback: 0 : 2 : 4
