@@ -379,8 +379,8 @@ bool action::setParameter(string param)
 		return true;
 	} else if (t.current() == "Throw"){
 		for (char c : t()) {
-			if(c == 'A') werf += 1;
-			if(c == 'G') werf += 2;
+			if(c == 'G') werf += 1;
+			if(c == 'A') werf += 2;
 		}
 		return true;
 	} else if (t.current() == "Position"){
@@ -705,7 +705,6 @@ bool action::check(const status &current)
 		if(werf == 1 && current.opponent->current.aerial) return 0;
 		if(werf == 2 && !current.opponent->current.aerial) return 0;
 	}
-	if(current.opponent->current.throwInvuln > 0) return 0;
 	if(restrictedMode)
 		if(restrictedMode & current.mode)
 			return 0;
