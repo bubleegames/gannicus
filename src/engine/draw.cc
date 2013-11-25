@@ -327,21 +327,17 @@ void fightingGame::drawMeters()
 
 	for(player *i:P){
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		vector<SDL_Rect> r (numRounds);
-		for(int j = 0; j < numRounds; j++){
-			r[j].y = 24; r[j].w = 20; r[j].h = 10;
-			r[j].x = env.screenWidth / 2 + (i->ID == 1 ? -120 - 24 * j : 100 + 24 * j);
-		}
-		for(int j = 0; j < numRounds; j++){
-			if(i->rounds > j) glColor4f(0.0f, 1.0f, 1.0f, 1.0f);
-			else glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-			glRectf((GLfloat)(r[j].x), (GLfloat)(r[j].y), (GLfloat)(r[j].x + r[j].w), (GLfloat)(r[j].y + r[j].h));
-		}
 		glPushMatrix();
 			glTranslatef(env.screenWidth/2, 0, 0);
 			glPushMatrix();
 				glScalef(env.screenWidth/2 * (i->ID == 1 ? -1 : 1), env.screenHeight, 0);
 				glDisable( GL_TEXTURE_2D );
+				for(int j = 0; j < numRounds; j++){
+					if(i->rounds > j) glColor4f(0.0f, 1.0f, 1.0f, 1.0f);
+					else glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+					float x = 1.0 / 8.0 + (float)j * .03, y = 2.0 / 75.0, w = .025, h = 1.0 / 90.0;
+					glRectf(x, y, w + x, h + y);
+				}
 				for(HUDMeter <int> j:i->pick()->drawMeters(i->ID, i->current)){
 					j.draw();
 				}
