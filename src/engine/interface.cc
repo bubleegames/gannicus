@@ -94,7 +94,7 @@ void SaltAndBone::createPlayers(string rep)
 		single = true;
 		analytics = false;
 		for(int i = 0; i < 2; i++){
-			selection[i].value = oldReplay->selection[i].value;
+			selection[i].value = oldReplay->selection[i];
 			selection[i].lock = 1;
 			P[i]->characterSelect(selection[i].value);
 			if(scripting) P[i]->readScripts();
@@ -109,7 +109,7 @@ void SaltAndBone::createPlayers()
 	for(int i = 0; i < 2; i++){
 		P.push_back(new player(i+1));
 		p.push_back(P[i]);
-		selection.push_back("P");
+		selection.push_back(cursor<int>("P"));
 		selection.back().w = 1 / 8.0;
 		selection.back().h = 1 / 32.0;
 		selection.back().align = i*2;
@@ -269,7 +269,7 @@ void SaltAndBone::matchInit()
 		i->rounds = 0;
 	}
 	pMenu = 0;
-	if(!selection[0].lock || !selection[1].lockion){
+	if(!selection[0].lock || !selection[1].lock){
 		Mix_VolumeMusic(musicVolume);
 		Mix_PlayMusic(menuMusic, -1);
 		//printf("\n");
@@ -389,7 +389,10 @@ void SaltAndBone::runTimer()
 						if(selection[0].lock && selection[1].lock){
 							if(analytics){
 								replay = new script;
-								replay->init(selection);
+								vector <int> v;
+								for(cursor <int> i:selection)
+									v.push_back(i.value);
+								replay->init(v);
 							}
 							roundInit();
 						}

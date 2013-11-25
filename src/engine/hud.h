@@ -61,6 +61,9 @@ public:
 template <typename T>
 class counter : virtual public HUDMeter<T>, virtual public words{
 public:
+	virtual T operator=(const counter &o){
+		return this->value = o.value;
+	}
 	string postText;
 	counter(string a, string b) {
 		text = a;
@@ -104,6 +107,15 @@ public:
 template <typename T>
 class cursor : virtual public counter<T> {
 public:
+	cursor(string o){
+		this->text = o;
+	}
+
+	cursor(string a, string b) {
+		this->text = a;
+		this->postText = b;
+	}
+
 	cursor() { 
 		counter<T>(); lock = false; 
 	}
