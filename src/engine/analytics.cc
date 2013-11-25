@@ -15,10 +15,10 @@ void script::init(int players)
 	}
 }
 
-void script::init(vector<int> s)
+void script::init(vector<counter<int>> s)
 {
 	for(unsigned int i = 0; i < s.size(); i++){
-		selection.push_back(s[i]);
+		selection.push_back(s[i].value);
 		vector<inputs> tvec;
 		command.push_back(tvec);
 	}

@@ -914,7 +914,7 @@ void SaltAndBone::cSelectMenu()
 		loadAssets();
 		if(analytics){
 			replay = new script;
-			replay->init(selection[i].value);
+			replay->init(selection);
 		}
 
 		Mix_HaltMusic();

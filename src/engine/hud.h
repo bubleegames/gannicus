@@ -7,6 +7,7 @@
 using std::vector;
 using std::cout;
 using std::string;
+using std::to_string;
 class HUDElement{
 public:
 	HUDElement();
@@ -64,37 +65,37 @@ public:
 	counter(string a, string b) {
 		text = a;
 		postText = b;
-		value = (T)0;
+		this->value = (T)0;
 	}
 
 	counter(string a) {
 		text = a;
 		postText = "";
-		value = (T)0;
+		this->value = (T)0;
 	}
 
 	counter (T a) {
 		text = "";
 		postText = "";
-		value = a;
+		this->value = a;
 	}
 
 	counter () {
-		text = a;
+		text = "";
 		postText = "";
-		value = (T)0;
+		this->value = (T)0;
 	}
 
 	void draw(vector<GLuint> glyph) {
 		string temp = text;
-		text += to_string(value) + postText;
-		words::draw(glyph)
+		text += to_string(this->value) + postText;
+		words::draw(glyph);
 		text = temp;
 	}
 
 	void draw() {
 		string temp = text;
-		text += to_string(value) + postText;
+		text += to_string(this->value) + postText;
 		words::draw();
 		text = temp;
 	}
@@ -104,23 +105,16 @@ template <typename T>
 class cursor : virtual public counter<T> {
 public:
 	cursor() { 
-		counter(); lock = false; 
+		counter<T>(); lock = false; 
 	}
 
-	bool& operator=(const bool& o){
-		return &lock = o;
+	bool operator=(const bool& o){
+		return lock = o;
 	}
 
-	cursor.draw() {
-		string temp = text;
-		text += lock ? "[" : "" + toString(value) + lock ? "]" : "" + postText;
-		words::draw();
-		text = temp;
-	}
-
-	cursor.draw(vector<GLuint> glyph) {
-		if(lock) A = .5 + lock*.5;
-		counter::draw(glyph);
+	void draw(vector<GLuint> glyph) {
+		if(lock) this->A = .5 + lock*.5;
+		counter<T>::draw(glyph);
 	}
 
 	bool lock;

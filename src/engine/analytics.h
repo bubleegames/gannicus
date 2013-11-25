@@ -44,7 +44,7 @@ public:
 	script() {}
 	script(string);
 	void init(int);
-	void init(vector<int>);
+	void init(vector<counter<int>>);
 	void push(int i, inputs);
 	void push(inputs);
 	vector<vector<inputs> > command;

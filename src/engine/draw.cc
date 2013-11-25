@@ -31,7 +31,6 @@ void SaltAndBone::draw()
 
 void SaltAndBone::drawCSelect()
 {
-	int x, y;
 	glColor4f(0.1f, 0.1f, 0.1f, 1.0f);
 	glRectf(0.0f, 0.0f, (GLfloat)env.screenWidth, (GLfloat)env.screenHeight);
 	for(int i = 0; i < 2; i++){
@@ -56,8 +55,8 @@ void SaltAndBone::drawCSelect()
 		glVertex3f(350.0f, 900.0f, 0.f);
 	glEnd();
 	for(cursor<int> i:selection){
-		i.x = (1.0/2.0 + 1.0/3.0 * cos(((M_PI*2.0)/(float)numChars)*(float)selection[i].value+M_PI/4.0+M_PI/2.0)) - 100.0;
-		i.y = (1.0/2.0 + 1.0/3.0 * sin(((M_PI*2.0)/(float)numChars)*(float)selection[i].value+M_PI/4.0+M_PI/2.0));
+		i.x = (1.0/2.0 + 1.0/3.0 * cos(((M_PI*2.0)/(float)numChars)*(float)i.value+M_PI/4.0+M_PI/2.0)) - 100.0;
+		i.y = (1.0/2.0 + 1.0/3.0 * sin(((M_PI*2.0)/(float)numChars)*(float)i.value+M_PI/4.0+M_PI/2.0));
 		i.draw(glyph);
 	}
 
