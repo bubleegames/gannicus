@@ -71,6 +71,7 @@ public:
 	virtual action * neutralize(status&);
 	virtual vector<HUDMeter<int>> drawMeters(int, status&);
 	virtual void init(status&);
+	virtual bool death(status&);
 	virtual int checkBlocking(status&, deque<int>);
 	virtual void block(status&, int, bool);
 	virtual void resetAirOptions(vector<HUDMeter<int>>&);
@@ -113,6 +114,7 @@ public:
 	pet(string, string);
 	virtual int takeHit(status&, hStat&, int, int&);
 	virtual void build(string, string);
+	virtual bool death(status&);
 	virtual void init(status&);
 	pet();
 };

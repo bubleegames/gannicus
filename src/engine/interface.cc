@@ -573,8 +573,8 @@ void SaltAndBone::cleanup()
 			}
 		}
 		if(!rMenu && select[0] && select[1]){
+			for(instance *i:things) i->step();
 			for(unsigned int i = 0; i < things.size(); i++){
-				things[i]->step();
 				if(i > 1 && things[i]->current.dead){ 
 					things.erase(things.begin()+i);
 					i--;
@@ -708,7 +708,7 @@ void SaltAndBone::summonForces()
 /*Check if someone won*/
 void SaltAndBone::checkWin()
 {
-	if(P[0]->current.meter[0].value == 0 || P[1]->current.meter[0].value == 0 || timer == 0){
+	if(P[0]->dead() || P[1]->dead() || timer == 0){
 		roundEnd = true;
 		if(P[0]->current.meter[0].value > P[1]->current.meter[0].value) {
 			P[0]->rounds++;

@@ -22,6 +22,7 @@ public:
 	deque<int> inputBuffer;
 	void checkFacing();
 	void checkFacing(instance*);
+	virtual bool dead();
 	virtual hStat pollStats();
 	virtual void neutralize();
 	virtual bool validate(int, int);
@@ -74,6 +75,7 @@ public:
 	player();
 	player(int);
 	~player();
+	virtual bool dead();
 	virtual character * pick() { return v; }
 
 	int rounds;		//How many rounds has this player won this match?

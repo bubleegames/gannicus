@@ -24,6 +24,11 @@ character::character(string name)
 	build(name, name);
 }
 
+bool character::death(status &current)
+{
+	return current.move == dead;
+}
+
 character::~character()
 {
 	if(!dFlag){

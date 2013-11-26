@@ -590,6 +590,16 @@ void instance::print()
 	cout << "Player" << ID << "(" << pick()->name << "): " << current.move->name << "[" << current.frame << "]\n";
 }
 
+bool instance::dead()
+{
+	return pick()->death(current);
+}
+
+bool player::dead()
+{
+	return current.meter[0].value == 0 || pick()->death(current);
+}
+
 void instance::step()
 {
 	if(!current.freeze){
@@ -597,20 +607,17 @@ void instance::step()
 		current.hover--;
 	}
 	if(pick()->death(current)) current.dead = true;
+	for(unsigned int i = 0; i < current.offspring.size(); i++){
+		if(current.offspring[i]->current.move == current.offspring[i]->pick()->die){
+			current.offspring.erase(current.offspring.begin()+i);
+			i--;
+		}
+	}
 	if(current.connect < 0) current.connect = 0;
 	if(!current.freeze){ 
 		if(current.move->flip == current.frame) flip();
 		current.age++;
 	}
-	/*for(unsigned int i = 0; i < current.offspring.size(); i++){
-		if(current.offspring[i]->current.posX > 3700 || current.offspring[i]->current.posX < -500 || 
-		   current.offspring[i]->current.posY < -200 || current.offspring[i]->current.posY > 2500) 
-			current.offspring[i]->current.age = current.offspring[i]->pick()->lifespan - 240;
-		if(current.offspring[i]->current.move == current.offspring[i]->pick()->die){
-			current.offspring.erase(current.offspring.begin()+i--);
-		}
-	}
-	*/
 	pick()->step(current);
 	if(current.move && current.frame >= current.move->frames){
 		if(current.move->modifier && current.move->basis.move){ 
