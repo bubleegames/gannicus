@@ -130,31 +130,28 @@ void SaltAndBone::createPlayers()
 
 void SaltAndBone::loadMatchBackground()
 {
-	//if(!killTimer && scalingFactor >= 1.2)*/ env.background = aux::load_texture("content/stages/" + to_string(selection[0]) + "/bg.png");
-	//else {
-		switch (selection[0]){
-		case 1:
-			env.bgR = 1.0;
-			env.bgG = 0.0;
-			env.bgB = 0.0;
-			break;
-		case 2:
-			env.bgR = 1.0;
-			env.bgG = 1.0;
-			env.bgB = 0.0;
-			break;
-		case 3:
-			env.bgR = 0.0;
-			env.bgG = 0.0;
-			env.bgB = 0.0;
-			break;
-		case 4:
-			env.bgR = 1.0;
-			env.bgG = 0.5;
-			env.bgB = 0.0;
-			break;
-		}
-	//}
+	switch (selection[0]){
+	case 1:
+		env.bgR = 1.0;
+		env.bgG = 0.0;
+		env.bgB = 0.0;
+		break;
+	case 2:
+		env.bgR = 1.0;
+		env.bgG = 1.0;
+		env.bgB = 0.0;
+		break;
+	case 3:
+		env.bgR = 0.25;
+		env.bgG = 0.25;
+		env.bgB = 0.25;
+		break;
+	case 4:
+		env.bgR = 1.0;
+		env.bgG = 0.5;
+		env.bgB = 0.0;
+		break;
+	}
 
 	if(selection[0] == selection[1]) 
 		matchMusic = Mix_LoadMUS("content/sound/Mirror.ogg");
@@ -280,12 +277,11 @@ void SaltAndBone::roundInit()
 	while(things.size() > P.size())
 		things.pop_back();
 	env.roundInit();
-
+	env.spawn(things);
 	for(player* i:P){
 		i->roundInit();
 		i->updateRects();
 	}
-	env.spawn(things);
 	/*Initialize input containers*/
 	initContainers();
 	for(unsigned int i = 0; i < P.size(); i++){
