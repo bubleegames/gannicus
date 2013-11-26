@@ -937,6 +937,11 @@ int player::takeHit(int combo, hStat & s)
 	}
 }
 
+void instance::outOfBounds()
+{
+	current.move = pick()->die->execute(current);
+}
+
 void instance::invertVectors(int operation)
 {
 	switch (operation){

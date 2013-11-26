@@ -568,8 +568,7 @@ void SaltAndBone::cleanup()
 	if(select[0] && select[1] && !pMenu){
 		for(instance *i:things){
 			if(i->current.posX > env.bg.w + 300 || i->current.posX < -300 || i->current.posY < -300 || i->current.posY > env.bg.h){
-				i->pick()->die->execute(i->current);
-				i->current.move = i->pick()->die;
+				i->outOfBounds();
 			}
 		}
 		if(!rMenu && select[0] && select[1]){

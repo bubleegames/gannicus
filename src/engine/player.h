@@ -27,6 +27,7 @@ public:
 	virtual void neutralize();
 	virtual bool validate(int, int);
 	virtual bool acceptTarget(instance*);
+	virtual void outOfBounds();
 	virtual int CHState() const { return 0; }
 	virtual void init();
 	virtual void step();
@@ -90,6 +91,7 @@ public:
 	virtual void readScripts();
 	virtual void roundInit();
 	virtual void macroCheck(SDL_Event&);
+	virtual void outOfBounds() {}
 	virtual int takeHit(int, hStat&);
 	virtual int CHState() const;
 	virtual bool reversalPossible() const;
