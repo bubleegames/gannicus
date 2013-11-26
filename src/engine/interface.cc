@@ -281,11 +281,11 @@ void SaltAndBone::roundInit()
 		things.pop_back();
 	env.roundInit();
 
-	env.spawn(things);
 	for(player* i:P){
 		i->roundInit();
 		i->updateRects();
 	}
+	env.spawn(things);
 	/*Initialize input containers*/
 	initContainers();
 	for(unsigned int i = 0; i < P.size(); i++){
@@ -905,7 +905,6 @@ void SaltAndBone::cSelectMenu()
 		SDL_GL_SwapBuffers();
 		for(unsigned int i = 0; i < P.size(); i++){
 			P[i]->characterSelect(selection[i]);
-			//P[i]->enemySelect(selection[P[i]->current.opponent]);
 		}
 		loadAssets();
 		if(analytics){

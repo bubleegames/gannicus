@@ -399,6 +399,7 @@ void player::characterSelect(int i)
 	}
 	iterator = 0;
 	current.meter = pick()->generateMeter();
+	neutralize();
 }
 
 void player::readScripts()
