@@ -86,7 +86,8 @@ action * actionTrie::actionHook(status &current, deque<int> inputBuffer, int i, 
 	action * result = nullptr;
 	int j;
 	for(j = i; j < 30; j++){
-		if(inputBuffer[j] < 10) test = child[inputBuffer[j]];
+		if(inputBuffer[j] < 0 || inputBuffer[j] > 9) test = child[5];
+		else test = child[inputBuffer[j]];
 		if(test != nullptr){
 			if (first < 0) result = test->actionHook(current, inputBuffer, j, j, buttons);
 			else result = test->actionHook(current, inputBuffer, j, first, buttons);
