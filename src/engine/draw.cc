@@ -190,15 +190,37 @@ void SaltAndBone::drawLoadingScreen()
 	glPopMatrix();
 }
 
-void SaltAndBone::drawGame()
+void environment::draw()
 {
 	glPushMatrix();
-		glTranslatef(-env.bg.x, env.bg.y, 0);
-		glColor4f(env.bgR, env.bgG, env.bgB, 0.5f);
-		glRectf(0, 0, env.bg.w, env.bg.h);
+		glTranslatef(-bg.x, bg.y, 0);
+		glColor4f(bgR, bgG, bgB, 0.5f);
+		glRectf(0, 0, bg.w, bg.h);
 		glEnable( GL_TEXTURE_2D );
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		if(background){
+			glColor4f(1.0 - bgR, 1.0 - bgG, 1.0 - bgB, 0.5);
+			glBindTexture(GL_TEXTURE_2D, background);
+			glBegin(GL_QUADS);
+				glTexCoord2i(0, 0);
+				glVertex3f(0.0f, 0.0f, 0.f);
+
+				glTexCoord2i(1, 0);
+				glVertex3f((float)bg.w, 0.0f, 0.f);
+
+				glTexCoord2i(1, 1);
+				glVertex3f((float)bg.w, (float)bg.h, 0.f);
+
+				glTexCoord2i(0, 1);
+				glVertex3f(0.0, (float)bg.h, 0.f);
+			glEnd();
+		}
 	glPopMatrix();
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+}
+
+void SaltAndBone::drawGame()
+{
+	env.draw();
 	drawHUD();
 	glPushMatrix();
 		glTranslatef(-env.bg.x, (env.bg.y+env.bg.h), 0);
@@ -517,7 +539,8 @@ void player::drawHitParticle()
 	if(particleLife > 0){
 		switch (particleType){
 		case 1:
-			glColor4f(1.0f, 0.0f, 0.0f, 0.7f);
+			if(current.opponent->current.counter == 1) glColor4f(1.0f, 0.5f, 0.0f, 0.7f);
+			else glColor4f(1.0f, 0.0f, 0.0f, 0.7f);
 			break;
 		case 0:
 			glColor4f(0.0f, 0.0f, 0.0f, 0.7f);

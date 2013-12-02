@@ -182,6 +182,7 @@ void HUD::loadMisc()
 
 void SaltAndBone::loadMisc()
 {
+	env.loadMisc();
 	HUD::loadMisc();
 	selectScreen = aux::load_texture("content/menu/Select.png");
 	menuMusic = Mix_LoadMUS("content/sound/Menu.ogg");

@@ -8,6 +8,7 @@ using std::ifstream;
 
 environment::environment()
 {
+	background = 0;
 	load("world");
 	auto gravity = make_shared<globalForce>();
 	gravity->x = 0;
@@ -31,8 +32,14 @@ int environment::spawn(vector <instance*> things)
 	return things.size() - spawnPoints.size();
 }
 
+void environment::loadMisc()
+{
+	background = aux::load_texture("content/stages/" + filename + "/bg.png");
+}
+
 void environment::load(string name)
 {
+	filename = name;
 	ifstream read;
 	read.open("content/stages/"+name+"/"+name+".st");
 	char buffer[1024];
