@@ -79,6 +79,7 @@ void instance::init()
 	current.aerial = false;
 	current.dead = false;
 	current.age = 0;
+	current.throwInvuln = 0;
 	current.offspring.clear();
 	inputBuffer.clear();
 	for(int i = 0; i < 30; i++) inputBuffer.push_front(5);
@@ -603,7 +604,7 @@ bool player::dead()
 void instance::step()
 {
 	if(!current.freeze){
-		current.throwInvuln--;
+		if(current.throwInvuln > 0) current.throwInvuln--;
 		current.hover--;
 	}
 	if(pick()->death(current)) current.dead = true;
