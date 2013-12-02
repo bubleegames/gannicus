@@ -439,14 +439,14 @@ vector<HUDMeter<int>> character::drawMeters(int ID, status &current)
 
 void instance::drawBoxen()
 {
-	glColor4f(1.0f, current.throwInvuln > 0 ? 0.5f : 1.0f, current.throwInvuln > 0 ? 0.2f : 1.0f, 0.5f);
+	glColor4f(1.0f, current.throwInvuln > 0 ? 0.5f : 1.0f, current.throwInvuln > 0 ? 0.2f : 1.0f, 0.7f);
 	glPushMatrix();
 		glTranslatef(collision.x, -collision.y, 0);
 		glRectf(0.0f, 0.0f, (GLfloat)(collision.w), (GLfloat)(-collision.h));
 	glPopMatrix();
 	for(unsigned int i = 0; i < hitreg.size(); i++){
 		glFlush();
-		glColor4f(CHState() ? 1.0f : 0.0f, ID == 2 ? 0.0f : 1.0f, ID == 2 ? 1.0f : 0.0f, 0.5f);
+		glColor4f(CHState() ? 1.0f : 0.0f, ID == 2 ? 0.0f : 1.0f, ID == 2 ? 1.0f : 0.0f, 0.7f);
 		glNormal3f(1.0f, 0.0f, 1.0f);
 		glPushMatrix();
 			glTranslatef(hitreg[i].x, -hitreg[i].y, 1);
@@ -455,7 +455,7 @@ void instance::drawBoxen()
 	}
 	for(unsigned int i = 0; i < current.move->hitbox[current.frame].size(); i++){
 		glFlush();
-		glColor4f(1.0f, ID == 2 ? 1.0 : 0.0, 0.0, 0.5f);
+		glColor4f(1.0f, ID == 2 ? 1.0 : 0.0, 0.0, 0.7f);
 		glPushMatrix();
 			glTranslatef(current.move->hitbox[current.frame][i].x*current.facing + current.posX, -(current.move->hitbox[current.frame][i].y + current.posY), 0);
 			glRectf(0.0f, 0.0f, (GLfloat)(current.move->hitbox[current.frame][i].w*current.facing), (GLfloat)(-(current.move->hitbox[current.frame][i].h)));
