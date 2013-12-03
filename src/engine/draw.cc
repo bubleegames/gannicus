@@ -198,7 +198,8 @@ void environment::draw()
 		glRectf(0, 0, bg.w, bg.h);
 		glEnable( GL_TEXTURE_2D );
 		if(background){
-			glColor4f(1.0 - bgR, 1.0 - bgG, 1.0 - bgB, 0.5);
+			glColor4f(1.0, 1.0, 1.0, 0.25);
+	//		glColor4f(1.0 - bgR, 1.0 - bgG, 1.0 - bgB, 0.5);
 			glBindTexture(GL_TEXTURE_2D, background);
 			glBegin(GL_QUADS);
 				glTexCoord2i(0, 0);
@@ -439,7 +440,7 @@ vector<HUDMeter<int>> character::drawMeters(int ID, status &current)
 
 void instance::drawBoxen()
 {
-	glColor4f(1.0f, current.throwInvuln > 0 ? 0.5f : 1.0f, current.throwInvuln > 0 ? 0.2f : 1.0f, 0.7f);
+	glColor4f(current.throwInvuln == 0, current.throwInvuln == 0, current.throwInvuln == 0, 0.7f);
 	glPushMatrix();
 		glTranslatef(collision.x, -collision.y, 0);
 		glRectf(0.0f, 0.0f, (GLfloat)(collision.w), (GLfloat)(-collision.h));
