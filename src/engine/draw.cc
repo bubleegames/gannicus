@@ -198,8 +198,8 @@ void environment::draw()
 		glRectf(0, 0, bg.w, bg.h);
 		glEnable( GL_TEXTURE_2D );
 		if(background){
-			glColor4f(1.0, 1.0, 1.0, 0.25);
-	//		glColor4f(1.0 - bgR, 1.0 - bgG, 1.0 - bgB, 0.5);
+			glColor4f(1.0, 1.0, 1.0, 0.125);
+//			glColor4f(1.0 - bgR, 1.0 - bgG, 1.0 - bgB, 0.5);
 			glBindTexture(GL_TEXTURE_2D, background);
 			glBegin(GL_QUADS);
 				glTexCoord2i(0, 0);
