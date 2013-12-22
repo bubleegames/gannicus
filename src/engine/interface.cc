@@ -577,10 +577,11 @@ void SaltAndBone::cleanup()
 	}
 
 	for(unsigned int i = 0; i < currentFrame.size(); i++){
-		if(currentFrame[i].n.raw.Start && counter[i] <= 0){
+		if(currentFrame[i].n.raw.Start == 1 && counter[i] <= 0){
 			if(pauseEnabled && !roundEnd){
 				if(pMenu) pMenu = 0;
 				else pMenu = 1;
+				counter[i] = 10;
 			}
 		}
 	}
