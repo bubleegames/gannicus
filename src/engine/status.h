@@ -32,6 +32,8 @@ struct status{
 	action *move, *bufferedMove, *reversal;
 	int reversalTimer;
 	vector <instance*> offspring;
+	vector<SDL_Rect> hitbox, hitreg;
+	SDL_Rect collision;
 	int connect, hit, counter;
 	int drawX, drawY;
 	bool elasticX;

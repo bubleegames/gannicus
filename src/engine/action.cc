@@ -701,9 +701,9 @@ bool action::patternMatch(vector<int> inputs, int pattern, int t, int f)
 bool action::check(const status &current)
 {
 	if(werf){
-		if(current.opponent->current.throwInvuln > 0) return 0;
-		if(werf == 1 && current.opponent->current.aerial) return 0;
-		if(werf == 2 && !current.opponent->current.aerial) return 0;
+		if(current.opponent->save.throwInvuln > 0) return 0;
+		if(werf == 1 && current.opponent->save.aerial) return 0;
+		if(werf == 2 && !current.opponent->save.aerial) return 0;
 	}
 	if(restrictedMode)
 		if(restrictedMode & current.mode)

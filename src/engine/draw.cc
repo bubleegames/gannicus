@@ -442,16 +442,16 @@ void instance::drawBoxen()
 {
 	glColor4f(current.throwInvuln == 0, current.throwInvuln == 0, current.throwInvuln == 0, 0.7f);
 	glPushMatrix();
-		glTranslatef(collision.x, -collision.y, 0);
-		glRectf(0.0f, 0.0f, (GLfloat)(collision.w), (GLfloat)(-collision.h));
+		glTranslatef(current.collision.x, -current.collision.y, 0);
+		glRectf(0.0f, 0.0f, (GLfloat)(current.collision.w), (GLfloat)(-current.collision.h));
 	glPopMatrix();
-	for(unsigned int i = 0; i < hitreg.size(); i++){
+	for(unsigned int i = 0; i < current.hitreg.size(); i++){
 		glFlush();
 		glColor4f(CHState() ? 1.0f : 0.0f, ID == 2 ? 0.0f : 1.0f, ID == 2 ? 1.0f : 0.0f, 0.7f);
 		glNormal3f(1.0f, 0.0f, 1.0f);
 		glPushMatrix();
-			glTranslatef(hitreg[i].x, -hitreg[i].y, 1);
-			glRectf(0.0f, 0.0f, (GLfloat)(hitreg[i].w), (GLfloat)(-hitreg[i].h));
+			glTranslatef(current.hitreg[i].x, -current.hitreg[i].y, 1);
+			glRectf(0.0f, 0.0f, (GLfloat)(current.hitreg[i].w), (GLfloat)(-current.hitreg[i].h));
 		glPopMatrix();
 	}
 	for(unsigned int i = 0; i < current.move->hitbox[current.frame].size(); i++){
@@ -470,7 +470,7 @@ void instance::draw(GLint p)
 {
 	bool sCheck = spriteCheck();
 	status * n;
-	if(sCheck && save.facing && particleType == 1 && current.freeze && current.counter) n = &save;
+	if(save.facing && particleType == 1 && current.freeze && current.counter) n = &save;
 	else n = &current;
 
 	if(n == &current){
@@ -480,32 +480,26 @@ void instance::draw(GLint p)
 		if(n->move->offX != 0) n->drawX += n->move->offX*n->facing;
 		else{
 			if(n->facing == 1){
-				if(collision.x < n->drawX) n->drawX = collision.x;
-				for(unsigned int i = 0; i < hitreg.size(); i++){
-					if(hitreg[i].x < n->drawX) n->drawX = hitreg[i].x;
-				}
-				for(unsigned int i = 0; i < hitbox.size(); i++){
-					if(hitbox[i].x < n->drawX) n->drawX = hitbox[i].x;
-				}
+				if(n->collision.x < n->drawX) n->drawX = n->collision.x;
+				for(unsigned int i = 0; i < n->hitreg.size(); i++)
+					if(n->hitreg[i].x < n->drawX) n->drawX = n->hitreg[i].x;
+				for(unsigned int i = 0; i < n->hitbox.size(); i++)
+					if(n->hitbox[i].x < n->drawX) n->drawX = n->hitbox[i].x;
 			} else {
-				if(collision.x + collision.w > n->drawX) n->drawX = collision.x + collision.w;
-				for(unsigned int i = 0; i < hitreg.size(); i++){
-					if(hitreg[i].x + hitreg[i].w > n->drawX) n->drawX = hitreg[i].x + hitreg[i].w;
-				}
-				for(unsigned int i = 0; i < hitbox.size(); i++){
-					if(hitbox[i].x + hitbox[i].w > n->drawX) n->drawX = hitbox[i].x + hitbox[i].w;
-				}
+				if(n->collision.x + n->collision.w > n->drawX) n->drawX = n->collision.x + n->collision.w;
+				for(unsigned int i = 0; i < n->hitreg.size(); i++)
+					if(n->hitreg[i].x + n->hitreg[i].w > n->drawX) n->drawX = n->hitreg[i].x + n->hitreg[i].w;
+				for(unsigned int i = 0; i < n->hitbox.size(); i++)
+					if(n->hitbox[i].x + n->hitbox[i].w > n->drawX) n->drawX = n->hitbox[i].x + n->hitbox[i].w;
 			}
 		}
 		if(n->move->offY != 0) n->drawY += n->move->offY;
 		else{
-			if(collision.y < n->drawY) n->drawY = collision.y;
-			for(unsigned int i = 0; i < hitreg.size(); i++){
-				if(hitreg[i].y < n->drawY) n->drawY = hitreg[i].y;
-			}
-			for(unsigned int i = 0; i < hitbox.size(); i++){
-				if(hitbox[i].y < n->drawY) n->drawY = hitbox[i].y;
-			}
+			if(n->collision.y < n->drawY) n->drawY = n->collision.y;
+			for(unsigned int i = 0; i < n->hitreg.size(); i++)
+				if(n->hitreg[i].y < n->drawY) n->drawY = n->hitreg[i].y;
+			for(unsigned int i = 0; i < n->hitbox.size(); i++)
+				if(n->hitbox[i].y < n->drawY) n->drawY = n->hitbox[i].y;
 		}
 	}
 	glEnable(GL_TEXTURE_2D);
@@ -515,7 +509,7 @@ void instance::draw(GLint p)
 			glTranslatef(n->drawX, -n->drawY, 0);
 			glPushMatrix();
 				glScalef((float)n->facing, 1.0, 1.0);
-				pick()->draw(n->move, n->frame, p);
+				pick()->draw(*n, p);
 			glPopMatrix();
 		glPopMatrix();
 	}
@@ -531,7 +525,6 @@ void instance::draw(GLint p)
 			glPopMatrix();
 		} else drawBoxen();
 	}
-	if(n == &current) save = current;
 }
 
 void player::drawHitParticle()
@@ -558,8 +551,8 @@ void player::drawHitParticle()
 		glPushMatrix();
 			glTranslatef(current.posX, 0.0f, 0.0f);
 			glPushMatrix();
-				glTranslatef(0.0f, -collision.y, 0.0f);
-				glRectf((GLfloat)(-10*current.facing), (GLfloat)(-collision.h), (GLfloat)(50 * current.facing), (GLfloat)(-collision.h - 40));
+				glTranslatef(0.0f, -current.collision.y, 0.0f);
+				glRectf((GLfloat)(-10*current.facing), (GLfloat)(-current.collision.h), (GLfloat)(50 * current.facing), (GLfloat)(-current.collision.h - 40));
 			glPopMatrix();
 			for(SDL_Rect i:hitLocation){
 				glPushMatrix();
@@ -575,14 +568,14 @@ void player::drawHitParticle()
 	}
 }
 
-void avatar::draw(action *& cMove, int f, GLint p)
+void avatar::draw(status &current, GLint p)
 {
 	if(palette) glUseProgram(p);
 	GLint paletteID = glGetUniformLocation(p, "palette"); //Get a pointer to a shader uniform var
 	glActiveTexture(GL_TEXTURE2); // Choose texture unit 1 (base texture). 
 	glBindTexture(GL_TEXTURE_2D, palette); //Bind texture as normal
 	glUniform1i(paletteID, 2); //Set base texture sampler uniform var
-	cMove->draw(f, p);
+	current.move->draw(current.frame, p);
 	glUseProgram(0);
 }
 

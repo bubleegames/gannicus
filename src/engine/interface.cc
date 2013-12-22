@@ -404,7 +404,7 @@ void fightingGame::print()
 	for(player* i:P) i->print();
 }
 
-/*Main function for a frame. This resolves character spritions, env.background scrolling, and hitboxes*/
+/*Main function for a frame. This resolves character spritions, env.background scrolling, and current.hitboxes*/
 void SaltAndBone::resolve()
 {
 	if(!select[0] || !select[1]) cSelectMenu();
@@ -493,8 +493,8 @@ void SaltAndBone::resolveCamera()
 	}
 	dragBG(dx);
 	for(unsigned int i = 0; i < P.size(); i++){
-		if(dy < things[i]->current.posY + things[i]->collision.h){
-			dy = things[i]->current.posY + things[i]->collision.h;
+		if(dy < things[i]->current.posY + things[i]->current.collision.h){
+			dy = things[i]->current.posY + things[i]->current.collision.h;
 			if(dy > env.bg.h) dy = env.bg.h;
 		}
 	}
@@ -523,14 +523,6 @@ void SaltAndBone::resolveInputs()
 			}
 		}
 		for(player *i:P) i->pushInput(currentFrame[i->ID - 1].n.raw.dir + flop[i->ID -1]);
-		for(unsigned int i = 2; i < things.size(); i++) things[i]->pushInput(P[things[i]->ID - 1]->inputBuffer);
-		for(unsigned int i = 0; i < P.size(); i++){
-			bool test = 1;
-			P[i]->getMove(currentFrame[i].buttons, test);
-			if(!test && !P[i]->current.aerial){ 
-				P[i]->checkFacing();
-			}
-		}
 		for(instance *i:things){
 			bool d = 0;
 			if(i)
@@ -564,6 +556,7 @@ void SaltAndBone::cleanup()
 {
 	if(select[0] && select[1] && !pMenu){
 		for(instance *i:things){
+			i->cleanup();
 			if(i->current.posX > env.bg.w + 300 || i->current.posX < -300 || i->current.posY < -300 || i->current.posY > env.bg.h){
 				i->outOfBounds();
 			}
@@ -679,9 +672,9 @@ void SaltAndBone::summonForces()
 			avec->effectCode = tvec->effectCode;
 			avec->eventHorizon = tvec->eventHorizon;
 			avec->grip = tvec->grip;
-			if(things[i]->current.facing == 1) avec->current.posX = things[i]->collision.x + things[i]->collision.w / 2;
-			else avec->current.posX = things[i]->collision.x - things[i]->collision.w / 2 + things[i]->collision.w % 2;
-			avec->current.posY = things[i]->collision.y + things[i]->collision.h/2;
+			if(things[i]->current.facing == 1) avec->current.posX = things[i]->current.collision.x + things[i]->current.collision.w / 2;
+			else avec->current.posX = things[i]->current.collision.x - things[i]->current.collision.w / 2 + things[i]->current.collision.w % 2;
+			avec->current.posY = things[i]->current.collision.y + things[i]->current.collision.h/2;
 			if(avec->type == 0) avec->x *= things[i]->current.facing;
 			switch(tvec->ID){
 			case 1:
@@ -1153,28 +1146,28 @@ void fightingGame::unitCollision(instance *a, instance *b)
 
 	/*Collision between players. Unfortunately a lot of specialcasing necessary here.*/
 
-	int rLOffset = right->current.posX - right->collision.x,
-	    rROffset = right->current.posX - (right->collision.x + right->collision.w),
-	    lLOffset = left->current.posX - left->collision.x,
-	    lROffset = left->current.posX - (left->collision.x + left->collision.w),
+	int rLOffset = right->current.posX - right->current.collision.x,
+	    rROffset = right->current.posX - (right->current.collision.x + right->current.collision.w),
+	    lLOffset = left->current.posX - left->current.collision.x,
+	    lROffset = left->current.posX - (left->current.collision.x + left->current.collision.w),
 	    dOffset = (left->current.deltaX - right->current.deltaX) % 2,
-	    totalMiddle = (right->collision.x + left->collision.x + left->collision.w)/2;
+	    totalMiddle = (right->current.collision.x + left->current.collision.x + left->current.collision.w)/2;
 	if(abs(left->current.deltaX) > abs(right->current.deltaX)) totalMiddle += dOffset;
 
 	if(left->current.lCorner){ 
-		right->current.posX = left->collision.x + left->collision.w + rLOffset;
+		right->current.posX = left->current.collision.x + left->current.collision.w + rLOffset;
 	}
-	else if(right->current.rCorner) left->current.posX = right->collision.x + lROffset;
+	else if(right->current.rCorner) left->current.posX = right->current.collision.x + lROffset;
 	else {
-		right->current.posX = totalMiddle + right->collision.w + rROffset;
-		left->current.posX = totalMiddle - left->collision.w + lLOffset;
+		right->current.posX = totalMiddle + right->current.collision.w + rROffset;
+		left->current.posX = totalMiddle - left->current.collision.w + lLOffset;
 	}
-	if(left->collision.x < 50) {
+	if(left->current.collision.x < 50) {
 		left->updateRects();
-		right->current.posX = left->collision.x + left->collision.w + rLOffset;
-	} else if (right->collision.x + right->collision.w > 3150) {
+		right->current.posX = left->current.collision.x + left->current.collision.w + rLOffset;
+	} else if (right->current.collision.x + right->current.collision.w > 3150) {
 		right->updateRects();
-		left->current.posX = right->collision.x + lROffset;
+		left->current.posX = right->current.collision.x + lROffset;
 	}
 	right->updateRects();
 	left->updateRects();
@@ -1186,7 +1179,7 @@ void SaltAndBone::resolveCollision()
 	vector<int> dx;
 	for(player *i:P){
 		env.enforceFloor(i);
-		temp.push_back(i->collision);
+		temp.push_back(i->current.collision);
 		dx.push_back(i->current.deltaX);
 		temp.back().x -= dx.back();
 	}
@@ -1199,7 +1192,7 @@ void SaltAndBone::resolveCollision()
 			while(dx[0] || dx[1]){
 				for(unsigned int i = 0; i < P.size(); i++){
 					if(dx[i]){
-						P[i]->current.posX += temp[i].x - P[i]->collision.x;
+						P[i]->current.posX += temp[i].x - P[i]->current.collision.x;
 						P[i]->updateRects();
 						dx[i] -= (dx[i] > 0) ? j[i] : -j[i];
 						j[i] = 0;
@@ -1248,7 +1241,7 @@ void SaltAndBone::resolveCollision()
 	}
 
 	//Some issues arise if you don't have this second pass
-	if (aux::checkCollision(P[0]->collision, P[1]->collision))
+	if (aux::checkCollision(P[0]->current.collision, P[1]->current.collision))
 		unitCollision(P[0], P[1]);
 }
 
@@ -1303,16 +1296,16 @@ void SaltAndBone::resolveHits()
 		hitBy[i] = -1;
 	}
 	for(instance *i:things){
-		if(!i->hitbox.empty()){
+		if(!i->current.hitbox.empty()){
 			if(!freeze) i->current.opponent->checkBlocking();
 		}
 	}
 	for(unsigned int i = 0; i < things.size(); i++){
 		for(int m = things.size()-1; m >= 0; m--){
 			if(m != (int)i){
-				for(unsigned int j = 0; j < things[i]->hitbox.size(); j++){
-					for(unsigned int k = 0; k < things[m]->hitreg.size(); k++){
-						if(things[m]->checkHit(things[i]->hitbox[j], things[m]->hitreg[k])){
+				for(unsigned int j = 0; j < things[i]->current.hitbox.size(); j++){
+					for(unsigned int k = 0; k < things[m]->current.hitreg.size(); k++){
+						if(things[m]->checkHit(things[i]->current.hitbox[j], things[m]->current.hitreg[k])){
 							if(!taken[m] && !connect[i] && things[i]->acceptTarget(things[m])){
 								connect[i] = 1;
 								things[i]->current.counter = things[m]->CHState();
@@ -1325,8 +1318,8 @@ void SaltAndBone::resolveHits()
 								}
 								s[i] = things[i]->pollStats();
 								if(i < P.size()) push[i] = s[i].push;
-								k = things[m]->hitreg.size();
-								j = things[i]->hitbox.size();
+								k = things[m]->current.hitreg.size();
+								j = things[i]->current.hitbox.size();
 								taken[m] = 1;
 								hitBy[m] = i;
 								break;

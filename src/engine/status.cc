@@ -45,6 +45,9 @@ status::status(const status & o)
 	reversalFlag = o.reversalFlag;
 	meter = o.meter;
 	offspring = o.offspring;
+	collision = o.collision;
+	hitbox = o.hitbox;
+	hitreg = o.hitreg;
 	age = o.age;
 	dead = o.dead;
 	mode = o.mode;

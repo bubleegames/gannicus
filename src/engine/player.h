@@ -14,8 +14,7 @@ public:
 	instance(avatar*);
 	virtual ~instance();
 	virtual avatar * pick() { return v; }
-	SDL_Rect collision;
-	vector<SDL_Rect> hitbox, hitreg, momentum;
+	vector<SDL_Rect> momentum;
 	vector<SDL_Rect> hitLocation;
 	int selectedPalette;
 	int ID;
@@ -55,6 +54,7 @@ public:
 	virtual void loadAssets();
 	virtual bool checkHit(SDL_Rect, SDL_Rect);
 	virtual void land();
+	virtual void cleanup();
 	virtual void encounterWall(bool, int);
 	int middle();
 	void flip();

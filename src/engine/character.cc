@@ -508,9 +508,9 @@ void character::block(status &current, int st, bool high)
 	}
 }
 
-void avatar::pollRects(status& current, SDL_Rect& collision, vector<SDL_Rect>& hitreg, vector<SDL_Rect>& hitbox)
+void avatar::pollRects(status& current)
 {
-	current.move->pollRects(current, collision, hitreg, hitbox);
+	current.move->pollRects(current, current.collision, current.hitreg, current.hitbox);
 }
 
 hStat avatar::pollStats(status &current)

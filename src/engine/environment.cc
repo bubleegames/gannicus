@@ -109,7 +109,7 @@ void environment::roundInit()
 
 void environment::airCheck(instance * a)
 {
-	if(a->collision.y > floor && a->current.aerial == 0){
+	if(a->current.collision.y > floor && a->current.aerial == 0){
 		a->current.aerial = 1;
 		a->current.reversal = nullptr;
 	}
@@ -126,7 +126,7 @@ void environment::enforceFloor(instance * a)
 {
 	/*Floor, or "Bottom corner"*/
 
-	if (a->collision.y < floor){
+	if (a->current.collision.y < floor){
 		a->land();
 		a->current.posY = floor - a->current.move->collision[a->current.frame].y;
 		a->updateRects();
@@ -135,8 +135,8 @@ void environment::enforceFloor(instance * a)
 
 void environment::enforceBounds(instance * a)
 {
-	if(a->current.rebound && a->current.posY + a->collision.h >= screenHeight){
-		a->current.posY = screenHeight - a->collision.h;
+	if(a->current.rebound && a->current.posY + a->current.collision.h >= screenHeight){
+		a->current.posY = screenHeight - a->current.collision.h;
 		a->current.deltaY = -a->current.deltaY;
 		a->current.rebound = false;
 		a->updateRects();
@@ -149,24 +149,24 @@ void environment::checkCorners(instance * a)
 	    right = bg.x + screenWidth - wall;
 	/*Walls, or "Left and Right" corners
 	This not only keeps the characters within the stage boundaries, but flags them as "in the corner"
-	so we can specialcase a->collision checks for when one player is in the corner.*/
+	so we can specialcase a->current.collision checks for when one player is in the corner.*/
 
 	/*Offset variables. I could do these calculations on the fly, but it's easier this way.
-	Essentially, this represents the offset between the sprite and the a->collision box, since
-	even though we're *checking* a->collision, we're still *moving* spr*/
-	int lOffset = a->current.posX - a->collision.x,
-	    rOffset = a->current.posX - (a->collision.x + a->collision.w);
+	Essentially, this represents the offset between the sprite and the a->current.collision box, since
+	even though we're *checking* a->current.collision, we're still *moving* spr*/
+	int lOffset = a->current.posX - a->current.collision.x,
+	    rOffset = a->current.posX - (a->current.collision.x + a->current.collision.w);
 	a->updateRects();
-	if(a->collision.x <= left){
+	if(a->current.collision.x <= left){
 		a->encounterWall(0, wall);
-		if(a->collision.x < left)
+		if(a->current.collision.x < left)
 			a->current.posX = left + lOffset;
 	} else a->current.lCorner = 0;
-	if(a->collision.x + a->collision.w >= right){
+	if(a->current.collision.x + a->current.collision.w >= right){
 		a->encounterWall(1, wall);
-		if(a->collision.x + a->collision.w > right)
+		if(a->current.collision.x + a->current.collision.w > right)
 			a->current.posX = right + rOffset;
 	} else a->current.rCorner = 0;
-	a->updateRects(); //Update rectangles or the next a->collision check will be wrong.
+	a->updateRects(); //Update rectangles or the next a->current.collision check will be wrong.
 }
 

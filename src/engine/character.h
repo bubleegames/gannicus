@@ -18,7 +18,7 @@ public:
 	virtual void init(status&) = 0;
 	virtual action * moveSignal(int);
 	bool spriteCheck(action *&, int);
-	virtual void draw(action *&, int, GLint);
+	virtual void draw(status&, GLint);
 	virtual action * createMove(string);
 	virtual action * dealWithMove(string);
 	virtual action * mandateMove(string);
@@ -37,7 +37,7 @@ public:
 	virtual void loadAssets(int);
 	virtual void connect(status&);
 	virtual hStat pollStats(status&);
-	virtual void pollRects(status&, SDL_Rect&, vector<SDL_Rect>&, vector<SDL_Rect>&);
+	virtual void pollRects(status&);
 	virtual void step(status&);		//Anything that happens every frame
 	virtual void tick(status&) {}	//Anything that happens every frame as long as we're not in freeze state
 	virtual int acceptTarget(action*, int);

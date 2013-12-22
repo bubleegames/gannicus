@@ -432,20 +432,20 @@ void player::readScripts()
 void instance::updateRects()
 {
 	if(current.move != nullptr) {
-		pick()->pollRects(current, collision, hitreg, hitbox);
-		for(unsigned int i = 0; i < hitbox.size(); i++){
-			if(current.facing == -1) hitbox[i].x = current.posX - hitbox[i].x - hitbox[i].w;
-			else hitbox[i].x += current.posX;
-			hitbox[i].y += current.posY;
+		pick()->pollRects(current);
+		for(unsigned int i = 0; i < current.hitbox.size(); i++){
+			if(current.facing == -1) current.hitbox[i].x = current.posX - current.hitbox[i].x - current.hitbox[i].w;
+			else current.hitbox[i].x += current.posX;
+			current.hitbox[i].y += current.posY;
 		}
-		for(unsigned int i = 0; i < hitreg.size(); i++){
-			if(current.facing == -1) hitreg[i].x = current.posX - hitreg[i].x - hitreg[i].w;
-			else hitreg[i].x += current.posX;
-			hitreg[i].y += current.posY;
+		for(unsigned int i = 0; i < current.hitreg.size(); i++){
+			if(current.facing == -1) current.hitreg[i].x = current.posX - current.hitreg[i].x - current.hitreg[i].w;
+			else current.hitreg[i].x += current.posX;
+			current.hitreg[i].y += current.posY;
 		}
-		if(current.facing == -1) collision.x = current.posX - collision.x - collision.w;
-		else collision.x += current.posX;
-		collision.y += current.posY;
+		if(current.facing == -1) current.collision.x = current.posX - current.collision.x - current.collision.w;
+		else current.collision.x += current.posX;
+		current.collision.y += current.posY;
 	}
 }
 
@@ -500,7 +500,7 @@ void instance::encounterWall(bool side, int wallPosition)
 			if(current.deltaX > 0) current.deltaX = -current.deltaX; 
 			current.elasticX = false;
 		}
-		if(collision.x + collision.w >= wallPosition){ //TODO: This is obviously kludgey to hardcode
+		if(current.collision.x + current.collision.w >= wallPosition){ //TODO: This is obviously kludgey to hardcode
 			if(current.facing == -1) current.rCorner = 1;
 			else {
 				current.posX--;
@@ -519,7 +519,7 @@ void instance::encounterWall(bool side, int wallPosition)
 			if(current.deltaX < 0) current.deltaX = -current.deltaX;
 			current.elasticX = false;
 		}
-		if(collision.x <= wallPosition){ //TODO: This is obviously kludgey to hardcode
+		if(current.collision.x <= wallPosition){ //TODO: This is obviously kludgey to hardcode
 			if(current.facing == 1) current.lCorner = 1;
 			else current.posX++;
 			if (current.stick) {
@@ -645,10 +645,10 @@ void instance::neutralize()
 void instance::flip()
 {
 	if(current.facing == -1){
-		current.posX += collision.x - (current.posX + (current.posX - collision.x - collision.w));
+		current.posX += current.collision.x - (current.posX + (current.posX - current.collision.x - current.collision.w));
 		current.facing = 1;
 	} else { 
-		current.posX += (collision.w + collision.x) - current.posX*2 + collision.x;
+		current.posX += (current.collision.w + current.collision.x) - current.posX*2 + current.collision.x;
 		current.facing = -1;
 	}
 }
@@ -656,11 +656,11 @@ void instance::flip()
 void instance::checkFacing(instance * other)
 {
 	int comparison, midpoint;
-	midpoint = collision.x + collision.w/2;
-	comparison = other->collision.x + other->collision.w/2;
+	midpoint = current.collision.x + current.collision.w/2;
+	comparison = other->current.collision.x + other->current.collision.w/2;
 
-	if(other->current.posX < current.posX) comparison += collision.w % 2; 
-	else midpoint += collision.w % 2;
+	if(other->current.posX < current.posX) comparison += current.collision.w % 2; 
+	else midpoint += current.collision.w % 2;
 
 	if (current.lCorner || other->current.rCorner) current.facing = 1;
 	else if (current.rCorner || other->current.lCorner) current.facing = -1;
@@ -673,8 +673,8 @@ void instance::checkFacing(instance * other)
 
 int instance::dragBG(int left, int right)
 {
-	if(collision.x < left) return collision.x - left;
-	else if (collision.x + collision.w > right) return (collision.x + collision.w) - right;
+	if(current.collision.x < left) return current.collision.x - left;
+	else if (current.collision.x + current.collision.w > right) return (current.collision.x + current.collision.w) - right;
 	else return 0;
 }
 
@@ -703,6 +703,11 @@ void instance::pushInput(unsigned int i)
 {
 	inputBuffer.push_front(i);
 	inputBuffer.pop_back();
+}
+
+void instance::cleanup()
+{
+	save = current;
 }
 
 void instance::getMove(vector<int> buttons, bool& dryrun)
@@ -760,8 +765,8 @@ void instance::pullVolition()
 
 int instance::middle()
 {
-	if(current.facing == 1) return collision.x + collision.w / 2;
-	else return collision.x + collision.w / 2 + collision.w % 2;
+	if(current.facing == 1) return current.collision.x + current.collision.w / 2;
+	else return current.collision.x + current.collision.w / 2 + current.collision.w % 2;
 }
 
 void player::macroCheck(SDL_Event &event)
@@ -968,7 +973,7 @@ void instance::invertVectors(int operation)
 
 int player::CHState() const
 {
-	if(!hitbox.empty()) return true;
+	if(!current.hitbox.empty()) return true;
 	else return current.move->CHState(current.frame);
 }
 
