@@ -473,6 +473,21 @@ void instance::loadAssets()
 	if(sprite) pick()->loadAssets(selectedPalette);
 }
 
+void instance::checkReversal()
+{
+	if(current.move){
+		if(current.reversal){
+			if(*current.reversal > current){
+				checkFacing();
+				current.move = current.reversal->execute(current);
+				current.reversalFlag = true;
+				current.reversal = nullptr;
+				current.reversalTimer = 0;
+			}
+		}
+	} else neutralize();
+}
+
 void player::checkBlocking()
 {
 	if(current.cancelState() & 513){
@@ -710,24 +725,17 @@ void instance::cleanup()
 	save = current;
 }
 
-void instance::getMove(vector<int> buttons, bool& dryrun)
+void instance::getMove(vector<int> buttons)
 {
-	if(!current.move) neutralize();
+	checkReversal();
 	status e = current;
 	int n = current.frame;
-	pick()->prepHooks(current, inputBuffer, buttons, dryrun);
+	pick()->prepHooks(current, inputBuffer, buttons);
 	if(current.move){
 		if(current.move->throwinvuln == 1 && current.throwInvuln <= 0) current.throwInvuln = 1;
 		if(current.move->throwinvuln == 2) current.throwInvuln = 6;
 	}
-	if(dryrun){
-		if(current.reversalFlag){
-			if(current.frame != n || current.move != e.move) dryrun = 0;
-		}
-		current.move = e.move;
-	} else {
-		if(current.frame != n || current.move != e.move) current.move->playSound(ID);
-	}
+	if(current.frame != n || current.move != e.move) current.move->playSound(ID);
 }
 
 void instance::pullVolition()

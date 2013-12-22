@@ -46,21 +46,6 @@ character::~character()
 	}
 }
 
-void avatar::checkReversal(status &current, bool dryrun)
-{
-	if(current.move && current.reversal){
-		if(*current.reversal > current){
-			current.move = dryrun ? current.reversal : current.reversal->execute(current);
-			current.reversalFlag = true;
-			if(!dryrun){
-				current.reversal = nullptr;
-				current.reversalTimer = 0;
-			}
-		}
-	}
-	else if(!current.move) current.move = neutralize(current);
-}
-
 void avatar::getReversal(status &current, deque<int> inputBuffer, vector<int> buttons)
 {
 	status temp = current;
@@ -86,17 +71,14 @@ void avatar::getReversal(status &current, deque<int> inputBuffer, vector<int> bu
 	}
 }
 
-void avatar::executeBuffer(status &current, bool dryrun)
+void avatar::executeBuffer(status &current)
 {
-	if(!dryrun){ 
-		current.move = current.bufferedMove->execute(current);
-		current.bufferedMove = nullptr;
-	} else current.move = current.bufferedMove;
+	current.move = current.bufferedMove->execute(current);
+	current.bufferedMove = nullptr;
 }
 
-void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> buttons, bool dryrun)
+void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> buttons)
 {
-	checkReversal(current, dryrun);
 	action * ret = nullptr;
 	ret = hook(current, inputBuffer, buttons);
 	if(!ret){
@@ -111,17 +93,17 @@ void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> butt
 				ret = current.move->onHold;
 			}
 		}
-		if (current.bufferedMove && current.freeze <= 0) executeBuffer(current, dryrun);
+		if (current.bufferedMove && current.freeze <= 0) executeBuffer(current);
 		else getReversal(current, inputBuffer, buttons);
 	}
 	if(ret){
 		current.reversalFlag = false;
 		if(current.freeze > 0){
 			if(current.bufferedMove == nullptr){
-				if(!dryrun) current.bufferedMove = ret;
+				current.bufferedMove = ret;
 			}
 		} else {
-			current.move = dryrun ? ret : ret->execute(current);
+			current.move = ret->execute(current);
 		}
 	}
 }

@@ -20,6 +20,7 @@ public:
 	int ID;
 	deque<int> inputBuffer;
 	void checkFacing();
+	void checkReversal();
 	void checkFacing(instance*);
 	virtual bool dead();
 	virtual hStat pollStats();
@@ -31,7 +32,7 @@ public:
 	virtual void init();
 	virtual void step();
 
-	virtual void getMove(vector<int>, bool&);
+	virtual void getMove(vector<int>);
 	virtual int takeHit(int, hStat&);
 	virtual void invertVectors(int);
 	virtual void pullVolition();

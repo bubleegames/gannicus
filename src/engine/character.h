@@ -25,10 +25,9 @@ public:
 	virtual void build(string, string);
 	virtual void processMove(action * m);
 	virtual void sortMove(action *, string);
-	virtual void prepHooks(status&, deque<int>, vector<int>, bool);
-	virtual void checkReversal(status&, bool);
+	virtual void prepHooks(status&, deque<int>, vector<int>);
 	virtual void getReversal(status &, deque<int>, vector<int>);
-	virtual void executeBuffer(status &, bool);
+	virtual void executeBuffer(status &);
 	virtual action * hook(status&, deque<int>, vector<int>);
 	virtual void land(status&);
 	virtual bool death(status&) { return 0; }
