@@ -28,6 +28,7 @@ public:
 	virtual bool validate(int, int);
 	virtual bool acceptTarget(instance*);
 	virtual void outOfBounds();
+	virtual void manageOffspring();
 	virtual int CHState() const { return 0; }
 	virtual void init();
 	virtual void step();
