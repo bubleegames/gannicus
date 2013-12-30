@@ -62,6 +62,32 @@ hStat instance::pollStats()
 	return s;
 }
 
+int instance::comboState()
+{
+	current.comboState = pick()->comboState(save.move);
+	return current.comboState;
+}
+
+int player::comboState()
+{
+	int t;
+	if(current.move == pick()->down){
+		t = pick()->comboState(save.move);
+		switch(t){
+		case -1:
+		case 0:
+			break;
+		case 1: 
+			current.comboState = 2;
+			break;
+		case -2:
+			current.comboState = -3;
+			break;
+		}
+		return current.comboState;
+	} else return instance::comboState();
+}
+
 void instance::init()
 {
 	current.deltaX = 0;

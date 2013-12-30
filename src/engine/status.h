@@ -23,6 +23,7 @@ struct status{
 	int posX, posY;
 	int age;
 	int facing;
+	int comboState;
 	int deltaX, deltaY; 
 	int frame;
 	int freeze;

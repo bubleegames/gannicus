@@ -43,6 +43,7 @@ public:
 	virtual bool stuck();
 	virtual void drawBoxen();
 	virtual void combineDelta();
+	virtual int comboState();
 	virtual bool spriteCheck();
 	virtual void connect(int, hStat&);
 	virtual void checkBlocking() {}
@@ -82,6 +83,7 @@ public:
 
 	int rounds;		//How many rounds has this player won this match?
 //	int padding[400];	//More magic. Do not touch
+	virtual int comboState();
 	virtual void characterSelect(int);
 	virtual void enemySelect(int);
 	virtual bool stuck();

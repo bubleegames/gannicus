@@ -29,6 +29,7 @@ public:
 	virtual void getReversal(status &, deque<int>, vector<int>);
 	virtual void executeBuffer(status &);
 	virtual action * hook(status&, deque<int>, vector<int>);
+	virtual int comboState(action *);
 	virtual void land(status&);
 	virtual bool death(status&) { return 0; }
 	virtual int takeHit(status&, hStat&, int, int&) { return 0; }

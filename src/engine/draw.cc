@@ -303,10 +303,16 @@ void SaltAndBone::drawHUD()
 			drawGlyph("Recording", 100+1000*i, 600, 200, 55, 2*i);
 			glColor4f(1.0, 1.0, 1.0, 1.0);
 		}
-		if(combo[i] > 1){
+		if(combo[i] || knockdown[i]){
 			glColor4f(1.0, 1.0-.5*illegit[i], 1.0-.5*illegit[i], 1.0);
-			drawGlyph(to_string(combo[i]) + " hits", 100+800*i, 600, 400, 75, 0+2*i);
+			if(combo[i] > 1){ 
+				drawGlyph(to_string(combo[i]) + " hits", 100+800*i, 600, 400, 75, 0+2*i);
+			} else if(!knockdown[i]) glColor4f(1.0, 1.0, 1.0, 0.2);
 			drawGlyph(to_string(damage[i]) + " damage", 100+800*i, 600, 475, 35, 0+2*i);
+			if(knockdown[i]){
+				if(knockdown[i] == 1) glColor4f(0.6, 1.0, 0.6, 1.0);
+				drawGlyph("Knockdown", 100+800*i, 600, 510, 35, 0+2*i); 
+			}
 			glColor4f(1.0, 1.0, 1.0, 1.0);
 		}
 	}

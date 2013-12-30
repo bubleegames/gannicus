@@ -69,6 +69,7 @@ public:
 	vector<int> punish;
 	vector<int> counterHit;
 	vector<int> blockFail;
+	vector<int> knockdown;
 	vector<SDL_Rect> hitloc;
 };
 #endif

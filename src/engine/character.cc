@@ -151,6 +151,11 @@ void avatar::getName(string directory, string file)
 	read >> name;
 }
 
+int avatar::comboState(action * c)
+{
+	return 0;
+}
+
 int character::comboState(action * c)
 {
 	if(c == reel) return 1;

@@ -112,6 +112,7 @@ void SaltAndBone::createPlayers()
 		select.push_back(false);
 		selection.push_back(1+i);
 		combo.push_back(0);
+		knockdown.push_back(0);
 		damage.push_back(0);
 		blockFail.push_back(0);
 		counterHit.push_back(0);
@@ -287,6 +288,7 @@ void SaltAndBone::roundInit()
 	initContainers();
 	for(unsigned int i = 0; i < P.size(); i++){
 		combo[i] = 0;
+		knockdown[i] = 0;
 		prorate[i] = 1.0;
 		damage[i] = 0;
 		illegit[i] = 0;
@@ -444,7 +446,13 @@ void SaltAndBone::resolveCombos()
 {
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(!roundEnd){
-			switch (P[i]->pick()->comboState(things[i]->current.move)){
+			switch (P[i]->comboState()){
+			case -3:
+				knockdown[(i+1)%2] = -1;
+				break;
+			case 2:
+				knockdown[(i+1)%2] = 1;
+				break;
 			case -2:
 				illegit[(i+1)%2] = 1;
 				counterHit[(i+1)%2] = 0;
@@ -459,6 +467,7 @@ void SaltAndBone::resolveCombos()
 						P[i]->current.opponent->current.meter[4].value = 0;
 					}
 				}
+				knockdown[(i+1)%2] = 0;
 				combo[(i+1)%2] = 0;
 				damage[(i+1)%2] = 0;
 				prorate[(i+1)%2] = 1.0;

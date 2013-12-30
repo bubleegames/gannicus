@@ -9,6 +9,7 @@ status::status()
 	frame = 0;
 	connect = 0;
 	counter = 0;
+	comboState = 0;
 	absorbedHits = 0;
 	hit = 0;
 	reversalTimer = 0;
@@ -46,6 +47,7 @@ status::status(const status & o)
 	meter = o.meter;
 	offspring = o.offspring;
 	collision = o.collision;
+	comboState = o.comboState;
 	hitbox = o.hitbox;
 	hitreg = o.hitreg;
 	age = o.age;
