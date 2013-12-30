@@ -312,7 +312,7 @@ void SaltAndBone::drawHUD()
 			else if(combo[i] < 0)
 				glColor4f(1.0, 1.0, 1.0, 0.2);
 			else if(!knockdown[i])
-				glColor4f(1.0, 1.0, 1.0, 0.8);
+				glColor4f(1.0, 1.0-.5*illegit[i], 1.0-.5*illegit[i], 0.8);
 			if(damage[i] != 0 || knockdown[i])drawGlyph(to_string(damage[i]) + " damage", 100+800*i, 600, 475, 35, 0+2*i);
 			if(knockdown[i]){
 				if(knockdown[i] == 1) glColor4f(0.6, 1.0, 0.6, 1.0);
