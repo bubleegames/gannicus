@@ -1370,7 +1370,10 @@ void SaltAndBone::resolveHits()
 					P[things[hitBy[i]]->ID-1]->takeHit(combo[i], parryHit);
 					s[hitBy[i]].pause = 0;
 				}
-				if(s[hitBy[i]].stun) combo[(i+1)%2] += hit[hitBy[i]];
+				if(s[hitBy[i]].stun){ 
+					if(combo[(i+1)%2] < 0 && hit[hitBy[i]] > 0) combo[(i+1)%2] = 0;
+					combo[(i+1)%2] += hit[hitBy[i]];
+				}
 				env.enforceFloor(P[i]->current.opponent);
 				env.enforceBounds(P[i]->current.opponent);
 				env.checkCorners(P[i]->current.opponent);
