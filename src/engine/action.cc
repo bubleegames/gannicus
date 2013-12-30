@@ -782,6 +782,7 @@ hStat action::pollStats(int f, bool CH)
 		s.pause = stats[c].pause + CHStats[c].pause * CH;
 		s.connect = stats[c].connect + CHStats[c].connect * CH;
 		s.autoCorrects = stats[c].autoCorrects + CHStats[c].autoCorrects * CH;
+		s.prorate = stats[c].prorate + CHStats[c].prorate * CH;
 		if(CH){
 			s.launch = CHStats[c].launch || stats[c].launch;
 			s.hover = CHStats[c].hover;
@@ -790,7 +791,6 @@ hStat action::pollStats(int f, bool CH)
 			s.slide = CHStats[c].slide;
 			s.stick = CHStats[c].stick;
 			s.ghostHit = CHStats[c].ghostHit;
-			s.prorate = CHStats[c].prorate;
 			s.ceilingBounce = CHStats[c].ceilingBounce;
 		} else {
 			s.launch = stats[c].launch;
@@ -800,7 +800,6 @@ hStat action::pollStats(int f, bool CH)
 			s.slide = stats[c].slide;
 			s.stick = stats[c].stick;
 			s.ghostHit = stats[c].ghostHit;
-			s.prorate = stats[c].prorate;
 			s.ceilingBounce = stats[c].ceilingBounce;
 		}
 		s.hitsProjectile = stats[c].hitsProjectile;
