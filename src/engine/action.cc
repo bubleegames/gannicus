@@ -783,7 +783,7 @@ hStat action::pollStats(int f, bool CH)
 		s.connect = stats[c].connect + CHStats[c].connect * CH;
 		s.autoCorrects = stats[c].autoCorrects + CHStats[c].autoCorrects * CH;
 		s.prorate = stats[c].prorate + CHStats[c].prorate * CH;
-		s.launch = stats[c].launch || CHStates[c].launch * CH;
+		s.launch = stats[c].launch || CHStats[c].launch * CH;
 		if(CH){
 			s.hover = CHStats[c].hover;
 			s.wallBounce = CHStats[c].wallBounce;
