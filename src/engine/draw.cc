@@ -243,23 +243,36 @@ void SaltAndBone::drawGame()
 	}
 }
 
-void SaltAndBone::drawHint(int i)
+void SaltAndBone::colorHint(int i)
 {
 	if(blockFail[i]){
 		if(blockFail[i] & 1){
 			if(!(blockFail[i] & 2)){
 				glColor4f(0.0, 1.0, 0.0, 0.7);
+			}
+		} else if(blockFail[i] & 2){
+			glColor4f(1.0, 0.75, 0.5, 0.7);
+		} else if(blockFail[i] & 4){
+			if(blockFail[i] & 8) glColor4f(0.85, 1.0, 1.0, 0.7);
+			else glColor4f(0.0, 1.0, 1.0, 0.7);
+		} else if(blockFail[i] & 8){
+			glColor4f(0.85, 0.85, 0.85, 0.7);
+		}
+	}
+}
+
+void SaltAndBone::drawHint(int i)
+{
+	if(blockFail[i]){
+		if(blockFail[i] & 1){
+			if(!(blockFail[i] & 2)){
 				drawGlyph("low", 0, 400, 300, 55, 2*i);
 			}
 		} else if(blockFail[i] & 2){
-			glColor4f(1.0, 0.6, 0.6, 0.7);
 			drawGlyph("high", 0, 400, 300, 55, 2*i);
 		} else if(blockFail[i] & 4){
-			if(blockFail[i] & 8) glColor4f(1.0, 0.0, 0.0, 0.7);
-			else glColor4f(0.0, 0.0, 1.0, 0.7);
 			drawGlyph("air", 0, 400, 300, 55, 2*i);
 		} else if(blockFail[i] & 8){
-			glColor4f(1.0, 0.0, 0.0, 0.7);
 			drawGlyph("unblock", 0, 300, 500, 55, 2*i);
 		}
 	}
@@ -288,13 +301,14 @@ void SaltAndBone::drawHUD()
 		}
 		glPushMatrix();
 			glTranslatef(100+i*1000, 0, 0);
+			colorHint(i);
 			drawHint(i);
 		glPopMatrix();
 		if(counterHit[i] > 0){
 			glColor4f(1.0, 1.0, 0.5, 0.7);
 			drawGlyph("Counter", 100+1000*i, 400, 200, 55, 2*i);
 		} else if(punish[i] > 0){
-			glColor4f(0.0, 0.0, 0.6, 0.7);
+			glColor4f(0.6, 0.6, 1.0, 0.7);
 			drawGlyph("Counter", 100+1000*i, 400, 200, 55, 2*i);
 		}
 		glColor4f(1.0, 1.0, 1.0, 1.0);
@@ -309,6 +323,10 @@ void SaltAndBone::drawHUD()
 				drawGlyph(to_string(combo[i]) + " hits", 100+800*i, 600, 400, 75, 0+2*i);
 			if(counterHit[i] > 0)
 				glColor4f(1.0, 1.0, 0.5, 0.8);
+			else if(punish[i] > 0)
+				glColor4f(0.6, 0.6, 1.0, 0.8);
+			else if(blockFail[(i+1)%2])
+				colorHint((i+1)%2);
 			else if(combo[i] < 0)
 				glColor4f(1.0, 1.0, 1.0, 0.2);
 			else if(!knockdown[i])

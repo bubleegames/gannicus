@@ -469,7 +469,7 @@ void SaltAndBone::resolveCombos()
 				}
 				knockdown[(i+1)%2] = 0;
 				combo[(i+1)%2] = 0;
-				if(P[i]->particleType != -2) damage[(i+1)%2] = 0;
+				damage[(i+1)%2] = 0;
 				prorate[(i+1)%2] = 1.0;
 				P[i]->current.elasticX = 0;
 				P[i]->current.elasticY = 0;

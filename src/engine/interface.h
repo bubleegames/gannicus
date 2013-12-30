@@ -73,6 +73,7 @@ public:
 	void drawHitParticles();
 	void drawHUD();
 	void drawHint(int);
+	void colorHint(int);
 	void drawGame();
 	void drawCSelect();
 	void drawMainMenu(int);

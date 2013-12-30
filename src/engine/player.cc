@@ -64,7 +64,7 @@ hStat instance::pollStats()
 
 int instance::comboState()
 {
-	current.comboState = pick()->comboState(save.move);
+	current.comboState = pick()->comboState(current.move);
 	return current.comboState;
 }
 
@@ -85,7 +85,8 @@ int player::comboState()
 			break;
 		}
 		return current.comboState;
-	} else return instance::comboState();
+	} else if(current.counter < 0 || current.move == pick()->fall || current.move->state[current.connect].b.neutral) return instance::comboState();
+	else return current.comboState;
 }
 
 void instance::init()
