@@ -918,7 +918,7 @@ action * action::execute(status &current)
 {
 	current.absorbedHits = 0;
 	current.meter[1].value -= cost;
-	current.meter[4].value += cost;
+	current.meter[4].value += cost * 2;
 	if(modifier){
 		if(current.move == nullptr) basis.move = nullptr;
 		basis.move = current.move;

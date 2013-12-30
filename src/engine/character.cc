@@ -591,7 +591,7 @@ vector<HUDMeter<int>> avatar::generateMeter()
 	meter.push_back(HUDMeter<int>(300));
 	meter.push_back(HUDMeter<int>(10));
 	meter.push_back(HUDMeter<int>(10));
-	meter.push_back(HUDMeter<int>(300));
+	meter.push_back(HUDMeter<int>(600));
 
 	meter[0].y = 1.0/90.0;
 	meter[0].x = 1.0/8.0;

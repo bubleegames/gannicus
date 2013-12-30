@@ -642,6 +642,21 @@ bool player::dead()
 	return current.meter[0].value == 0 || pick()->death(current);
 }
 
+void instance::manageOffspring()
+{
+	for(unsigned int i = 0; i < current.offspring.size(); i++){
+		if(current.offspring[i]->current.move == current.offspring[i]->pick()->die){
+			current.offspring.erase(current.offspring.begin()+i);
+			i--;
+		} else if (current.offspring[i]->ID != ID) {
+			if(current.offspring[i]->ID == current.opponent->ID)
+				current.opponent->current.offspring.push_back(current.offspring[i]);
+			current.offspring.erase(current.offspring.begin()+i);
+			i--;
+		}
+	}
+}
+
 void instance::step()
 {
 	if(!current.freeze){
@@ -649,12 +664,7 @@ void instance::step()
 		current.hover--;
 	}
 	if(pick()->death(current)) current.dead = true;
-	for(unsigned int i = 0; i < current.offspring.size(); i++){
-		if(current.offspring[i]->current.move == current.offspring[i]->pick()->die){
-			current.offspring.erase(current.offspring.begin()+i);
-			i--;
-		}
-	}
+	manageOffspring();
 	if(current.connect < 0) current.connect = 0;
 	if(!current.freeze){ 
 		if(current.move->flip == current.frame) flip();
