@@ -85,8 +85,7 @@ int player::comboState()
 			break;
 		}
 		return current.comboState;
-	} else if(current.counter < 0 || current.move == pick()->fall || current.move->state[current.connect].b.neutral) return instance::comboState();
-	else return current.comboState;
+	} else return instance::comboState();
 }
 
 void instance::init()
