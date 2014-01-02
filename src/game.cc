@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 {
 	vector <string> args;
 	for(int i = 0; i < argc; i++) args.push_back(argv[i]);
-	loop<SaltAndBone, 120, 2> game;
+	loop<SaltAndBone, 60, 2> game;
 	game.game.handleArgs(args);
 	game.run();
 	return 0;
