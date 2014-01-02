@@ -1429,16 +1429,15 @@ void SaltAndBone::resolveHits()
 						residual.x -= s[i].push/2;
 						residual.x -= abs(combo[i]);
 					}
+					if(!P[i]->current.opponent->particleType < 1 && P[i]->current.opponent->current.move->crouch)
+						residual.x += residual.x/2;
 				}
 				residual.x *= things[i]->current.facing;
 			}
 			if(!s[i].ghostHit) things[i]->momentum.push_back(residual);
 		}
 	}
-/*	if(connect[0] || connect[1]){
-		//resolveCollision();
-	}
-*/
+
 	for(instance * i:P) {
 		if(i->current.meter[0].value <= 0 && endTimer >= 5 * 60){ 
 			for(instance *j:things)
