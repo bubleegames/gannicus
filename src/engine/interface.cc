@@ -1429,8 +1429,6 @@ void SaltAndBone::resolveHits()
 						residual.x -= s[i].push/2;
 						residual.x -= abs(combo[i]);
 					}
-					if(!P[i]->current.opponent->particleType < 1 && P[i]->current.opponent->current.move->crouch)
-						residual.x += residual.x/2;
 				}
 				residual.x *= things[i]->current.facing;
 			}
