@@ -574,6 +574,14 @@ void instance::encounterWall(bool side, int wallPosition)
 	}
 }
 
+void player::land()
+{
+	instance::land();
+	if(current.move == pick()->down){
+		for(instance *i:current.offspring) i->passSignal(-3);
+	}
+}
+
 void instance::land()
 {
 	if(current.elasticY){
@@ -729,20 +737,9 @@ int instance::dragBG(int left, int right)
 	else return 0;
 }
 
-int instance::passSignal(int sig)
+void instance::passSignal(int sig)
 {
-	switch (sig){
-	case 1:
-		action * a; 
-		a = pick()->moveSignal(current.age);
-		if(a != nullptr){
-			current.move = a->execute(current);
-			return 1;
-		} else return 0;
-		break;
-	default:
-		return 0;
-	}
+	pick()->signal(sig, current);
 }
 
 void instance::pushInput(deque <int> i)
@@ -901,6 +898,7 @@ void instance::connect(int combo, hStat & s)
 	if(s.pause < 0){
 		if(!s.ghostHit) current.freeze = s.stun/4+10;
 	} else current.freeze = s.pause;
+	for(instance *i:current.offspring) i->passSignal(2);
 	pick()->connect(current);
 	current.reversal = nullptr;
 	if(current.bufferedMove == current.move) current.bufferedMove = nullptr;
@@ -923,7 +921,7 @@ int instance::takeHit(int combo, hStat & s)
 int player::takeHit(int combo, hStat & s)
 {
 	SDL_Rect v = {0, 0, 1, 0};
-	action * temp = nullptr;
+	action * counterAttack = nullptr;
 	current.reversal = nullptr;
 	s.untech -= combo;
 	int f;
@@ -931,14 +929,11 @@ int player::takeHit(int combo, hStat & s)
 	f = instance::takeHit(combo, s);
 	current.freeze = f;
 	if(particleType != 1){
-		temp = current.move->blockSuccess(s.stun, s.isProjectile);
+		counterAttack = current.move->blockSuccess(s.stun, s.isProjectile);
 	}
-/*	SDL_Rect fake = {0, 0, 0, 0};
-	SDL_Rect tempProx = current.prox;
-	current.prox = fake;
-*/	if(temp && temp != current.move && temp->check(current)){
+	if(counterAttack && counterAttack != current.move && counterAttack->check(current)){
 		combo = 0;
-		current.bufferedMove = temp;
+		current.bufferedMove = counterAttack;
 		current.freeze = 0;
 	} else {
 		particleLife = 8;
@@ -979,6 +974,7 @@ int player::takeHit(int combo, hStat & s)
 	if(current.move == pick()->die){
 		current.bufferedMove = nullptr;
 	}
+	for(instance *i:current.offspring) i->passSignal(particleType);
 	updateRects();
 	if(s.ghostHit) return 0;
 	else if(particleType == 1) return particleType;

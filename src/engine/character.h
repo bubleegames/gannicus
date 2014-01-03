@@ -16,7 +16,7 @@ public:
 	virtual void setParam(int, int) {}
 	virtual vector<HUDMeter<int>> generateMeter();
 	virtual void init(status&) = 0;
-	virtual action * moveSignal(int);
+	virtual void signal(int, status&);
 	bool spriteCheck(action *&, int);
 	virtual void draw(status&, GLint);
 	virtual action * createMove(string);

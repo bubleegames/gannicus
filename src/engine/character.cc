@@ -115,9 +115,8 @@ action * character::hook(status &current, deque<int> inputBuffer, vector<int> bu
 	else return avatar::hook(current, inputBuffer, buttons);
 }
 
-action * avatar::moveSignal(int)
+void avatar::signal(int, status&)
 {
-	return nullptr;
 }
 
 action * avatar::neutralize(status &current)
@@ -529,8 +528,6 @@ int character::takeHit(status &current, hStat &s, int blockType, int &hitType)
 	} else freeze = s.pause;
 	current.absorbedHits++;
 	hitType = current.move->takeHit(s, blockType, current);
-
-
 
 	if(hitType == 1) current.meter[0].value -= s.damage;
 	else if(hitType > -2) {

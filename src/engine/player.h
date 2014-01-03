@@ -50,7 +50,7 @@ public:
 	virtual void checkBlocking() {}
 	virtual void pushInput(unsigned int);
 	virtual void pushInput(deque<int>);
-	virtual int passSignal(int);
+	virtual void passSignal(int);
 	virtual int dragBG(int, int);
 	virtual void follow();
 	virtual void follow(instance*);
@@ -96,6 +96,7 @@ public:
 	virtual void roundInit();
 	virtual void macroCheck(SDL_Event&);
 	virtual void outOfBounds() {}
+	virtual void land();
 	virtual int takeHit(int, hStat&);
 	virtual int CHState() const;
 	virtual bool reversalPossible() const;
