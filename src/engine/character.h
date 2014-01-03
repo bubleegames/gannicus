@@ -27,7 +27,6 @@ public:
 	virtual void sortMove(action *, string);
 	virtual void prepHooks(status&, deque<int>, vector<int>);
 	virtual void getReversal(status &, deque<int>, vector<int>);
-	virtual void executeBuffer(status &);
 	virtual action * hook(status&, deque<int>, vector<int>);
 	virtual int comboState(action *);
 	virtual void land(status&);

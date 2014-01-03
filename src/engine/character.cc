@@ -71,12 +71,6 @@ void avatar::getReversal(status &current, deque<int> inputBuffer, vector<int> bu
 	}
 }
 
-void avatar::executeBuffer(status &current)
-{
-	current.move = current.bufferedMove->execute(current);
-	current.bufferedMove = nullptr;
-}
-
 void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> buttons)
 {
 	action * ret = nullptr;
@@ -93,8 +87,10 @@ void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> butt
 				ret = current.move->onHold;
 			}
 		}
-		if (current.bufferedMove && current.freeze <= 0) executeBuffer(current);
-		else getReversal(current, inputBuffer, buttons);
+		if (current.bufferedMove && current.freeze <= 0){ 
+			ret = current.bufferedMove;
+			current.bufferedMove = nullptr;
+		} else getReversal(current, inputBuffer, buttons);
 	}
 	if(ret){
 		current.reversalFlag = false;
