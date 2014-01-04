@@ -47,6 +47,7 @@ public:
 	string dir;
 	actionTrie * head;
 	int lifespan;
+	int killFlags;
 	GLuint palette;
 
 	action * die;

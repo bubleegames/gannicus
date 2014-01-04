@@ -115,8 +115,25 @@ action * character::hook(status &current, deque<int> inputBuffer, vector<int> bu
 	else return avatar::hook(current, inputBuffer, buttons);
 }
 
-void avatar::signal(int, status&)
+void avatar::signal(int sig, status &current)
 {
+	switch(sig){
+	case 1:
+		if(killFlags & 1) current.move = die->execute(current);
+		break;
+	case 0:
+		if(killFlags & 2) current.move = die->execute(current);
+		break;
+	case -1:
+		if(killFlags & 4) current.move = die->execute(current);
+		break;
+	case -2:
+		if(killFlags & 8) current.move = die->execute(current);
+		break;
+	case -3:
+		if(killFlags & 16) current.move = die->execute(current);
+		break;
+	}
 }
 
 action * avatar::neutralize(status &current)
@@ -203,6 +220,8 @@ action * avatar::dealWithMove(string input)
 
 void avatar::build(string directory, string file)
 {
+	lifespan = -1;
+	killFlags = 0;
 	char buffer[101];
 	ifstream read;
 	read.open("content/characters/"+directory+"/"+file+".ch");

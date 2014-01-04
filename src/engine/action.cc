@@ -97,6 +97,7 @@ void action::zero()
 	werf = 0;
 	carryPosX = 0; carryPosY = 0;
 	lifespan = -1;
+	killFlags = 0;
 	allegiance = 1;
 	followStart = -1;
 	followEnd = -1;
@@ -110,6 +111,7 @@ void action::generate(string directory, string name)
 	if(name[0] == '%') payload = new pet(directory, t());
 	else payload = new projectile(directory, name);
 	if(lifespan) payload->lifespan = lifespan;
+	if(killFlags) payload->killFlags = killFlags;
 }
 
 instance * action::spawn()
@@ -375,6 +377,27 @@ bool action::setParameter(string param)
 	} else if (t.current() == "State") {
 		for(int i = 0; i < hits+1; i++){
 			state[i].i = stoi(t("\t: \n"));
+		}
+		return true;
+	} else if (t.current() == "DiesOn"){
+		for (char c : t()) {
+			switch(c){
+			case 'h': 
+				killFlags += 1;
+				break;
+			case 'b':
+				killFlags += 2;
+				break;
+			case 'i':
+				killFlags += 4;
+				break;
+			case 'p':
+				killFlags += 8;
+				break;
+			case 'k':
+				killFlags += 16;
+				break;
+			}
 		}
 		return true;
 	} else if (t.current() == "Throw"){

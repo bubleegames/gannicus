@@ -205,6 +205,7 @@ public:
 	int spawnPosX, spawnPosY;
 	int werf;
 	int lifespan;
+	int killFlags;
 	int allegiance;
 	bool unique:1;
 	bool spawnTrackX:1;
