@@ -30,12 +30,11 @@ void projectile::build(string directory, string file)
 	die = mandateMove("die");
 	avatar::build(directory.c_str(), file.c_str());
 	head->insert(die, 0);
-	lifespan = -1;
 }
 
-bool pet::death(status &current)
+bool pet::isDead(status &current)
 {
-	return projectile::death(current);
+	return projectile::isDead(current);
 }
 
 int projectile::acceptTarget(action * c, int f)
@@ -96,7 +95,7 @@ int projectile::takeHit(status &current, hStat &s, int blockType, int &hitType)
 	} else return 0;
 }
 
-bool projectile::death(status &current)
+bool projectile::isDead(status &current)
 {
 	if(current.move == die){
 		if(current.frame == current.move->frames - 1){

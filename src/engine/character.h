@@ -30,7 +30,7 @@ public:
 	virtual action * hook(status&, deque<int>, vector<int>);
 	virtual int comboState(action *);
 	virtual void land(status&);
-	virtual bool death(status&) { return 0; }
+	virtual bool isDead(status&) { return 0; }
 	virtual int takeHit(status&, hStat&, int, int&) { return 0; }
 	virtual void getName(string, string);
 	virtual void loadAssets(int);
@@ -71,7 +71,7 @@ public:
 	virtual action * neutralize(status&);
 	virtual vector<HUDMeter<int>> drawMeters(int, status&);
 	virtual void init(status&);
-	virtual bool death(status&);
+	virtual bool isDead(status&);
 	virtual int checkBlocking(status&, deque<int>);
 	virtual void block(status&, int, bool);
 	virtual void resetAirOptions(vector<HUDMeter<int>>&);
@@ -105,7 +105,7 @@ public:
 	virtual bool turn(int&);
 
 	virtual void processMove(action * m);
-	virtual bool death(status&);
+	virtual bool isDead(status&);
 	virtual void init(status&);
 };
 
@@ -114,7 +114,7 @@ public:
 	pet(string, string);
 	virtual int takeHit(status&, hStat&, int, int&);
 	virtual void build(string, string);
-	virtual bool death(status&);
+	virtual bool isDead(status&);
 	virtual void init(status&);
 	pet();
 };

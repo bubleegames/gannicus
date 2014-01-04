@@ -640,14 +640,14 @@ void instance::print()
 	cout << "Player" << ID << "(" << pick()->name << "): " << current.move->name << "[" << current.frame << "]\n";
 }
 
-bool instance::dead()
+bool instance::isDead()
 {
-	return pick()->death(current);
+	return pick()->isDead(current);
 }
 
-bool player::dead()
+bool player::isDead()
 {
-	return current.meter[0].value == 0 || pick()->death(current);
+	return current.meter[0].value == 0 || pick()->isDead(current);
 }
 
 void instance::manageOffspring()
@@ -671,7 +671,7 @@ void instance::step()
 		if(current.throwInvuln > 0) current.throwInvuln--;
 		current.hover--;
 	}
-	if(pick()->death(current)) current.dead = true;
+	if(pick()->isDead(current)) current.dead = true;
 	manageOffspring();
 	if(current.connect < 0) current.connect = 0;
 	if(!current.freeze){ 

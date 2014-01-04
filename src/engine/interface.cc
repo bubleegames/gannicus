@@ -707,7 +707,7 @@ void SaltAndBone::summonForces()
 /*Check if someone won*/
 void SaltAndBone::checkWin()
 {
-	if(P[0]->dead() || P[1]->dead() || timer == 0){
+	if(P[0]->isDead() || P[1]->isDead() || timer == 0){
 		roundEnd = true;
 		if(P[0]->current.meter[0].value > P[1]->current.meter[0].value) {
 			P[0]->rounds++;

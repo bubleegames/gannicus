@@ -24,7 +24,7 @@ character::character(string name)
 	build(name, name);
 }
 
-bool character::death(status &current)
+bool character::isDead(status &current)
 {
 	return current.move == dead;
 }
