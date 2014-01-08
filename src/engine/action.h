@@ -109,6 +109,7 @@ public:
 	int stop;
 	int throwinvuln;
 	bool null:1;
+	bool selfChain:1;
 	bool crouch:1;
 	bool hittable:1;
 	bool linkable:1;

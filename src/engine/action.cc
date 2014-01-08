@@ -28,6 +28,7 @@ void action::zero()
 	frames = 0;
 	hits = 0;
 	unique = false;
+	selfChain = false;
 	collision.clear();
 	hitbox.clear();
 	hitreg.clear();
@@ -600,6 +601,9 @@ void action::parseProperties(string properties, bool counter)
 	while(properties[i++] != ':'); i++;
 	for(; i < properties.size(); i++){
 		switch(properties[i]){
+		case '@':
+			selfChain = true;
+			break;
 		case 'a':
 			if(counter) CHStats[ch].autoCorrects = 1;
 			else stats[ch].autoCorrects = 1;
@@ -867,7 +871,7 @@ bool action::cancel(const status &current)
 	if(allowed.i & r.i){
 		if(z == this){
 			if(current.connect == 0) return 0;
-			else if(allowed.b.chain1) return 1;
+			else if(selfChain) return 1;
 			else return 0;
 		} else {
 			return 1;
