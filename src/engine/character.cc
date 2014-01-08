@@ -488,6 +488,7 @@ int character::checkBlocking(status &current, deque<int> inputBuffer)
 
 void character::block(status &current, int st, bool high)
 {
+	resetAirOptions(current.meter);
 	current.frame = 0;
 	current.hit = 0;
 	current.connect = 0;
@@ -528,7 +529,7 @@ int character::assessStun(status &current, hStat &s)
 		current.move = untech->execute(current);
 		resetAirOptions(current.meter);
 		return -(s.stun+s.untech);
-	} else if(current.move->crouch) {
+	} else if((!s.forceStand && current.move->crouch) || s.forceCrouch) {
 		current.move = crouchReel->execute(current);
 		return -(s.stun + s.stun/5);
 	} else {

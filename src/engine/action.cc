@@ -604,6 +604,14 @@ void action::parseProperties(string properties, bool counter)
 			if(counter) CHStats[ch].autoCorrects = 1;
 			else stats[ch].autoCorrects = 1;
 			break;
+		case '/':
+			if(counter) CHStats[ch].forceCrouch = 1;
+			else stats[ch].forceCrouch = 1;
+			break;
+		case '\\':
+			if(counter) CHStats[ch].forceStand = 1;
+			else stats[ch].forceStand = 1;
+			break;
 		case '^':
 			if(counter) CHStats[ch].launch = 1;
 			else stats[ch].launch = 1;
@@ -806,6 +814,8 @@ hStat action::pollStats(int f, bool CH)
 		s.connect = stats[c].connect + CHStats[c].connect * CH;
 		s.autoCorrects = stats[c].autoCorrects + CHStats[c].autoCorrects * CH;
 		s.prorate = stats[c].prorate + (CHStats[c].prorate - 1.0) * CH;
+		s.forceCrouch = stats[c].forceCrouch || CHStats[c].forceCrouch * CH;
+		s.forceStand = stats[c].forceStand || CHStats[c].forceStand * CH;
 		s.launch = stats[c].launch || CHStats[c].launch * CH;
 		if(CH){
 			s.hover = CHStats[c].hover;

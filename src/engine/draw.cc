@@ -271,6 +271,7 @@ void SaltAndBone::drawHint(int i)
 		} else if(blockFail[i] & 2){
 			drawGlyph("high", 0, 400, 300, 55, 2*i);
 		} else if(blockFail[i] & 4){
+			if(blockFail[i] & 8) drawGlyph("air", 0, 400, 300, 55, 2*i);
 			drawGlyph("air", 0, 400, 300, 55, 2*i);
 		} else if(blockFail[i] & 8){
 			drawGlyph("unblock", 0, 300, 500, 55, 2*i);

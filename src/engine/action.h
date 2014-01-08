@@ -23,7 +23,7 @@ class force;
 class avatar;
 class instance;
 struct hStat{
-	hStat() : damage(0), chip(0), stun(0), initialLaunch(0), pause(-1), push(0), lift(0), untech(0), blowback(0), hover(0), launch(0), ghostHit(0), wallBounce(0), floorBounce(0), ceilingBounce(0), slide(0), stick(0), hitsProjectile(0), turnsProjectile(0), killsProjectile(0), isProjectile(0), autoCorrects(0), connect(0), prorate(1.0) {}
+	hStat() : damage(0), chip(0), stun(0), initialLaunch(0), pause(-1), push(0), lift(0), untech(0), blowback(0), hover(0), launch(0), forceStand(0), forceCrouch(0), ghostHit(0), wallBounce(0), floorBounce(0), ceilingBounce(0), slide(0), stick(0), hitsProjectile(0), turnsProjectile(0), killsProjectile(0), isProjectile(0), autoCorrects(0), connect(0), prorate(1.0) {}
 	hStat(const hStat&);
 	int damage;	/*How much damage the hit does*/
 	int chip;	/*How much damage the hit does if blocked*/
@@ -36,6 +36,8 @@ struct hStat{
 	int blowback;	/*How many pixels per frame are added to push in the air*/
 	int hover;
 	bool launch:1;	/*Does this hit put the opponent in the air*/
+	bool forceStand:1;
+	bool forceCrouch:1;
 	bool ghostHit:1;
 	bool wallBounce:1;
 	bool floorBounce:1;
