@@ -29,6 +29,7 @@ void action::zero()
 	hits = 0;
 	unique = false;
 	selfChain = false;
+	cooldown = 0;
 	collision.clear();
 	hitbox.clear();
 	hitreg.clear();
@@ -260,6 +261,9 @@ bool action::setParameter(string param)
 	} else if(t.current() == "Proximity"){
 		xRequisite = stoi(t("\t: \n"));
 		yRequisite = stoi(t());
+		return true;
+	} else if (t.current() == "Cooldown") {
+		cooldown = stoi(t("\t: \n"));
 		return true;
 	} else if (t.current() == "Offset") {
 		offX = stoi(t("\t: \n"));
@@ -758,6 +762,8 @@ bool action::check(const status &current)
 		return 0;
 	if(yRequisite > 0 && current.prox().h > yRequisite) 
 		return 0;
+	for(cooldownTracker i:current.cooldowns)
+		if(i.move == this) return 0;
 	return 1;
 }
 
@@ -961,6 +967,7 @@ action * action::execute(status &current)
 		basis.connect = current.connect;
 		basis.hit = current.hit;
 	}
+	if(cooldown) current.cooldowns.push_back({this, cooldown});
 	current.frame = 0;
 	current.connect = 0;
 	current.hit = 0;
