@@ -28,6 +28,7 @@ void action::zero()
 	frames = 0;
 	hits = 0;
 	unique = false;
+	resetJumpOptions = false;
 	selfChain = false;
 	cooldown = 0;
 	collision.clear();
@@ -605,6 +606,9 @@ void action::parseProperties(string properties, bool counter)
 	while(properties[i++] != ':'); i++;
 	for(; i < properties.size(); i++){
 		switch(properties[i]){
+		case '-':
+			resetJumpOptions = true;
+			break;
 		case '@':
 			selfChain = true;
 			break;
@@ -959,6 +963,10 @@ action * action::execute(status &current)
 {
 	current.absorbedHits = 0;
 	current.meter[1].value -= cost;
+	if(resetJumpOptions){
+		current.meter[2].value = current.meter[2].maximum;
+		current.meter[3].value = current.meter[3].maximum;
+	}
 	current.meter[4].value += cost * 2;
 	if(modifier){
 		if(current.move == nullptr) basis.move = nullptr;

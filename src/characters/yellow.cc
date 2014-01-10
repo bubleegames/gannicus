@@ -5,16 +5,11 @@ yellow::yellow(){
 	build("Yellow", "Yellow");
 }
 
-void yellow::resetAirOptions(vector<HUDMeter<int>>& meter)
-{
-	meter[2].value = 1;
-	meter[3].value = 2;
-}
-
 vector<HUDMeter<int>> yellow::generateMeter()
 {
 	vector<HUDMeter<int>> meter = character::generateMeter();
 	meter.push_back(HUDMeter<int>(360));
+	meter[3].maximum = 2;
 	meter[5].y = 1.0/90.0 * 88.5;
 	meter[5].x = .275;
 	meter[5].h = 1.0/90.0;

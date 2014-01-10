@@ -4,7 +4,6 @@
 class yellow : public character {
 public:
 	yellow();
-	void resetAirOptions(vector<HUDMeter<int>>&);
 	action * createMove(string);
 	int takeHit(status&, hStat&, int, int&);
 	vector<HUDMeter<int>> drawMeters(int, status&);
