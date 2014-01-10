@@ -7,36 +7,11 @@ red::red()
 	backup = new instance;
 }
 
-vector<HUDMeter<int>> red::generateMeter()
-{
-	vector<HUDMeter<int>> meter = character::generateMeter();
-	meter.push_back(HUDMeter<int>(540));
-	meter.push_back(HUDMeter<int>(540));
-	meter[5].w = 0;
-	meter[6].w = 0;
-	return meter;
-}
-
-void red::tick(status &current)
-{
-	character::tick(current);
-	if(current.meter[5].value < 540) current.meter[5].value++;
-	if(current.meter[5].value < 0) current.meter[5].value = 0;
-}
-
 void red::step(status& current)
 {
-	if(current.meter[6].value > 0) current.meter[6].value--;
 	temporalBuffer.push_back(current);
 	if(temporalBuffer.size() > 120) temporalBuffer.erase(temporalBuffer.begin());
 	character::step(current);
-}
-
-void red::init(status& current)
-{
-	character::init(current);
-	current.meter[5].value = 540;
-	current.meter[6].value = 0;
 }
 
 action * red::createMove(string key)
@@ -60,20 +35,6 @@ action * red::createMove(string key)
 redCancel::redCancel(string dir, string file) 
 {
 	build(dir, file); 
-}
-
-bool redCancel::check(const status &current)
-{
-	if(current.meter[6].value > 0) return 0;
-	return special::check(current);
-}
-
-action * redCancel::execute(status &current)
-{
-	current.meter[2].value = 1;
-	current.meter[3].value = 1;
-	current.meter[6].value = 16;
-	return action::execute(current);
 }
 
 int redCancel::arbitraryPoll(int q, int f)

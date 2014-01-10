@@ -5,10 +5,7 @@ class red : public character{
 public:
 	red();
 	action * createMove(string);
-	void tick(status&);
-	vector<HUDMeter<int>> generateMeter();
 	void step(status&);
-	void init(status&);
 	vector<status> temporalBuffer;
 	instance * backup;
 };
@@ -18,9 +15,7 @@ public:
 	redCancel() {}
 	~redCancel();
 	redCancel(string, string);
-	bool check(const status&);
 	int arbitraryPoll(int, int);
-	action * execute(status&);
 };
 
 class redSuper : virtual public special{
