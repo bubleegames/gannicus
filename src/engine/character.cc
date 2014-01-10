@@ -602,8 +602,8 @@ vector<HUDMeter<int>> avatar::generateMeter()
 	vector<HUDMeter<int>> meter;
 	meter.push_back(HUDMeter<int>(600));
 	meter.push_back(HUDMeter<int>(300));
-	meter.push_back(HUDMeter<int>(10));
-	meter.push_back(HUDMeter<int>(10));
+	meter.push_back(HUDMeter<int>(1));
+	meter.push_back(HUDMeter<int>(1));
 	meter.push_back(HUDMeter<int>(600));
 
 	meter[0].y = 1.0/90.0;
@@ -639,8 +639,8 @@ void character::init(status& current)
 
 void character::resetAirOptions(vector<HUDMeter<int>>& meter)
 {
-	meter[2].value = 1;
-	meter[3].value = 1;
+	meter[2].value = meter[2].maximum;
+	meter[3].value = meter[3].maximum;
 }
 
 int avatar::acceptTarget(action * c, int f)
