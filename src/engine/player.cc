@@ -107,8 +107,6 @@ void instance::init()
 	current.age = 0;
 	current.throwInvuln = 0;
 	current.offspring.clear();
-	inputBuffer.clear();
-	for(int i = 0; i < 30; i++) inputBuffer.push_front(5);
 }
 
 bool instance::acceptTarget(instance * m)
@@ -148,12 +146,14 @@ void player::init()
 	record = nullptr;
 	v = nullptr;
 	rounds = 0;
+	controller::init();
 	instance::init();
 }
 
 void player::roundInit()
 {
 	instance::init();
+	controller::init();
 	neutralize();
 	if(v) pick()->init(current);
 	if(record){
@@ -742,23 +742,37 @@ void instance::passSignal(int sig)
 	pick()->signal(sig, current);
 }
 
-void instance::pushInput(deque <int> i)
-{
-	inputBuffer = i;
-}
-
-void instance::pushInput(unsigned int i)
-{
-	inputBuffer.push_front(i);
-	inputBuffer.pop_back();
-}
-
 void instance::cleanup()
 {
 	save = current;
 }
 
-void instance::getMove(vector<int> buttons)
+void controller::readEvent(SDL_Event & event, frame &t)
+{
+	int effect = tap(event);
+	if(effect != 0){
+		for(int i = 0; i < 4; i++){
+			if(abs(effect) & (1 << i)){
+				if(effect > 0){
+					t.axis[i] = 1;
+				} else {
+					t.axis[i] = 0;
+				}
+				if(i%2 == 0) t.axis[i+1] = 0;
+				else t.axis[i-1] = 0;
+			}
+		}
+		for(unsigned int i = 0; i < t.buttons.size(); i++){
+			if(abs(effect) & (1 << (i + 4))){
+				if(effect > 0) t.buttons[i] = 1;
+				else if(effect < 0) t.buttons[i] = -1;
+			}
+		}
+	}
+}
+
+
+void instance::getMove(vector<int> buttons, deque<int> inputBuffer)
 {
 	checkReversal();
 	status e = current;
@@ -828,30 +842,6 @@ void player::macroCheck(SDL_Event &event)
 					delete record;
 					record = nullptr;
 				}
-			}
-		}
-	}
-}
-
-void controller::readEvent(SDL_Event & event, frame &t)
-{
-	int effect = tap(event);
-	if(effect != 0){
-		for(int i = 0; i < 4; i++){
-			if(abs(effect) & (1 << i)){
-				if(effect > 0){
-					t.axis[i] = 1;
-				} else {
-					t.axis[i] = 0;
-				}
-				if(i%2 == 0) t.axis[i+1] = 0;
-				else t.axis[i-1] = 0;
-			}
-		}
-		for(unsigned int i = 0; i < t.buttons.size(); i++){
-			if(abs(effect) & (1 << (i + 4))){
-				if(effect > 0) t.buttons[i] = 1;
-				else if(effect < 0) t.buttons[i] = -1;
 			}
 		}
 	}

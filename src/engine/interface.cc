@@ -513,28 +513,29 @@ void SaltAndBone::resolveCamera()
 
 void SaltAndBone::resolveInputs()
 {
+	int flop;
 	if(timer > 99 * 60){
 		for(unsigned int i = 0; i < P.size(); i++){
-			if(timer == 106 * 60) things[i]->inputBuffer[0] = 0;
-			else if(timer == 106 * 60 - 1) things[i]->inputBuffer[0] = i;
-			else if(timer == 106 * 60 - 2) things[i]->inputBuffer[0] = selection[(i+1)%2] / 10;
-			else if(timer == 106 * 60 - 3) things[i]->inputBuffer[0] = selection[(i+1)%2] % 10;
-			else if(timer == 106 * 60 - 4) things[i]->inputBuffer[0] = 0;
-			else(things[i]->inputBuffer[0] = 5);
+			if(timer == 106 * 60) P[i]->inputBuffer[0] = 0;
+			else if(timer == 106 * 60 - 1) P[i]->inputBuffer[0] = i;
+			else if(timer == 106 * 60 - 2) P[i]->inputBuffer[0] = selection[(i+1)%2] / 10;
+			else if(timer == 106 * 60 - 3) P[i]->inputBuffer[0] = selection[(i+1)%2] % 10;
+			else if(timer == 106 * 60 - 4) P[i]->inputBuffer[0] = 0;
+			else(P[i]->inputBuffer[0] = 5);
 			for(int &j:currentFrame[i].buttons) j = 0;
 		}
 	} else {
-		int flop[2] = {0, 0};
 		for(unsigned int i = 0; i < currentFrame.size(); i++){
 			if(P[i]->current.facing == -1){
-				if(currentFrame[i].n.raw.dir % 3 == 0) flop[i] -= 2;
-				else if(currentFrame[i].n.raw.dir % 3 == 1) flop[i] += 2; 
+				if(currentFrame[i].n.raw.dir % 3 == 0) flop -= 2;
+				else if(currentFrame[i].n.raw.dir % 3 == 1) flop += 2; 
+				else flop = 0;
+				p[i]->pushInput(currentFrame[i].n.raw.dir + flop);
 			}
 		}
 		for(instance *i:things){
 			if(i){
-				i->pushInput(currentFrame[i->ID - 1].n.raw.dir + flop[i->ID -1]);
-				i->getMove(currentFrame[i->ID - 1].buttons);
+				i->getMove(currentFrame[i->ID - 1].buttons, P[i->ID - 1]->inputBuffer);
 			}
 		}
 	}
@@ -1305,9 +1306,9 @@ void SaltAndBone::resolveHits()
 		connect[i] = 0;
 		hitBy[i] = -1;
 	}
-	for(instance *i:things){
-		if(!i->current.hitbox.empty()){
-			if(!freeze) i->current.opponent->checkBlocking();
+	for(unsigned int i = 0; i < things.size(); i++){
+		if(!things[i]->current.hitbox.empty()){
+			if(!freeze) things[i]->current.opponent->checkBlocking();
 		}
 	}
 	for(unsigned int i = 0; i < things.size(); i++){

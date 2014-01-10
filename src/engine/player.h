@@ -18,7 +18,6 @@ public:
 	vector<SDL_Rect> hitLocation;
 	int selectedPalette;
 	int ID;
-	deque<int> inputBuffer;
 	void checkFacing();
 	void checkReversal();
 	void checkFacing(instance*);
@@ -33,7 +32,7 @@ public:
 	virtual void init();
 	virtual void step();
 
-	virtual void getMove(vector<int>);
+	virtual void getMove(vector<int>, deque<int>);
 	virtual int takeHit(int, hStat&);
 	virtual void invertVectors(int);
 	virtual void pullVolition();
@@ -48,8 +47,6 @@ public:
 	virtual bool spriteCheck();
 	virtual void connect(int, hStat&);
 	virtual void checkBlocking() {}
-	virtual void pushInput(unsigned int);
-	virtual void pushInput(deque<int>);
 	virtual void passSignal(int);
 	virtual int dragBG(int, int);
 	virtual void follow();

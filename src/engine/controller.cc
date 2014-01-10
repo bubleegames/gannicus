@@ -6,6 +6,13 @@ keySetting::keySetting()
 	effect = 0;
 }
 
+void controller::init()
+{
+	inputBuffer.clear();
+	for(int i = 0; i < 30; i++) inputBuffer.push_back(5);
+}
+
+
 script * controller::patternMatch(int effect)
 {
 	for(unsigned int i = 0; i < pattern.size(); i++){
@@ -122,6 +129,12 @@ bool controller::setKey(int effect, SDL_Event temp)
 	} else return 0;
 }
 
+void controller::pushInput(unsigned int i)
+{
+	inputBuffer.push_front(i);
+	inputBuffer.pop_back();
+}
+
 bool controller::same(SDL_Event temp)
 {
 	switch (temp.type){
@@ -197,51 +210,85 @@ void controller::swapKey(int effect, SDL_Event temp)
 	}
 }
 
-int controller::tap(SDL_Event temp)
+int inputHandler::tap(const SDL_Event &event)
+{
+	for(keySetting *i:input){
+		if(i->trigger.type == event.type){
+			switch(event.type){
+			case SDL_KEYUP:
+			case SDL_KEYDOWN:
+				if(i->trigger.key.keysym.sym == event.key.keysym.sym)
+					return i->effect;
+			case SDL_JOYBUTTONUP:
+			case SDL_JOYBUTTONDOWN:
+				if(i->trigger.jbutton.which == event.jbutton.which && 
+				   i->trigger.jbutton.button == event.jbutton.button) 
+					return i->effect;
+			case SDL_JOYAXISMOTION:
+				if(i->trigger.jaxis.which == event.jaxis.which &&
+				   i->trigger.jaxis.axis == event.jaxis.axis &&
+				   i->trigger.jaxis.value == event.jaxis.value)
+					return i->effect;
+			case SDL_JOYHATMOTION:
+				if(i->trigger.jhat.which == event.jhat.which &&
+				   i->trigger.jhat.hat == event.jhat.hat &&
+				   i->trigger.jhat.value == event.jhat.value)
+					return i->effect;
+			default:
+				break;
+			}
+		}
+	}
+	return 0;
+}
+
+int controller::tap(const SDL_Event &event){
 {
 	int ret = 0;
-	for(unsigned int i = 0; i < input.size(); i++){
-		switch(temp.type){
+	for(keySetting *i:input){
+		switch(event.type){
 		case SDL_KEYUP:
-			if(input[i]->trigger.type == SDL_KEYDOWN){
-				if(input[i]->trigger.key.keysym.sym == temp.key.keysym.sym) 
-					ret -= input[i]->effect;
+			if(i->trigger.type == SDL_KEYDOWN){
+				if(i->trigger.key.keysym.sym == event.key.keysym.sym) 
+					ret -= i->effect;
 			}
 			break;
 		case SDL_KEYDOWN:
-			if(input[i]->trigger.type == SDL_KEYDOWN){
-				if(input[i]->trigger.key.keysym.sym == temp.key.keysym.sym) 
-					ret += input[i]->effect;
+			if(i->trigger.type == SDL_KEYDOWN){
+				if(i->trigger.key.keysym.sym == event.key.keysym.sym) 
+					ret += i->effect;
 			}
 			break;
 		case SDL_JOYBUTTONUP:
-			if(input[i]->trigger.type == SDL_JOYBUTTONDOWN){
-				if(input[i]->trigger.jbutton.which == temp.jbutton.which && 
-				   input[i]->trigger.jbutton.button == temp.jbutton.button) 
-					ret -= input[i]->effect;
+			if(i->trigger.type == SDL_JOYBUTTONDOWN){
+				if(i->trigger.jbutton.which == event.jbutton.which && 
+				   i->trigger.jbutton.button == event.jbutton.button) 
+					ret -= i->effect;
 			}
 			break;
 		case SDL_JOYBUTTONDOWN:
-			if(input[i]->trigger.type == SDL_JOYBUTTONDOWN){
-				if(input[i]->trigger.jbutton.which == temp.jbutton.which && 
-				   input[i]->trigger.jbutton.button == temp.jbutton.button) 
-					ret += input[i]->effect;
+			if(i->trigger.type == SDL_JOYBUTTONDOWN){
+				if(i->trigger.jbutton.which == event.jbutton.which && 
+				   i->trigger.jbutton.button == event.jbutton.button) 
+					ret += i->effect;
 			}
 			break;
 		case SDL_JOYAXISMOTION:
-			if(input[i]->trigger.type == SDL_JOYAXISMOTION){
-				if(input[i]->trigger.jaxis.which == temp.jaxis.which &&
-				   input[i]->trigger.jaxis.axis == temp.jaxis.axis){
-					if(input[i]->trigger.jaxis.value == temp.jaxis.value){
-						ret += input[i]->effect;
+			if(i->trigger.type == SDL_JOYAXISMOTION){
+				if(i->trigger.jaxis.which == event.jaxis.which &&
+				   i->trigger.jaxis.axis == event.jaxis.axis){
+					if(i->trigger.jaxis.value == event.jaxis.value){
+						ret += i->effect;
 					} else {
-						if(temp.jaxis.value == 0) ret -= input[i]->effect;
+						if(event.jaxis.value == 0) ret -= i->effect;
 					}
 				}
 			}
 			break;
+		default:
+			inputHandler::tap(event);
 		}
 	}
-	if(ret & 1 || ret & 2 || ret & 4 || ret & 8);
 	return ret;
+}
 }
