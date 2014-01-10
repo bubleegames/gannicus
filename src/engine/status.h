@@ -12,6 +12,11 @@ using std::vector;
 
 class instance;
 class action;
+struct cooldownTracker {
+	action *move;
+	unsigned int duration;
+};
+
 struct status{
 	status();
 	status(const status&);
@@ -33,6 +38,7 @@ struct status{
 	action *move, *bufferedMove, *reversal;
 	int reversalTimer;
 	vector <instance*> offspring;
+	vector <cooldownTracker> cooldowns;
 	vector<SDL_Rect> hitbox, hitreg;
 	SDL_Rect collision;
 	int connect, hit, counter;

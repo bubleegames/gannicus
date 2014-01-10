@@ -116,6 +116,7 @@ public:
 	bool hidesMeter:1;
 	bool track:1;
 	bool countersProjectile:1;
+	unsigned int cooldown;
 	int flip;
 	int armorStart, armorLength;
 	int armorHits, armorCounter;

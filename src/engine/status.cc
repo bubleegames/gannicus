@@ -45,6 +45,7 @@ status::status(const status & o)
 	throwInvuln = o.throwInvuln;
 	reversalFlag = o.reversalFlag;
 	meter = o.meter;
+	cooldowns = o.cooldowns;
 	offspring = o.offspring;
 	collision = o.collision;
 	comboState = o.comboState;
