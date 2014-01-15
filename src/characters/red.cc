@@ -21,8 +21,7 @@ action * red::createMove(string key)
 	action * m;
 	switch(key[0]){
 	case '$':
-		if(key[1] == '!') m = new redSuper(name, t.current());
-		else m = new redCancel(name, t.current());
+		m = new redSuper(name, t.current());
 		break;
 	default:
 		m = character::createMove(key);
@@ -32,16 +31,6 @@ action * red::createMove(string key)
 	return m;
 }
 
-redCancel::redCancel(string dir, string file) 
-{
-	build(dir, file); 
-}
-
-int redCancel::arbitraryPoll(int q, int f)
-{
-	if(q == 33) return 1;
-	else return action::arbitraryPoll(q, f);
-}
 int redSuper::arbitraryPoll(int q, int f)
 {
 	if(q == 31) return 11;
@@ -49,5 +38,4 @@ int redSuper::arbitraryPoll(int q, int f)
 	else return action::arbitraryPoll(q, f);
 }
 
-redCancel::~redCancel() {}
 redSuper::~redSuper() {}

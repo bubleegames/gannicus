@@ -28,9 +28,14 @@ void action::zero()
 	frames = 0;
 	hits = 0;
 	unique = false;
+	freezesProjectiles = false;
 	resetJumpOptions = false;
+	requiresFreeze = false;
+	subsumedFreeze = false;
+	freezeAgnostic = false;
 	selfChain = false;
 	cooldown = 0;
+	timeDilation = 0;
 	collision.clear();
 	hitbox.clear();
 	hitreg.clear();
@@ -130,6 +135,10 @@ int action::arbitraryPoll(int q, int f)
 	case 2:
 		if(f == freezeFrame) return freezeLength;
 		else break;
+	case 31:
+		return timeDilation;
+	case 32:
+		return freezesProjectiles;
 	case 28:
 		if(werf && f == 0) return 1;
 		break;
@@ -249,6 +258,9 @@ bool action::setParameter(string param)
 		return true;
 	} else if (t.current() == "RequiredMode") {
 		requiredMode = stoi(t("\t: \n"));
+		return true;
+	} else if (t.current() == "TimeDilation") {
+		timeDilation = stoi(t("\t:\n"));
 		return true;
 	} else if (t.current() == "Displace") {
 		displaceFrame = stoi(t("\t:\n"));
@@ -606,6 +618,12 @@ void action::parseProperties(string properties, bool counter)
 	while(properties[i++] != ':'); i++;
 	for(; i < properties.size(); i++){
 		switch(properties[i]){
+		case '8':
+			freezesProjectiles = true;
+			break;
+		case 'x':
+			requiresFreeze = true;
+			break;
 		case '-':
 			resetJumpOptions = true;
 			break;
@@ -708,6 +726,12 @@ void action::parseProperties(string properties, bool counter)
 		case 'i':
 			if(!counter) countersProjectile = false;
 			break;
+		case '~':
+			freezeAgnostic = true;
+			break;
+		case '|':
+			subsumedFreeze = true;
+			break;
 		default:
 			break;
 		}
@@ -765,6 +789,8 @@ bool action::check(const status &current)
 	if(xRequisite > 0 && current.prox().w > xRequisite) 
 		return 0;
 	if(yRequisite > 0 && current.prox().h > yRequisite) 
+		return 0;
+	if(requiresFreeze && current.freeze <= 0)
 		return 0;
 	for(cooldownTracker i:current.cooldowns)
 		if(i.move == this) return 0;

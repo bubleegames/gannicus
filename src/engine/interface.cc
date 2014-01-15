@@ -1449,7 +1449,7 @@ void SaltAndBone::doSuperFreeze()
 {
 	int go[2] = {0, 0};
 	for(unsigned int i = 0; i < P.size(); i++){
-		if(!things[i]->current.move->arbitraryPoll(33, 0) || freeze <= 0){
+		if(!things[i]->current.move->subsumedFreeze || freeze <= 0){
 			go[i] = things[i]->current.move->arbitraryPoll(2, things[i]->current.frame);
 		}
 	}

@@ -10,14 +10,6 @@ public:
 	instance * backup;
 };
 
-class redCancel : virtual public special{
-public:
-	redCancel() {}
-	~redCancel();
-	redCancel(string, string);
-	int arbitraryPoll(int, int);
-};
-
 class redSuper : virtual public special{
 public:
 	redSuper();

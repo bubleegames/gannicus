@@ -108,12 +108,17 @@ public:
 	Mix_Chunk *soundClip;
 	int stop;
 	int throwinvuln;
+	int timeDilation; //Additional timer expended per frame of move
 	bool null:1;
 	bool selfChain:1;
 	bool crouch:1;
 	bool hittable:1;
 	bool linkable:1;
 	bool hidesMeter:1;
+	bool subsumedFreeze:1;
+	bool requiresFreeze:1;
+	bool freezeAgnostic:1;
+	bool freezesProjectiles:1;
 	bool track:1;
 	bool countersProjectile:1;
 	bool resetJumpOptions:1;
