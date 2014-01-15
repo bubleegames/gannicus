@@ -94,7 +94,7 @@ void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> butt
 	}
 	if(ret){
 		current.reversalFlag = false;
-		if(current.freeze > 0){
+		if(!ret->freezeAgnostic && current.freeze > 0){
 			if(current.bufferedMove == nullptr){
 				current.bufferedMove = ret;
 			}
