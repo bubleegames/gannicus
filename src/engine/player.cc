@@ -399,9 +399,6 @@ void player::characterSelect(int i)
 {
 	v = nullptr;
 	switch(i){
-	case 1:
-		v = new red;
-		break;
 	case 2:
 		v = new yellow;
 		break;
