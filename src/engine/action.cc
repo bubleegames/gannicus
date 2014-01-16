@@ -1002,6 +1002,7 @@ action * action::execute(status &current)
 		basis.hit = current.hit;
 	}
 	if(cooldown) current.cooldowns.push_back({this, cooldown});
+	if(freezeAgnostic) current.freeze = 0;
 	current.frame = 0;
 	current.connect = 0;
 	current.hit = 0;
