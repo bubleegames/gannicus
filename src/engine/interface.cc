@@ -1310,6 +1310,10 @@ void SaltAndBone::resolveHits()
 			if(!freeze) i->current.opponent->checkBlocking();
 		}
 	}
+
+	vector<int> chID;
+	for(instance *i:things) chID.push_back(i->ID);
+
 	for(unsigned int i = 0; i < things.size(); i++){
 		for(int m = things.size()-1; m >= 0; m--){
 			if(m != (int)i){
@@ -1384,7 +1388,7 @@ void SaltAndBone::resolveHits()
 	}
 
 	for(unsigned int i = 0; i < things.size(); i++){
-		if(connect[i]){
+		if(connect[i] && chID[i] == things[i]->ID){
 			things[i]->connect(combo[things[i]->ID-1], s[i]);
 			if(hit[i] == 1){
 				things[i]->current.hit = things[i]->current.connect;
