@@ -78,43 +78,48 @@ void SaltAndBone::drawMainMenu(int ID)
 	glEnable( GL_TEXTURE_2D );
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 1)*0.4);
 	if(analytics)
-		drawGlyph("Replay", 20 + 1260*ID, 300, 290, 40, 2*ID);
+		drawGlyph("Replay", 20 + 1260*ID, 300, 270, 40, 2*ID);
 	else
-		drawGlyph("No Replay", 20 + 1260*ID, 300, 290, 40, 2*ID);
+		drawGlyph("No Replay", 20 + 1260*ID, 300, 270, 40, 2*ID);
 
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 2)*0.4);
-	drawGlyph("Key Config", 20 + 1260*ID, 300, 330, 40, 2*ID);
+	drawGlyph("Key Config", 20 + 1260*ID, 300, 310, 40, 2*ID);
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 3)*0.4);
-	drawGlyph("Exit Menu", 20 + 1260*ID, 300, 370, 40, 2*ID);
+	drawGlyph("Exit Menu", 20 + 1260*ID, 300, 350, 40, 2*ID);
 
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 4)*0.4);
 	if(shortcut)
-		drawGlyph("Rematch", 20 + 1260*ID, 300, 410, 40, 2*ID);
+		drawGlyph("Rematch", 20 + 1260*ID, 300, 390, 40, 2*ID);
 	else
-		drawGlyph("Reselect", 20 + 1260*ID, 300, 410, 40, 2*ID);
+		drawGlyph("Reselect", 20 + 1260*ID, 300, 390, 40, 2*ID);
 
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 5)*0.4);
 	if(scripting)
-		drawGlyph("Scripts On", 20 + 1260*ID, 300, 450, 40, 2*ID);
+		drawGlyph("Scripts On", 20 + 1260*ID, 300, 430, 40, 2*ID);
 	else
-		drawGlyph("Scripts Off", 20 + 1260*ID, 300, 450, 40, 2*ID);
+		drawGlyph("Scripts Off", 20 + 1260*ID, 300, 430, 40, 2*ID);
 
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 6)*0.4);
 	if(pauseEnabled) 
-		drawGlyph("Pause on", 20 + 1260*ID, 300, 490, 40, 2*ID);
+		drawGlyph("Pause on", 20 + 1260*ID, 300, 470, 40, 2*ID);
 	else 
-		drawGlyph("Pause off", 20 + 1260*ID, 300, 490, 40, 2*ID);
+		drawGlyph("Pause off", 20 + 1260*ID, 300, 470, 40, 2*ID);
 
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 7)*0.4);
 	if(P[ID]->boxen && P[ID]->sprite) 
-		drawGlyph("Both", 20 + 1260*ID, 300, 530, 40, 2*ID);
+		drawGlyph("Both", 20 + 1260*ID, 300, 510, 40, 2*ID);
 	else if(P[ID]->boxen) 
-		drawGlyph("Boxen", 20 + 1260*ID, 300, 530, 40, 2*ID);
+		drawGlyph("Boxen", 20 + 1260*ID, 300, 510, 40, 2*ID);
 	else
-		drawGlyph("Sprites", 20 + 1260*ID, 300, 530, 40, 2*ID);
+		drawGlyph("Sprites", 20 + 1260*ID, 300, 510, 40, 2*ID);
 
 	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 8)*0.4);
-	drawGlyph("Quit Game", 20 + 1260*ID, 300, 570, 40, 2*ID);
+	if(killTimer)
+		drawGlyph("Training", 20 + 1260*ID, 300, 550, 40, 2*ID);
+	else
+		drawGlyph("Match", 20 + 1260*ID, 300, 550, 40, 2*ID);
+	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 9)*0.4);
+	drawGlyph("Quit Game", 20 + 1260*ID, 300, 590, 40, 2*ID);
 	glDisable( GL_TEXTURE_2D );
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
 }
@@ -342,7 +347,8 @@ void SaltAndBone::drawHUD()
 	}
 
 	if(timer > 100 * 60 && timer < 100 * 60 + 31){ 
-		globalAnnounce("Round " + to_string(currentRound));
+		if(killTimer) globalAnnounce("Eleven");
+		else globalAnnounce("Round " + to_string(currentRound));
 	}
 	if(timer > 99 * 60 && timer < 99 * 60 + 31){ 
 		globalAnnounce("FIGHT");

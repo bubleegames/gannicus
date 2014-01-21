@@ -982,6 +982,9 @@ void SaltAndBone::mainMenu(int ID)
 				} else P[ID]->boxen = true;
 				break;
 			case 8:
+				killTimer = !killTimer;
+				break;
+			case 9:
 				gameover = 1;
 				break;
 			}
