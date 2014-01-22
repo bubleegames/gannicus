@@ -912,6 +912,15 @@ void instance::connect(hStat & s)
 	if(s.pause < 0){
 		current.freeze = s.ghostHit ? 0 : s.stun/4+10;
 	} else current.freeze = s.pause;
+	if(s.autoCorrects) P[i]->checkFacing();
+	else if(!current.aerial){
+		for(int j = 0; j < 6; j++){
+			if(2 << j & things[i]->current.cancelState()){
+				P[i]->checkFacing();
+				break;
+			}
+		}
+	}
 	for(instance *i:current.offspring) i->passSignal(2);
 	pick()->connect(current);
 	current.reversal = nullptr;

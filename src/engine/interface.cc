@@ -1324,6 +1324,8 @@ void SaltAndBone::resolveHits()
 						taken[j] = 1;
 						hitBy[j] = i;
 						things[i]->current.counter = things[j]->CHState();
+						s[i] = things[i]->pollStats();
+						comboScaling(s[i], things[i]->ID-1);
 						if(j < 2){
 							if(things[i]->current.counter > 0){
 								counterHit[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
@@ -1331,8 +1333,6 @@ void SaltAndBone::resolveHits()
 								punish[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
 							}
 						}
-						s[i] = things[i]->pollStats();
-						comboScaling(s[i], things[i]->ID-1);
 						if(i < P.size()) push[i] = s[i].push;
 						break;
 					}
@@ -1354,16 +1354,14 @@ void SaltAndBone::resolveHits()
 						if(!blockFail[i]) blockFail[i] = 8;
 						else if(wasair && !(blockFail[i] & 4)) blockFail[i] = 12;
 					}
+					if(combo[(i+1)%2] < 0) combo[(i+1)%2] = 0;
 				}
 				if(things[i]->particleType == -2){
 					hStat parryHit = P[i]->generateParry(s[hitBy[i]]);
 					damage[i] += parryHit.damage;
 					P[things[hitBy[i]]->ID-1]->takeHit(parryHit);
 				}
-				if(s[hitBy[i]].stun){
-					if(combo[(i+1)%2] < 0 && hit[hitBy[i]] > 0) combo[(i+1)%2] = 0;
-					combo[(i+1)%2] += hit[hitBy[i]];
-				}
+				if(s[hitBy[i]].stun) combo[(i+1)%2] += hit[hitBy[i]];
 				env.enforceFloor(P[i]->current.opponent);
 				env.enforceBounds(P[i]->current.opponent);
 				env.checkCorners(P[i]->current.opponent);
@@ -1379,14 +1377,6 @@ void SaltAndBone::resolveHits()
 			if(hit[i] == 1){
 				things[i]->current.hit = things[i]->current.connect;
 				prorate[things[i]->ID-1] *= s[i].prorate;
-			}
-			if(!things[i]->current.aerial){
-				for(int j = 0; j < 6; j++){
-					if(2 << j & things[i]->current.cancelState() || s[i].autoCorrects){
-						P[i]->checkFacing();
-						break;
-					}
-				}
 			}
 		}
 	}
