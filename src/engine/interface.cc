@@ -1315,30 +1315,24 @@ void SaltAndBone::resolveHits()
 	for(instance *i:things) chID.push_back(i->ID);
 
 	for(unsigned int i = 0; i < things.size(); i++){
-		for(int m = things.size()-1; m >= 0; m--){
-			if(m != (int)i){
-				for(unsigned int j = 0; j < things[i]->current.hitbox.size(); j++){
-					for(unsigned int k = 0; k < things[m]->current.hitreg.size(); k++){
-						if(things[m]->checkHit(things[i]->current.hitbox[j], things[m]->current.hitreg[k])){
-							if(!taken[m] && !connect[i] && things[i]->acceptTarget(things[m])){
-								connect[i] = 1;
-								things[i]->current.counter = things[m]->CHState();
-								if(m < 2){
-									if(things[i]->current.counter > 0){
-										counterHit[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
-									} else if(!(things[m]->current.cancelState() & 513) && !combo[things[i]->ID-1] && !things[m]->current.counter){
-										punish[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
-									}
-								}
-								s[i] = things[i]->pollStats();
-								if(i < P.size()) push[i] = s[i].push;
-								k = things[m]->current.hitreg.size();
-								j = things[i]->current.hitbox.size();
-								taken[m] = 1;
-								hitBy[m] = i;
-								break;
+		for(int j = things.size()-1; j >= 0; j--){
+			if(j != (int)i){
+				if(!taken[j] && !connect[i] && things[i]->acceptTarget(things[j])){
+					if(things[i]->checkHit(things[j])){
+						connect[i] = 1;
+						taken[j] = 1;
+						hitBy[j] = i;
+						things[i]->current.counter = things[j]->CHState();
+						if(j < 2){
+							if(things[i]->current.counter > 0){
+								counterHit[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
+							} else if(!(things[j]->current.cancelState() & 513) && !combo[things[i]->ID-1] && !things[j]->current.counter){
+								punish[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
 							}
 						}
+						s[i] = things[i]->pollStats();
+						if(i < P.size()) push[i] = s[i].push;
+						break;
 					}
 				}
 			}

@@ -55,7 +55,7 @@ public:
 	virtual void follow();
 	virtual void follow(instance*);
 	virtual void loadAssets();
-	virtual bool checkHit(SDL_Rect, SDL_Rect);
+	virtual bool checkHit(instance*);
 	virtual void land();
 	virtual void cleanup();
 	virtual void encounterWall(bool, int);
