@@ -94,7 +94,7 @@ void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> butt
 	}
 	if(ret){
 		current.reversalFlag = false;
-		if(current.freeze > 0){
+		if(!ret->freezeAgnostic && current.freeze > 0){
 			if(current.bufferedMove == nullptr){
 				current.bufferedMove = ret;
 			}
@@ -602,8 +602,8 @@ vector<HUDMeter<int>> avatar::generateMeter()
 	vector<HUDMeter<int>> meter;
 	meter.push_back(HUDMeter<int>(600));
 	meter.push_back(HUDMeter<int>(300));
-	meter.push_back(HUDMeter<int>(10));
-	meter.push_back(HUDMeter<int>(10));
+	meter.push_back(HUDMeter<int>(1));
+	meter.push_back(HUDMeter<int>(1));
 	meter.push_back(HUDMeter<int>(600));
 
 	meter[0].y = 1.0/90.0;
@@ -639,8 +639,8 @@ void character::init(status& current)
 
 void character::resetAirOptions(vector<HUDMeter<int>>& meter)
 {
-	meter[2].value = 1;
-	meter[3].value = 1;
+	meter[2].value = meter[2].maximum;
+	meter[3].value = meter[3].maximum;
 }
 
 int avatar::acceptTarget(action * c, int f)
@@ -668,6 +668,13 @@ void character::land(status& current)
 
 void avatar::step(status &current)
 {
+	for(unsigned int i = 0; i < current.cooldowns.size(); i++){
+		if(!current.cooldowns[i].duration){ 
+			current.cooldowns.erase(current.cooldowns.begin()+i);
+			i--;
+		} else current.cooldowns[i].duration--;
+	}
+
 	if(current.freeze <= 0){
 		current.move->step(current);
 		tick(current);

@@ -28,7 +28,14 @@ void action::zero()
 	frames = 0;
 	hits = 0;
 	unique = false;
+	freezesProjectiles = false;
+	resetJumpOptions = false;
+	requiresFreeze = false;
+	subsumedFreeze = false;
+	freezeAgnostic = false;
 	selfChain = false;
+	cooldown = 0;
+	timeDilation = 0;
 	collision.clear();
 	hitbox.clear();
 	hitreg.clear();
@@ -128,6 +135,10 @@ int action::arbitraryPoll(int q, int f)
 	case 2:
 		if(f == freezeFrame) return freezeLength;
 		else break;
+	case 31:
+		return timeDilation;
+	case 32:
+		return freezesProjectiles;
 	case 28:
 		if(werf && f == 0) return 1;
 		break;
@@ -248,6 +259,9 @@ bool action::setParameter(string param)
 	} else if (t.current() == "RequiredMode") {
 		requiredMode = stoi(t("\t: \n"));
 		return true;
+	} else if (t.current() == "TimeDilation") {
+		timeDilation = stoi(t("\t:\n"));
+		return true;
 	} else if (t.current() == "Displace") {
 		displaceFrame = stoi(t("\t:\n"));
 		displaceX = stoi(t());
@@ -260,6 +274,9 @@ bool action::setParameter(string param)
 	} else if(t.current() == "Proximity"){
 		xRequisite = stoi(t("\t: \n"));
 		yRequisite = stoi(t());
+		return true;
+	} else if (t.current() == "Cooldown") {
+		cooldown = stoi(t("\t: \n"));
 		return true;
 	} else if (t.current() == "Offset") {
 		offX = stoi(t("\t: \n"));
@@ -601,6 +618,15 @@ void action::parseProperties(string properties, bool counter)
 	while(properties[i++] != ':'); i++;
 	for(; i < properties.size(); i++){
 		switch(properties[i]){
+		case '8':
+			freezesProjectiles = true;
+			break;
+		case 'x':
+			requiresFreeze = true;
+			break;
+		case '-':
+			resetJumpOptions = true;
+			break;
 		case '@':
 			selfChain = true;
 			break;
@@ -700,6 +726,12 @@ void action::parseProperties(string properties, bool counter)
 		case 'i':
 			if(!counter) countersProjectile = false;
 			break;
+		case '~':
+			freezeAgnostic = true;
+			break;
+		case '|':
+			subsumedFreeze = true;
+			break;
 		default:
 			break;
 		}
@@ -758,6 +790,10 @@ bool action::check(const status &current)
 		return 0;
 	if(yRequisite > 0 && current.prox().h > yRequisite) 
 		return 0;
+	if(requiresFreeze && current.freeze <= 0)
+		return 0;
+	for(cooldownTracker i:current.cooldowns)
+		if(i.move == this) return 0;
 	return 1;
 }
 
@@ -953,6 +989,10 @@ action * action::execute(status &current)
 {
 	current.absorbedHits = 0;
 	current.meter[1].value -= cost;
+	if(resetJumpOptions){
+		current.meter[2].value = current.meter[2].maximum;
+		current.meter[3].value = current.meter[3].maximum;
+	}
 	current.meter[4].value += cost * 2;
 	if(modifier){
 		if(current.move == nullptr) basis.move = nullptr;
@@ -961,6 +1001,8 @@ action * action::execute(status &current)
 		basis.connect = current.connect;
 		basis.hit = current.hit;
 	}
+	if(cooldown) current.cooldowns.push_back({this, cooldown});
+	if(freezeAgnostic) current.freeze = 0;
 	current.frame = 0;
 	current.connect = 0;
 	current.hit = 0;
