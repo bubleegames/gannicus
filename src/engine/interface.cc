@@ -1280,13 +1280,14 @@ void SaltAndBone::resolveThrows()
 	}
 }
 
-void SaltAndBone::scaleDamage(int &d, int ID)
+void SaltAndBone::comboScaling(hStat &d, int ID)
 {
-	bool actuallyDoesDamage = (d > 0);
-	d *= prorate[ID];
+	bool actuallyDoesDamage = (d.damage > 0);
+	d.untech -= combo[ID];
+	d.damage *= prorate[ID];
 	if(actuallyDoesDamage){
-		d -= combo[ID];
-		if(d < 1) d = 1;
+		d.damage -= combo[ID];
+		if(d.damage < 1) d.damage = 1;
 	}
 }
 
@@ -1331,6 +1332,7 @@ void SaltAndBone::resolveHits()
 							}
 						}
 						s[i] = things[i]->pollStats();
+						comboScaling(s[i], things[i]->ID-1);
 						if(i < P.size()) push[i] = s[i].push;
 						break;
 					}
@@ -1342,10 +1344,9 @@ void SaltAndBone::resolveHits()
 	for(unsigned int i = 0; i < things.size(); i++){ 
 		if(taken[i]){
 			int health = things[things[i]->ID-1]->current.meter[0].value;
-			scaleDamage(s[hitBy[i]].damage, things[hitBy[i]]->ID-1);
 			action * b = things[i]->current.move;
 			bool wasair = things[i]->current.aerial;
-			hit[hitBy[i]] = things[i]->takeHit(combo[things[hitBy[i]]->ID-1], s[hitBy[i]]);
+			hit[hitBy[i]] = things[i]->takeHit(s[hitBy[i]]);
 			if(i < P.size()){
 				if(hit[hitBy[i]] == 1){
 					if(b->canGuard(P[i]->current.frame)){
@@ -1355,20 +1356,11 @@ void SaltAndBone::resolveHits()
 					}
 				}
 				if(things[i]->particleType == -2){
-
-					hStat parryHit;
-					parryHit.damage = s[hitBy[i]].chip ? s[hitBy[i]].chip : s[hitBy[i]].damage/5;
+					hStat parryHit = P[i]->generateParry(s[hitBy[i]]);
 					damage[i] += parryHit.damage;
-					parryHit.ghostHit = true;
-					parryHit.stun = 0;
-					parryHit.push = s[hitBy[i]].push;
-					if(things[i]->current.aerial){
-						parryHit.push += (P[things[hitBy[i]]->ID-1]->current.aerial) ? s[hitBy[i]].blowback : s[hitBy[i]].blowback*5;
-					}
-					P[things[hitBy[i]]->ID-1]->takeHit(combo[i], parryHit);
-					s[hitBy[i]].pause = 0;
+					P[things[hitBy[i]]->ID-1]->takeHit(parryHit);
 				}
-				if(s[hitBy[i]].stun){ 
+				if(s[hitBy[i]].stun){
 					if(combo[(i+1)%2] < 0 && hit[hitBy[i]] > 0) combo[(i+1)%2] = 0;
 					combo[(i+1)%2] += hit[hitBy[i]];
 				}
@@ -1383,7 +1375,7 @@ void SaltAndBone::resolveHits()
 
 	for(unsigned int i = 0; i < things.size(); i++){
 		if(connect[i] && chID[i] == things[i]->ID){
-			things[i]->connect(combo[things[i]->ID-1], s[i]);
+			things[i]->connect(s[i]);
 			if(hit[i] == 1){
 				things[i]->current.hit = things[i]->current.connect;
 				prorate[things[i]->ID-1] *= s[i].prorate;

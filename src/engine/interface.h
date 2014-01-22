@@ -19,7 +19,7 @@ public:
 	virtual bool screenInit(int, int);
 	virtual void processInput(SDL_Event&);
 	virtual void initialConfig(int);
-	virtual void scaleDamage(int&, int) {}
+	virtual void comboScaling(hStat&, int) {}
 	words globalAnnounce;
 	virtual void unitCollision(instance*, instance*);
 	virtual void genInput();
@@ -51,7 +51,7 @@ public:
 	virtual void initShaders();
 	virtual void loadAssets();
 	virtual void handleArgs(vector<string>);
-	virtual void scaleDamage(int&, int);
+	virtual void comboScaling(hStat&, int);
 	void processInput(SDL_Event&);
 	void createPlayers();
 	void createPlayers(string);

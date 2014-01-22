@@ -34,7 +34,7 @@ public:
 	virtual void step();
 
 	virtual void getMove(vector<int>);
-	virtual int takeHit(int, hStat&);
+	virtual int takeHit(hStat&);
 	virtual void invertVectors(int);
 	virtual void pullVolition();
 	virtual void setPosition(int, int);
@@ -46,7 +46,7 @@ public:
 	virtual void combineDelta();
 	virtual int comboState();
 	virtual bool spriteCheck();
-	virtual void connect(int, hStat&);
+	virtual void connect(hStat&);
 	virtual void checkBlocking() {}
 	virtual void pushInput(unsigned int);
 	virtual void pushInput(deque<int>);
@@ -90,6 +90,7 @@ public:
 	virtual bool stuck();
 	virtual bool validate(int, int);
 	virtual void drawHitParticle();
+	hStat generateParry(hStat&);
 
 	virtual void readEvent(SDL_Event &, frame &);
 	virtual void readScripts();
@@ -97,7 +98,7 @@ public:
 	virtual void macroCheck(SDL_Event&);
 	virtual void outOfBounds() {}
 	virtual void land();
-	virtual int takeHit(int, hStat&);
+	virtual int takeHit(hStat&);
 	virtual int CHState() const;
 	virtual bool reversalPossible() const;
 
