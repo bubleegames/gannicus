@@ -37,10 +37,12 @@ bool pet::isDead(status &current)
 	return projectile::isDead(current);
 }
 
-int projectile::acceptTarget(action * c, int f)
+int projectile::acceptTarget(status &current)
 {
-	if(c->stats[c->calcCurrentHit(f)].hitsProjectile || c->stats[c->calcCurrentHit(f)].killsProjectile || c->stats[c->calcCurrentHit(f)].turnsProjectile)
-		return 1;
+	if(current.move->hits > 0){
+		if(current.move->stats[current.move->calcCurrentHit(current.frame)].hitsProjectile || current.move->stats[current.move->calcCurrentHit(current.frame)].killsProjectile || current.move->stats[current.move->calcCurrentHit(current.frame)].turnsProjectile)
+			return 1;
+	}
 	return 0;
 }
 

@@ -39,7 +39,7 @@ public:
 	virtual void pollRects(status&);
 	virtual void step(status&);		//Anything that happens every frame
 	virtual void tick(status&) {}	//Anything that happens every frame as long as we're not in freeze state
-	virtual int acceptTarget(action*, int);
+	virtual int acceptTarget(status&);
 	virtual instance * spawn(status&);
 	virtual action * neutralize(status&);
 	virtual bool turn(int&) { return 0; }
@@ -99,7 +99,7 @@ public:
 	projectile(string, string);
 	projectile() {}
 	virtual void build(string, string);
-	virtual int acceptTarget(action*, int);
+	virtual int acceptTarget(status&);
 	virtual hStat pollStats(status&);
 	virtual int takeHit(status&, hStat&, int, int&);
 	virtual bool turn(int&);

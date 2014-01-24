@@ -115,7 +115,7 @@ bool instance::acceptTarget(instance * m)
 {
 	if(m->ID == ID) return 0;
 	if(m->current.move->hittable) return 1;
-	return m->pick()->acceptTarget(current.move, current.frame);
+	return m->pick()->acceptTarget(current);
 }
 
 bool instance::checkHit(instance *o)

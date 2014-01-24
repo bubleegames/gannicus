@@ -643,7 +643,7 @@ void character::resetAirOptions(vector<HUDMeter<int>>& meter)
 	meter[3].value = meter[3].maximum;
 }
 
-int avatar::acceptTarget(action * c, int f)
+int avatar::acceptTarget(status &)
 {
 	return 1;
 }
