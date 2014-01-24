@@ -1190,7 +1190,7 @@ void SaltAndBone::resolveCollision()
 {
 	vector<SDL_Rect> temp;
 	vector<int> dx;
-	for(player *i:P){
+	for(instance *i:things){
 		env.enforceFloor(i);
 		temp.push_back(i->current.collision);
 		dx.push_back(i->current.deltaX);
@@ -1247,7 +1247,7 @@ void SaltAndBone::resolveCollision()
 		}
 	}
 
-	for(player *i:P){
+	for(instance *i:things){
 		env.enforceFloor(i);
 		env.enforceBounds(i);
 		env.checkCorners(i);
@@ -1283,13 +1283,14 @@ void SaltAndBone::resolveThrows()
 	}
 }
 
-void SaltAndBone::scaleDamage(int &d, int ID)
+void SaltAndBone::comboScaling(hStat &d, int ID)
 {
-	bool actuallyDoesDamage = (d > 0);
-	d *= prorate[ID];
+	bool actuallyDoesDamage = (d.damage > 0);
+	d.untech -= combo[ID];
+	d.damage *= prorate[ID];
 	if(actuallyDoesDamage){
-		d -= combo[ID];
-		if(d < 1) d = 1;
+		d.damage -= combo[ID];
+		if(d.damage < 1) d.damage = 1;
 	}
 }
 
@@ -1313,31 +1314,30 @@ void SaltAndBone::resolveHits()
 			if(!freeze) i->current.opponent->checkBlocking();
 		}
 	}
+
+	vector<int> chID;
+	for(instance *i:things) chID.push_back(i->ID);
+
 	for(unsigned int i = 0; i < things.size(); i++){
-		for(int m = things.size()-1; m >= 0; m--){
-			if(m != (int)i){
-				for(unsigned int j = 0; j < things[i]->current.hitbox.size(); j++){
-					for(unsigned int k = 0; k < things[m]->current.hitreg.size(); k++){
-						if(things[m]->checkHit(things[i]->current.hitbox[j], things[m]->current.hitreg[k])){
-							if(!taken[m] && !connect[i] && things[i]->acceptTarget(things[m])){
-								connect[i] = 1;
-								things[i]->current.counter = things[m]->CHState();
-								if(m < 2){
-									if(things[i]->current.counter > 0){
-										counterHit[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
-									} else if(!(things[m]->current.cancelState() & 513) && !combo[things[i]->ID-1] && !things[m]->current.counter){
-										punish[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
-									}
-								}
-								s[i] = things[i]->pollStats();
-								if(i < P.size()) push[i] = s[i].push;
-								k = things[m]->current.hitreg.size();
-								j = things[i]->current.hitbox.size();
-								taken[m] = 1;
-								hitBy[m] = i;
-								break;
+		for(int j = things.size()-1; j >= 0; j--){
+			if(j != (int)i){
+				if(!taken[j] && !connect[i] && things[i]->acceptTarget(things[j])){
+					if(things[i]->checkHit(things[j])){
+						connect[i] = 1;
+						taken[j] = 1;
+						hitBy[j] = i;
+						things[i]->current.counter = things[j]->CHState();
+						s[i] = things[i]->pollStats();
+						comboScaling(s[i], things[i]->ID-1);
+						if(j < 2){
+							if(things[i]->current.counter > 0){
+								counterHit[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
+							} else if(!(things[j]->current.cancelState() & 513) && !combo[things[i]->ID-1] && !things[j]->current.counter){
+								punish[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
 							}
 						}
+						if(i < P.size()) push[i] = s[i].push;
+						break;
 					}
 				}
 			}
@@ -1347,10 +1347,9 @@ void SaltAndBone::resolveHits()
 	for(unsigned int i = 0; i < things.size(); i++){ 
 		if(taken[i]){
 			int health = things[things[i]->ID-1]->current.meter[0].value;
-			scaleDamage(s[hitBy[i]].damage, things[hitBy[i]]->ID-1);
 			action * b = things[i]->current.move;
 			bool wasair = things[i]->current.aerial;
-			hit[hitBy[i]] = things[i]->takeHit(combo[things[hitBy[i]]->ID-1], s[hitBy[i]]);
+			hit[hitBy[i]] = things[i]->takeHit(s[hitBy[i]]);
 			if(i < P.size()){
 				if(hit[hitBy[i]] == 1){
 					if(b->canGuard(P[i]->current.frame)){
@@ -1358,48 +1357,29 @@ void SaltAndBone::resolveHits()
 						if(!blockFail[i]) blockFail[i] = 8;
 						else if(wasair && !(blockFail[i] & 4)) blockFail[i] = 12;
 					}
+					if(combo[(i+1)%2] < 0) combo[(i+1)%2] = 0;
 				}
 				if(things[i]->particleType == -2){
-
-					hStat parryHit;
-					parryHit.damage = s[hitBy[i]].chip ? s[hitBy[i]].chip : s[hitBy[i]].damage/5;
+					hStat parryHit = P[i]->generateParry(s[hitBy[i]]);
 					damage[i] += parryHit.damage;
-					parryHit.ghostHit = true;
-					parryHit.stun = 0;
-					parryHit.push = s[hitBy[i]].push;
-					if(things[i]->current.aerial){
-						parryHit.push += (P[things[hitBy[i]]->ID-1]->current.aerial) ? s[hitBy[i]].blowback : s[hitBy[i]].blowback*5;
-					}
-					P[things[hitBy[i]]->ID-1]->takeHit(combo[i], parryHit);
-					s[hitBy[i]].pause = 0;
+					P[things[hitBy[i]]->ID-1]->takeHit(parryHit);
 				}
-				if(s[hitBy[i]].stun){ 
-					if(combo[(i+1)%2] < 0 && hit[hitBy[i]] > 0) combo[(i+1)%2] = 0;
-					combo[(i+1)%2] += hit[hitBy[i]];
-				}
-				env.enforceFloor(P[i]->current.opponent);
-				env.enforceBounds(P[i]->current.opponent);
-				env.checkCorners(P[i]->current.opponent);
+				if(s[hitBy[i]].stun) combo[(i+1)%2] += hit[hitBy[i]];
 			}
+			env.enforceFloor(things[i]->current.opponent);
+			env.enforceBounds(things[i]->current.opponent);
+			env.checkCorners(things[i]->current.opponent);
 			if(things[i]->current.facing * things[hitBy[i]]->current.facing == 1) things[i]->invertVectors(1);
 			if(i < P.size()) damage[(i+1)%2] += health - P[i]->current.meter[0].value;
 		}
 	}
 
 	for(unsigned int i = 0; i < things.size(); i++){
-		if(connect[i]){
-			things[i]->connect(combo[things[i]->ID-1], s[i]);
+		if(connect[i] && chID[i] == things[i]->ID){
+			things[i]->connect(s[i]);
 			if(hit[i] == 1){
 				things[i]->current.hit = things[i]->current.connect;
 				prorate[things[i]->ID-1] *= s[i].prorate;
-			}
-			if(!things[i]->current.aerial){
-				for(int j = 0; j < 6; j++){
-					if(2 << j & things[i]->current.cancelState() || s[i].autoCorrects){
-						P[i]->checkFacing();
-						break;
-					}
-				}
 			}
 		}
 	}

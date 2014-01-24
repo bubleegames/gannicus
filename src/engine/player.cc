@@ -115,17 +115,23 @@ bool instance::acceptTarget(instance * m)
 {
 	if(m->ID == ID) return 0;
 	if(m->current.move->hittable) return 1;
-	return m->pick()->acceptTarget(current.move, current.frame);
+	return m->pick()->acceptTarget(current);
 }
 
-bool instance::checkHit(SDL_Rect a, SDL_Rect b)
+bool instance::checkHit(instance *o)
 {
-	SDL_Rect hitLoc;
-	if(aux::checkCollision(a, b, hitLoc)){
-		hitLoc.x -= current.posX;
-		hitLoc.y -= current.posY;
-		hitLocation.push_back(hitLoc);
-		return true;
+	if(current.move->hits > 0){
+		for(SDL_Rect i:current.hitbox){
+			for(SDL_Rect j:o->current.hitreg){
+				SDL_Rect hitLoc;
+				if(aux::checkCollision(i, j, hitLoc)){
+					hitLoc.x -= current.posX;
+					hitLoc.y -= current.posY;
+					hitLocation.push_back(hitLoc);
+					return true;
+				}
+			}
+		}
 	}
 	return false;
 }
@@ -698,6 +704,19 @@ void instance::neutralize()
 	current.move = pick()->neutralize(current);
 }
 
+hStat player::generateParry (hStat &a)
+{
+	hStat ret;
+	ret.damage = a.chip ? a.chip : a.damage/5;
+	ret.ghostHit = true;
+	ret.stun = 0;
+	ret.push = a.push;
+	if(current.aerial) ret.push += (current.opponent->current.aerial) ? a.blowback : a.blowback*5;
+	ret.pause = 0;
+	return ret;
+}
+
+
 void instance::flip()
 {
 	if(current.facing == -1){
@@ -890,18 +909,27 @@ void player::readEvent(SDL_Event & event, frame &t)
 	//t.n.raw.Player = ID%2;
 }
 
-void instance::connect(int combo, hStat & s)
+void instance::connect(hStat & s)
 {
 	if(s.pause < 0){
-		if(!s.ghostHit) current.freeze = s.stun/4+10;
+		current.freeze = s.ghostHit ? 0 : s.stun/4+10;
 	} else current.freeze = s.pause;
+	if(s.autoCorrects) checkFacing();
+	else if(!current.aerial){
+		for(int i = 0; i < 6; i++){
+			if(2 << i & current.cancelState()){
+				checkFacing();
+				break;
+			}
+		}
+	}
 	for(instance *i:current.offspring) i->passSignal(2);
 	pick()->connect(current);
 	current.reversal = nullptr;
 	if(current.bufferedMove == current.move) current.bufferedMove = nullptr;
 }
 
-int instance::takeHit(int combo, hStat & s)
+int instance::takeHit(hStat & s)
 {
 	if(s.turnsProjectile){
 		if(pick()->turn(ID)){ 
@@ -915,21 +943,19 @@ int instance::takeHit(int combo, hStat & s)
 	return pick()->takeHit(current, s, blockType, particleType);
 }
 
-int player::takeHit(int combo, hStat & s)
+int player::takeHit(hStat & s)
 {
 	SDL_Rect v = {0, 0, 1, 0};
 	action * counterAttack = nullptr;
 	current.reversal = nullptr;
-	s.untech -= combo;
 	int f;
 	if(current.slide) s.lift += 15 - abs(s.lift)/4;
-	f = instance::takeHit(combo, s);
+	f = instance::takeHit(s);
 	current.freeze = f;
 	if(particleType != 1){
 		counterAttack = current.move->blockSuccess(s.stun, s.isProjectile);
 	}
 	if(counterAttack && counterAttack != current.move && counterAttack->check(current)){
-		combo = 0;
 		current.bufferedMove = counterAttack;
 		current.freeze = 0;
 	} else {
