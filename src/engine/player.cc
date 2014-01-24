@@ -120,14 +120,16 @@ bool instance::acceptTarget(instance * m)
 
 bool instance::checkHit(instance *o)
 {
-	for(SDL_Rect i:current.hitbox){
-		for(SDL_Rect j:o->current.hitreg){
-			SDL_Rect hitLoc;
-			if(aux::checkCollision(i, j, hitLoc)){
-				hitLoc.x -= current.posX;
-				hitLoc.y -= current.posY;
-				hitLocation.push_back(hitLoc);
-				return true;
+	if(current.move->hits > 0){
+		for(SDL_Rect i:current.hitbox){
+			for(SDL_Rect j:o->current.hitreg){
+				SDL_Rect hitLoc;
+				if(aux::checkCollision(i, j, hitLoc)){
+					hitLoc.x -= current.posX;
+					hitLoc.y -= current.posY;
+					hitLocation.push_back(hitLoc);
+					return true;
+				}
 			}
 		}
 	}

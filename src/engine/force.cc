@@ -66,7 +66,7 @@ void globalForce::enforce(instance& a)
 	SDL_Rect resultant = get<0>(r);
 	if (get<3>(r)) enforceStop(a, resultant);
 	a.momentum.push_back(resultant);
-};
+}
 
 void linearDecay::enforce(instance& a)
 {
