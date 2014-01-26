@@ -125,9 +125,9 @@ bool instance::checkHit(instance *o)
 			for(SDL_Rect j:o->current.hitreg){
 				SDL_Rect hitLoc;
 				if(aux::checkCollision(i, j, hitLoc)){
-					hitLoc.x -= current.posX;
-					hitLoc.y -= current.posY;
-					hitLocation.push_back(hitLoc);
+					hitLoc.x -= o->current.posX;
+					hitLoc.y -= o->current.posY;
+					o->hitLocation.push_back(hitLoc);
 					return true;
 				}
 			}
