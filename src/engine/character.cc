@@ -100,6 +100,7 @@ void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> butt
 			}
 		} else {
 			current.move = ret->execute(current);
+			current.bufferedMove = nullptr;
 		}
 	}
 }
