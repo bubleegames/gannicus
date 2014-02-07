@@ -1331,7 +1331,7 @@ void SaltAndBone::resolveHits()
 						comboScaling(s[i], things[i]->ID-1);
 						if(things[i]->current.counter > 0){
 							counterHit[things[i]->ID-1] = 1;
-						} else if(!(things[j]->current.cancelState() & 513) && !things[j]->current.counter){
+						} else if(!(things[j]->current.cancelState() & 513) && !things[j]->current.counter && !combo[things[i]->ID-1]){
 							punish[things[i]->ID-1] = 1;
 						}
 						if(i < P.size()) push[i] = s[i].push;
