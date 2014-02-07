@@ -1329,12 +1329,10 @@ void SaltAndBone::resolveHits()
 						things[i]->current.counter = things[j]->CHState();
 						s[i] = things[i]->pollStats();
 						comboScaling(s[i], things[i]->ID-1);
-						if(j < 2){
-							if(things[i]->current.counter > 0){
-								counterHit[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
-							} else if(!(things[j]->current.cancelState() & 513) && !combo[things[i]->ID-1] && !things[j]->current.counter){
-								punish[things[i]->ID-1] = s[i].stun + (s[i].pause > 0) ? s[i].pause : (s[i].stun/4 + 10);
-							}
+						if(things[i]->current.counter > 0){
+							counterHit[things[i]->ID-1] = 1;
+						} else if(!(things[j]->current.cancelState() & 513) && !things[j]->current.counter){
+							punish[things[i]->ID-1] = 1;
 						}
 						if(i < P.size()) push[i] = s[i].push;
 						break;
