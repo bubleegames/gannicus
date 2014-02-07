@@ -315,7 +315,7 @@ void SaltAndBone::drawHUD()
 			drawGlyph("Counter", 100+1000*i, 400, 200, 55, 2*i);
 		} else if(punish[i] > 0){
 			glColor4f(0.6, 0.6, 1.0, 0.7);
-			drawGlyph("Counter", 100+1000*i, 400, 200, 55, 2*i);
+			drawGlyph("Punish", 100+1000*i, 400, 200, 55, 2*i);
 		}
 		glColor4f(1.0, 1.0, 1.0, 1.0);
 		if(P[i]->record){
