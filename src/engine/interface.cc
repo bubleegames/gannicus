@@ -1342,16 +1342,6 @@ void SaltAndBone::resolveHits()
 		}
 	}
 
-	for(unsigned int i = 0; i < things.size(); i++){
-		if(connect[i] && chID[i] == things[i]->ID){
-			things[i]->connect(s[i]);
-			if(hit[i] == 1){
-				things[i]->current.hit = things[i]->current.connect;
-				prorate[things[i]->ID-1] *= s[i].prorate;
-			}
-		}
-	}
-
 	for(unsigned int i = 0; i < things.size(); i++){ 
 		if(taken[i]){
 			int health = things[things[i]->ID-1]->current.meter[0].value;
@@ -1379,6 +1369,16 @@ void SaltAndBone::resolveHits()
 			env.checkCorners(things[i]->current.opponent);
 			if(things[i]->current.facing * things[hitBy[i]]->current.facing == 1) things[i]->invertVectors(1);
 			if(i < P.size()) damage[(i+1)%2] += health - P[i]->current.meter[0].value;
+		}
+	}
+
+	for(unsigned int i = 0; i < things.size(); i++){
+		if(connect[i] && chID[i] == things[i]->ID){
+			things[i]->connect(s[i]);
+			if(hit[i] == 1){
+				things[i]->current.hit = things[i]->current.connect;
+				prorate[things[i]->ID-1] *= s[i].prorate;
+			}
 		}
 	}
 
