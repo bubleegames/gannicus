@@ -716,7 +716,6 @@ hStat player::generateParry (hStat &a)
 	return ret;
 }
 
-
 void instance::flip()
 {
 	if(current.facing == -1){

@@ -1342,6 +1342,16 @@ void SaltAndBone::resolveHits()
 		}
 	}
 
+	for(unsigned int i = 0; i < things.size(); i++){
+		if(connect[i] && chID[i] == things[i]->ID){
+			things[i]->connect(s[i]);
+			if(hit[i] == 1){
+				things[i]->current.hit = things[i]->current.connect;
+				prorate[things[i]->ID-1] *= s[i].prorate;
+			}
+		}
+	}
+
 	for(unsigned int i = 0; i < things.size(); i++){ 
 		if(taken[i]){
 			int health = things[things[i]->ID-1]->current.meter[0].value;
@@ -1372,29 +1382,20 @@ void SaltAndBone::resolveHits()
 		}
 	}
 
-	for(unsigned int i = 0; i < things.size(); i++){
-		if(connect[i] && chID[i] == things[i]->ID){
-			things[i]->connect(s[i]);
-			if(hit[i] == 1){
-				things[i]->current.hit = things[i]->current.connect;
-				prorate[things[i]->ID-1] *= s[i].prorate;
-			}
-		}
-	}
-
 	SDL_Rect residual = {0, 0, 1, 0};
 	for(unsigned int i = 0; i < P.size(); i++){ 
 		if(connect[i]){
 			if(P[i]->current.aerial){ 
+				residual.h = 1;
 				switch(s[i].pause){
 				case -1:
-					residual.y = 6 + (s[i].stun/4+9)/4;
+					residual.y = 12 + (s[i].stun/4+9)/4;
 					break;
 				case 0:
 					residual.y = 0;
 					break;
 				default:
-					residual.y = 6 + (s[i].pause - 1)/4;
+					residual.y = 12 + (s[i].pause - 1)/4;
 					break;
 				}
 			} else { 
