@@ -1382,20 +1382,23 @@ void SaltAndBone::resolveHits()
 		}
 	}
 
+	bool bounce;
 	SDL_Rect residual = {0, 0, 1, 0};
 	for(unsigned int i = 0; i < P.size(); i++){ 
+		bounce = false;
 		if(connect[i]){
 			if(P[i]->current.aerial){ 
-				residual.h = 1;
 				switch(s[i].pause){
 				case -1:
-					residual.y = 12 + (s[i].stun/4+9)/4;
+					bounce = true;
+					residual.y = 2 + (s[i].stun/4+9)/4;
 					break;
 				case 0:
 					residual.y = 0;
 					break;
 				default:
-					residual.y = 12 + (s[i].pause - 1)/4;
+					bounce = true;
+					residual.y = 2 + (s[i].pause - 1)/4;
 					break;
 				}
 			} else { 
@@ -1415,6 +1418,7 @@ void SaltAndBone::resolveHits()
 				residual.x *= things[i]->current.facing;
 			}
 			if(!s[i].ghostHit) things[i]->momentum.push_back(residual);
+			if(bounce) things[i]->momentum.push_back({0, 6, 0, 0});
 		}
 	}
 
