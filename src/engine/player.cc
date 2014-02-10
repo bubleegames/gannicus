@@ -507,7 +507,7 @@ void instance::checkReversal()
 	if(current.move){
 		if(current.reversal){
 			if(*current.reversal > current){
-				checkFacing();
+				if(!current.aerial) checkFacing();
 				current.move = current.reversal->execute(current);
 				current.reversalFlag = true;
 				current.reversal = nullptr;
