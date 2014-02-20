@@ -41,6 +41,7 @@ struct status{
 	vector <cooldownTracker> cooldowns;
 	vector<SDL_Rect> hitbox, hitreg;
 	SDL_Rect collision;
+	vector<SDL_Rect> momentum;
 	int connect, hit, counter;
 	int drawX, drawY;
 	bool elasticX;

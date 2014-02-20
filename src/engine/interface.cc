@@ -331,8 +331,8 @@ void SaltAndBone::runTimer()
 		 */
 		if(endTimer > 0) endTimer--;
 		else{
-			things[0]->momentum.clear();
-			things[1]->momentum.clear();
+			things[0]->current.momentum.clear();
+			things[1]->current.momentum.clear();
 			if(P[0]->rounds == numRounds || P[1]->rounds == numRounds){
 				if(!oldReplay){
 					if(P[0]->rounds == P[1]->rounds);
@@ -1417,8 +1417,8 @@ void SaltAndBone::resolveHits()
 				}
 				residual.x *= things[i]->current.facing;
 			}
-			if(!s[i].ghostHit) things[i]->momentum.push_back(residual);
-			if(bounce) things[i]->momentum.push_back({0, 6, 0, 0});
+			if(!s[i].ghostHit) things[i]->current.momentum.push_back(residual);
+			if(bounce) things[i]->current.momentum.push_back({0, 6, 0, 0});
 		}
 	}
 

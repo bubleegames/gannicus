@@ -41,6 +41,7 @@ status::status(const status & o)
 	rCorner = o.rCorner; lCorner = o.lCorner;
 	move = o.move; bufferedMove = o.bufferedMove; reversal = o.reversal;
 	connect = o.connect; hit = o.hit; counter = o.counter;
+	momentum = o.momentum;
 	dead = o.dead;
 	throwInvuln = o.throwInvuln;
 	reversalFlag = o.reversalFlag;

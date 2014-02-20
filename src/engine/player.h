@@ -14,7 +14,6 @@ public:
 	instance(avatar*);
 	virtual ~instance();
 	virtual avatar * pick() { return v; }
-	vector<SDL_Rect> momentum;
 	vector<SDL_Rect> hitLocation;
 	int selectedPalette;
 	int ID;
