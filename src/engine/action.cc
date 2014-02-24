@@ -297,9 +297,7 @@ bool action::setParameter(string param)
 		if(hits > 0){
 			stats = vector<hStat> (hits);
 			CHStats = vector<hStat> (hits);
-			onConnect = vector <action*> (hits);
 			tempOnConnect = vector <string> (hits);
-			for(action *&i:onConnect) i = nullptr;
 			for(unsigned int i = 0; i < stats.size(); i++) stats[i].hitState.i = 0;
 			for(unsigned int i = 0; i < CHStats.size(); i++) CHStats[i].hitState.i = 0;
 		}
@@ -966,8 +964,8 @@ action * action::connect(status &current)
 			if(current.meter[1].value + gain[current.connect] < 300) current.meter[1].value += gain[current.connect];
 			else current.meter[1].value = 300;
 		}
-		if(onConnect[current.connect-1] != nullptr){
-			return onConnect[current.connect-1];
+		if(stats[current.connect-1].onConnect != nullptr){
+			return stats[current.connect-1].onConnect;
 		} else return nullptr;
 	}
 }
@@ -1017,7 +1015,7 @@ void action::feed(action * c, int code, int i)
 		next = c;
 		break;
 	case 2:
-		onConnect[i] = c;
+		stats[i].onConnect = c;
 		break;
 	case 3:
 		attempt = c;
