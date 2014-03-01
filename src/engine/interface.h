@@ -40,6 +40,7 @@ public:
 	vector<int> selection;
 	map<int, character*> charTable;
 	vector<string> characterManifest;
+	character * generateCharacter(int);
 	int numRounds;
 	int numChars;
 	environment env;

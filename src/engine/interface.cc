@@ -927,6 +927,13 @@ void SaltAndBone::cSelectMenu()
 	}
 }
 
+character * fightingGame::generateCharacter(int i)
+{
+	if(charTable[i] == nullptr)
+		charTable[i] = new character(characterManifest[i]);
+	return charTable[i];
+}
+
 character * SaltAndBone::generateCharacter(int i)
 {
 	if(charTable[i] == nullptr){
@@ -935,7 +942,7 @@ character * SaltAndBone::generateCharacter(int i)
 			charTable[i] = new yellow;
 			break;
 		default:
-			charTable[i] = new character(characterManifest[i]);
+			return fightingGame::generateCharacter(i);
 			break;
 		}
 	}
