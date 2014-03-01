@@ -13,7 +13,7 @@ public:
 	~actionTrie();
 	action * actionHook(status&, deque<int>, int, int, vector<int>);
 	actionTrie * child[10];
-	vector<action*> fish;
+	deque<action*> fish;
 	actionTrie * insert(int);
 	actionTrie * insert(int, action*);
 	void insert(action *, int);

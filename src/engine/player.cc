@@ -401,35 +401,9 @@ void player::enemySelect(int i)
 	pick()->avatar::build(name + "/" + chr[j], name);
 }
 
-void player::characterSelect(int i)
+void player::characterSelect(character* a)
 {
-	v = nullptr;
-	switch(i){
-	case 2:
-		v = new yellow;
-		break;
-	default:
-		ifstream charlist;
-		vector<string> chr (i+1);
-		chr[0] = "White";
-		charlist.open("src/charlist.h");
-		int j = 0;
-		while(j < i){
-			char k;
-			do charlist >> k;
-			while(k != '/');
-			do charlist >> k;
-			while(k != '-');
-			j++;
-			charlist >> chr[j];
-		}
-		charlist.close();
-		v = new character(chr[i]);
-		break;
-	}
-	iterator = 0;
-	current.meter = pick()->generateMeter();
-	neutralize();
+	v = a;
 }
 
 void player::readScripts()

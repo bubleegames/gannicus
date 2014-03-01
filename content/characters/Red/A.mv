@@ -6,6 +6,7 @@ Check: 5
 State: 256 : 510
 Damage: 9
 Prorate: .95
+Connect: 0 : B
 Stun: 10
 Untech: 7
 Push: 2

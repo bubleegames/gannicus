@@ -96,7 +96,7 @@ void SaltAndBone::createPlayers(string rep)
 		for(int i = 0; i < 2; i++){
 			selection[i] = oldReplay->selection[i];
 			select[i] = 1;
-			P[i]->characterSelect(selection[i]);
+			P[i]->characterSelect(generateCharacter(selection[i]));
 			if(scripting) P[i]->readScripts();
 		}
 		loadMatchBackground();
@@ -432,10 +432,17 @@ void SaltAndBone::initCharacters()
 	ifstream nch;
 	numChars = 0;
 	char buffer[200];
+	string temp;
+	characterManifest.push_back("White");
 	nch.open("src/charlist.h");
 	do{
 		nch.getline(buffer, 200);
-		if(buffer[0] == '/' && buffer[1] == '/') numChars++;
+		if(buffer[0] == '/'){
+			tokenizer t(buffer, "/\n -");
+			charTable[stoi(t())] = nullptr;
+			characterManifest.push_back(t());
+			numChars++;
+		}
 	} while(!nch.eof());
 	nch.close();
 	if(stats) delete stats;
@@ -902,8 +909,11 @@ void SaltAndBone::cSelectMenu()
 		glDisable(GL_TEXTURE_2D);
 		drawLoadingScreen();
 		SDL_GL_SwapBuffers();
-		for(unsigned int i = 0; i < P.size(); i++){
-			P[i]->characterSelect(selection[i]);
+		for(unsigned int i = 0; i < P.size(); i++) {
+			P[i]->characterSelect(generateCharacter(selection[i]));
+			P[i]->current.meter = P[i]->pick()->generateMeter();
+			P[i]->neutralize();
+			P[i]->iterator = 0;
 		}
 		loadAssets();
 		if(analytics){
@@ -915,6 +925,21 @@ void SaltAndBone::cSelectMenu()
 
 		roundInit();
 	}
+}
+
+character * SaltAndBone::generateCharacter(int i)
+{
+	if(charTable[i] == nullptr){
+		switch(i){
+		case 2:
+			charTable[i] = new yellow;
+			break;
+		default:
+			charTable[i] = new character(characterManifest[i]);
+			break;
+		}
+	}
+	return charTable[i];
 }
 
 void SaltAndBone::loadAssets()
@@ -1061,9 +1086,8 @@ void SaltAndBone::pauseMenu()
 					break;
 				case 2:
 					for(unsigned int i = 0; i < P.size(); i++){
-						delete P[i]->pick();
+						P[i]->characterSelect(nullptr);
 						select[i] = 0;
-						initCharacters();
 						things[i]->current.meter.clear();
 					}
 					Mix_HaltMusic();
@@ -1107,7 +1131,7 @@ void SaltAndBone::rematchMenu()
 					break;
 				case 2:
 					for(unsigned int k = 0; k < P.size(); k++){
-						delete P[k]->pick();
+						P[k]->characterSelect(nullptr);
 						select[k] = 0;
 						things[k]->current.meter.clear();
 					}
@@ -1131,9 +1155,12 @@ void SaltAndBone::rematchMenu()
 
 SaltAndBone::~SaltAndBone()
 {
-	for(unsigned int i = 0; i < P.size(); i++){
-		if(select[i] && P[i]->pick()) delete P[i]->pick();
+	for(unsigned int i = 0; i < characterManifest.size(); i++){
+		if(charTable[i] != nullptr){ 
+			delete charTable[i];
+		}
 	}
+	charTable.clear();
 	if(menuMusic != nullptr) Mix_FreeMusic(menuMusic);
 	delete stats;
 	SDL_FreeSurface(screen);
