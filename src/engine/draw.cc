@@ -296,6 +296,8 @@ void SaltAndBone::drawHUD()
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(P[i]->name.size()) drawGlyph(P[i]->name, 100+800*i, 600, 30, 40, 0+2*i);
 		else drawGlyph(things[i]->pick()->name, 100+800*i, 600, 30, 40, 0+2*i);
+		drawGlyph(to_string(things[i]->current.meter[0].value), 1500*i, 100, 10, 30, 0+2*i);
+		drawGlyph(to_string(things[i]->current.meter[1].value), 1500*i, 100, 860, 30, 0+2*i);
 		if(P[i]->reversalPossible()){
 			glDisable( GL_TEXTURE_2D );
 			glPushMatrix();
