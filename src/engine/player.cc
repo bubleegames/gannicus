@@ -179,7 +179,7 @@ void player::roundInit()
 	particleType = 0;
 	search = 0;
 	current.facing = ID == 1 ? 1 : -1;
-	cooldowns.clear();
+	current.cooldowns.clear();
 	updateRects();
 }
 
