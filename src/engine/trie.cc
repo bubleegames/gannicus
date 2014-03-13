@@ -10,22 +10,20 @@ actionTrie::actionTrie(action * a, int p)
 {
 	for(int i = 0; i < 10; i++)
 		child[i] = nullptr;
-	pattern.push_back(p);
-	fish.push_back(a);
+	fish.push_back(actionHandle(a,p));
 }
 
 actionTrie::actionTrie(action * a)
 {
 	for(int i = 0; i < 10; i++)
 		child[i] = nullptr;
-	pattern.push_back(0);
-	fish.push_back(a);
+	fish.push_back(actionHandle(a, 0));
 }
 
 void actionTrie::insert(action * b, string p)
 {
 	actionTrie * t = this;
-	int q, pattern = 0;
+	int q, pat = 0;
 	for(int i = p.length()-1; i > 0; i--){
 		switch(p[i]){
 		case 'A':
@@ -33,7 +31,7 @@ void actionTrie::insert(action * b, string p)
 		case 'C':
 		case 'D':
 		case 'E':
-			pattern += 1 << (p[i] - 'A');
+			pat += 1 << (p[i] - 'A');
 			break;
 		default:
 			q = stoi(p.substr(i, 1));
@@ -42,13 +40,12 @@ void actionTrie::insert(action * b, string p)
 			break;
 		}
 	}
-	t->insert(b, pattern);
+	t->insert(b, pat);
 }
 
 void actionTrie::insert(action * b, int p)
 {
-	fish.push_back(b);
-	pattern.push_back(p);
+	fish.push_back(actionHandle(b, p));
 }
 
 actionTrie * actionTrie::insert(int a, action * b)
@@ -96,9 +93,9 @@ action * actionTrie::actionHook(status &current, deque<int> inputBuffer, int i, 
 	}
 	if(fish.size() != 0){
 		for(unsigned int k = 0; k < fish.size(); k++){
-			if(fish[k]){
-				if(fish[k]->activate(current, buttons, pattern[k], i, first)){
-					return fish[k];
+			if(fish[k].target){
+				if(fish[k].target->activate(current, buttons, fish[k].pattern, i, first)){
+					return fish[k].target;
 				}
 			}
 		}

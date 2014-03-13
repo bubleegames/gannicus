@@ -4,6 +4,14 @@
 using std::deque;
 #ifndef ___move_trie
 #define ___move_trie
+class actionHandle{
+public:
+	actionHandle() : target(nullptr), pattern(0) {}
+	actionHandle(action* t, int p) { target = t; pattern = p; }
+	unsigned int patternMatch(int[], bool[]);
+	action * target;
+	int pattern;
+};
 
 class actionTrie{
 public:
@@ -13,12 +21,11 @@ public:
 	~actionTrie();
 	action * actionHook(status&, deque<int>, int, int, vector<int>);
 	actionTrie * child[10];
-	vector<action*> fish;
+	vector<actionHandle> fish;
 	actionTrie * insert(int);
 	actionTrie * insert(int, action*);
 	void insert(action *, int);
 	void insert(action *, string);
-	unsigned int patternMatch(int[], bool[]);
 private:
 	vector<int> pattern;
 };
