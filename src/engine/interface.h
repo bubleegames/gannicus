@@ -4,10 +4,12 @@
 #include "opera.h"
 #include "environment.h"
 #include "force.h"
+#include <map>
 #ifndef ___SaltAndBone
 #define ___SaltAndBone
 using std::string;
 using std::vector;
+using std::map;
 
 class fightingGame : public window, public arcadeHarness, public HUD, public soundScape {
 public:
@@ -36,6 +38,9 @@ public:
 	bool initd:1;
 	vector<bool> select;
 	vector<int> selection;
+	map<int, character*> charTable;
+	vector<string> characterManifest;
+	character * generateCharacter(int);
 	int numRounds;
 	int numChars;
 	environment env;
@@ -48,6 +53,7 @@ public:
 	void readInput();
 	void loadMisc();
 	void initCharacters();
+	void initCharTable();
 	virtual void initShaders();
 	virtual void loadAssets();
 	virtual void handleArgs(vector<string>);
@@ -85,6 +91,7 @@ public:
 	void roundInit();
 	void matchInit();
 	void cSelectMenu();
+	character * generateCharacter(int);
 	void mainMenu(int);
 	void keyConfig(int);
 	void rematchMenu();

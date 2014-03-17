@@ -670,10 +670,12 @@ void character::land(status& current)
 void avatar::step(status &current)
 {
 	for(unsigned int i = 0; i < current.cooldowns.size(); i++){
-		if(!current.cooldowns[i].duration){ 
-			current.cooldowns.erase(current.cooldowns.begin()+i);
-			i--;
-		} else current.cooldowns[i].duration--;
+		if(current.cooldowns[i].duration > -1){
+			if(!current.cooldowns[i].duration){ 
+				current.cooldowns.erase(current.cooldowns.begin()+i);
+				i--;
+			} else current.cooldowns[i].duration--;
+		}
 	}
 
 	if(current.freeze <= 0){

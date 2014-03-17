@@ -57,7 +57,7 @@ void force::enforceStop(instance& a, SDL_Rect& resultant)
 	resultant.y = 0;
 	a.current.deltaX = 0; a.current.deltaY = 0;
 	grip--;
-	a.momentum.clear();
+	a.current.momentum.clear();
 }
 
 void globalForce::enforce(instance& a)
@@ -65,7 +65,7 @@ void globalForce::enforce(instance& a)
 	auto r = enforceBegin(a);
 	SDL_Rect resultant = get<0>(r);
 	if (get<3>(r)) enforceStop(a, resultant);
-	a.momentum.push_back(resultant);
+	a.current.momentum.push_back(resultant);
 }
 
 void linearDecay::enforce(instance& a)
@@ -80,7 +80,7 @@ void linearDecay::enforce(instance& a)
 		resultant.x *= get<1>(r).w;
 		resultant.y *= get<1>(r).h;	
 	}
-	a.momentum.push_back(resultant);
+	a.current.momentum.push_back(resultant);
 }
 
 void halfLifeDecay::enforce(instance& a)
@@ -95,7 +95,7 @@ void halfLifeDecay::enforce(instance& a)
 		resultant.x *= get<1>(r).w;
 		resultant.y *= get<1>(r).h;
 	}
-	a.momentum.push_back(resultant);
+	a.current.momentum.push_back(resultant);
 }
 
 void cutoffDecay::enforce(instance & a)
@@ -116,5 +116,5 @@ void cutoffDecay::enforce(instance & a)
 			resultant.y *= get<1>(r).h;
 		}
 	}
-	a.momentum.push_back(resultant);
+	a.current.momentum.push_back(resultant);
 }

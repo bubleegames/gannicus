@@ -179,6 +179,7 @@ void player::roundInit()
 	particleType = 0;
 	search = 0;
 	current.facing = ID == 1 ? 1 : -1;
+	current.cooldowns.clear();
 	updateRects();
 }
 
@@ -401,35 +402,9 @@ void player::enemySelect(int i)
 	pick()->avatar::build(name + "/" + chr[j], name);
 }
 
-void player::characterSelect(int i)
+void player::characterSelect(character* a)
 {
-	v = nullptr;
-	switch(i){
-	case 2:
-		v = new yellow;
-		break;
-	default:
-		ifstream charlist;
-		vector<string> chr (i+1);
-		chr[0] = "White";
-		charlist.open("src/charlist.h");
-		int j = 0;
-		while(j < i){
-			char k;
-			do charlist >> k;
-			while(k != '/');
-			do charlist >> k;
-			while(k != '-');
-			j++;
-			charlist >> chr[j];
-		}
-		charlist.close();
-		v = new character(chr[i]);
-		break;
-	}
-	iterator = 0;
-	current.meter = pick()->generateMeter();
-	neutralize();
+	v = a;
 }
 
 void player::readScripts()
@@ -480,15 +455,15 @@ void instance::updateRects()
 
 void instance::combineDelta()
 {
-	for(unsigned int i = 0; i < momentum.size(); i++){
-		current.deltaX += momentum[i].x;
-		current.deltaY += momentum[i].y;
+	for(unsigned int i = 0; i < current.momentum.size(); i++){
+		current.deltaX += current.momentum[i].x;
+		current.deltaY += current.momentum[i].y;
 
-		if(momentum[i].w <= 0) {
-			momentum.erase(momentum.begin()+i);
+		if(current.momentum[i].w <= 0) {
+			current.momentum.erase(current.momentum.begin()+i);
 			i--;
 		}
-		else momentum[i].w--;
+		else current.momentum[i].w--;
 	}
 	if(current.hover > 0 && current.deltaY < 0) current.deltaY = 0;
 	current.posX += current.deltaX;
@@ -507,7 +482,7 @@ void instance::checkReversal()
 	if(current.move){
 		if(current.reversal){
 			if(*current.reversal > current){
-				checkFacing();
+				if(!current.aerial) checkFacing();
 				current.move = current.reversal->execute(current);
 				current.reversalFlag = true;
 				current.reversal = nullptr;
@@ -553,7 +528,7 @@ void instance::encounterWall(bool side, int wallPosition)
 				if(stuck()){
 					current.deltaX = 0;
 					current.deltaY = 0;
-					momentum.clear();
+					current.momentum.clear();
 				} else current.stick = 0;
 			}
 		}
@@ -570,7 +545,7 @@ void instance::encounterWall(bool side, int wallPosition)
 				if(stuck()){
 					current.deltaX = 0;
 					current.deltaY = 0;
-					momentum.clear();
+					current.momentum.clear();
 				} else current.stick = 0;
 			}
 		}
@@ -602,8 +577,8 @@ void instance::land()
 		}
 	} else {
 		if(current.aerial == 1){
-			for(unsigned int i = 0; i < momentum.size(); i++){
-				if(momentum[i].y > 0) momentum.erase(momentum.begin()+i);
+			for(unsigned int i = 0; i < current.momentum.size(); i++){
+				if(current.momentum[i].y > 0) current.momentum.erase(current.momentum.begin()+i);
 			}
 			current.aerial = false;
 			pick()->land(current);
@@ -789,9 +764,9 @@ void instance::getMove(vector<int> buttons)
 void instance::pullVolition()
 {
 	int top = 0;
-	for(unsigned int i = 0; i < momentum.size(); i++)
-		if(momentum[i].h > 0 && momentum[i].h > top){ 
-			top = (short)momentum[i].h;
+	for(unsigned int i = 0; i < current.momentum.size(); i++)
+		if(current.momentum[i].h > 0 && current.momentum[i].h > top){ 
+			top = (short)current.momentum[i].h;
 		}
 	if(current.move->stop){
 		if(current.frame == 0){
@@ -799,7 +774,7 @@ void instance::pullVolition()
 				current.deltaX = 0; current.deltaY = 0;
 			}
 			if(current.move->stop & 2)
-				momentum.clear();
+				current.momentum.clear();
 		}
 	}
 	int dx = current.move->displace(current.posX, current.posY, current.frame);
@@ -811,7 +786,7 @@ void instance::pullVolition()
 				temp[i].x *= current.facing;
 				if(temp[i].x || temp[i].y || temp[i].h){
 					if(abs((short)temp[i].h) >= top || top == 0){
-						momentum.push_back(temp[i]);
+						current.momentum.push_back(temp[i]);
 					}
 				}
 			}
@@ -962,7 +937,7 @@ int player::takeHit(hStat & s)
 		current.deltaX /= 6;
 		if(current.deltaY < 0) current.deltaY /= 55;
 		else current.deltaY /= 6;
-		momentum.clear();
+		current.momentum.clear();
 		if(current.aerial) v.y = s.lift;
 		else v.y = 0;
 		if(current.aerial) v.x = -(s.push/5 + s.blowback);
@@ -978,7 +953,7 @@ int player::takeHit(hStat & s)
 			current.freeze = 0;
 			current.meter[4] = 0;
 		}
-		momentum.push_back(v);
+		current.momentum.push_back(v);
 		if(current.aerial && s.hover){
 			current.hover = s.hover;
 		}
@@ -1014,17 +989,17 @@ void instance::invertVectors(int operation)
 {
 	switch (operation){
 	case 1:
-		for(unsigned int i = 0; i < momentum.size(); i++)
-			momentum[i].x = -momentum[i].x;
+		for(unsigned int i = 0; i < current.momentum.size(); i++)
+			current.momentum[i].x = -current.momentum[i].x;
 		break;
 	case 2:
-		for(unsigned int i = 0; i < momentum.size(); i++)
-			momentum[i].y = -momentum[i].y;
+		for(unsigned int i = 0; i < current.momentum.size(); i++)
+			current.momentum[i].y = -current.momentum[i].y;
 		break;
 	case 3:
-		for(unsigned int i = 0; i < momentum.size(); i++){
-			momentum[i].x = -momentum[i].x;
-			momentum[i].y = -momentum[i].y;
+		for(unsigned int i = 0; i < current.momentum.size(); i++){
+			current.momentum[i].x = -current.momentum[i].x;
+			current.momentum[i].y = -current.momentum[i].y;
 		}
 		break;
 	default:
@@ -1050,7 +1025,7 @@ void player::getThrown(action *toss, int x, int y)
 {
 	int xSign = x / abs(x);
 	updateRects();
-	momentum.clear();
+	current.momentum.clear();
 	current.deltaX = 0;
 	current.deltaY = 0;
 	hStat dummy;

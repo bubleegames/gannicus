@@ -14,7 +14,6 @@ public:
 	instance(avatar*);
 	virtual ~instance();
 	virtual avatar * pick() { return v; }
-	vector<SDL_Rect> momentum;
 	vector<SDL_Rect> hitLocation;
 	int selectedPalette;
 	int ID;
@@ -85,7 +84,7 @@ public:
 	int rounds;		//How many rounds has this player won this match?
 //	int padding[400];	//More magic. Do not touch
 	virtual int comboState();
-	virtual void characterSelect(int);
+	virtual void characterSelect(character*);
 	virtual void enemySelect(int);
 	virtual bool stuck();
 	virtual bool validate(int, int);

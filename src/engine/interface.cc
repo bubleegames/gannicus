@@ -96,7 +96,7 @@ void SaltAndBone::createPlayers(string rep)
 		for(int i = 0; i < 2; i++){
 			selection[i] = oldReplay->selection[i];
 			select[i] = 1;
-			P[i]->characterSelect(selection[i]);
+			P[i]->characterSelect(generateCharacter(selection[i]));
 			if(scripting) P[i]->readScripts();
 		}
 		loadMatchBackground();
@@ -331,8 +331,8 @@ void SaltAndBone::runTimer()
 		 */
 		if(endTimer > 0) endTimer--;
 		else{
-			things[0]->momentum.clear();
-			things[1]->momentum.clear();
+			things[0]->current.momentum.clear();
+			things[1]->current.momentum.clear();
 			if(P[0]->rounds == numRounds || P[1]->rounds == numRounds){
 				if(!oldReplay){
 					if(P[0]->rounds == P[1]->rounds);
@@ -432,10 +432,17 @@ void SaltAndBone::initCharacters()
 	ifstream nch;
 	numChars = 0;
 	char buffer[200];
+	string temp;
+	characterManifest.push_back("White");
 	nch.open("src/charlist.h");
 	do{
 		nch.getline(buffer, 200);
-		if(buffer[0] == '/' && buffer[1] == '/') numChars++;
+		if(buffer[0] == '/'){
+			tokenizer t(buffer, "/\n -");
+			charTable[stoi(t())] = nullptr;
+			characterManifest.push_back(t());
+			numChars++;
+		}
 	} while(!nch.eof());
 	nch.close();
 	if(stats) delete stats;
@@ -902,8 +909,11 @@ void SaltAndBone::cSelectMenu()
 		glDisable(GL_TEXTURE_2D);
 		drawLoadingScreen();
 		SDL_GL_SwapBuffers();
-		for(unsigned int i = 0; i < P.size(); i++){
-			P[i]->characterSelect(selection[i]);
+		for(unsigned int i = 0; i < P.size(); i++) {
+			P[i]->characterSelect(generateCharacter(selection[i]));
+			P[i]->current.meter = P[i]->pick()->generateMeter();
+			P[i]->neutralize();
+			P[i]->iterator = 0;
 		}
 		loadAssets();
 		if(analytics){
@@ -915,6 +925,28 @@ void SaltAndBone::cSelectMenu()
 
 		roundInit();
 	}
+}
+
+character * fightingGame::generateCharacter(int i)
+{
+	if(charTable[i] == nullptr)
+		charTable[i] = new character(characterManifest[i]);
+	return charTable[i];
+}
+
+character * SaltAndBone::generateCharacter(int i)
+{
+	if(charTable[i] == nullptr){
+		switch(i){
+		case 2:
+			charTable[i] = new yellow;
+			break;
+		default:
+			return fightingGame::generateCharacter(i);
+			break;
+		}
+	}
+	return charTable[i];
 }
 
 void SaltAndBone::loadAssets()
@@ -1061,9 +1093,8 @@ void SaltAndBone::pauseMenu()
 					break;
 				case 2:
 					for(unsigned int i = 0; i < P.size(); i++){
-						delete P[i]->pick();
+						P[i]->characterSelect(nullptr);
 						select[i] = 0;
-						initCharacters();
 						things[i]->current.meter.clear();
 					}
 					Mix_HaltMusic();
@@ -1107,7 +1138,7 @@ void SaltAndBone::rematchMenu()
 					break;
 				case 2:
 					for(unsigned int k = 0; k < P.size(); k++){
-						delete P[k]->pick();
+						P[k]->characterSelect(nullptr);
 						select[k] = 0;
 						things[k]->current.meter.clear();
 					}
@@ -1131,9 +1162,12 @@ void SaltAndBone::rematchMenu()
 
 SaltAndBone::~SaltAndBone()
 {
-	for(unsigned int i = 0; i < P.size(); i++){
-		if(select[i] && P[i]->pick()) delete P[i]->pick();
+	for(unsigned int i = 0; i < characterManifest.size(); i++){
+		if(charTable[i] != nullptr){ 
+			delete charTable[i];
+		}
 	}
+	charTable.clear();
 	if(menuMusic != nullptr) Mix_FreeMusic(menuMusic);
 	delete stats;
 	SDL_FreeSurface(screen);
@@ -1382,20 +1416,23 @@ void SaltAndBone::resolveHits()
 		}
 	}
 
+	bool bounce;
 	SDL_Rect residual = {0, 0, 1, 0};
 	for(unsigned int i = 0; i < P.size(); i++){ 
+		bounce = false;
 		if(connect[i]){
 			if(P[i]->current.aerial){ 
-				residual.h = 1;
 				switch(s[i].pause){
 				case -1:
-					residual.y = 12 + (s[i].stun/4+9)/4;
+					bounce = true;
+					residual.y = 2 + (s[i].stun/4+9)/4;
 					break;
 				case 0:
 					residual.y = 0;
 					break;
 				default:
-					residual.y = 12 + (s[i].pause - 1)/4;
+					bounce = true;
+					residual.y = 2 + (s[i].pause - 1)/4;
 					break;
 				}
 			} else { 
@@ -1414,7 +1451,8 @@ void SaltAndBone::resolveHits()
 				}
 				residual.x *= things[i]->current.facing;
 			}
-			if(!s[i].ghostHit) things[i]->momentum.push_back(residual);
+			if(!s[i].ghostHit) things[i]->current.momentum.push_back(residual);
+			if(bounce) things[i]->current.momentum.push_back({0, 6, 0, 0});
 		}
 	}
 
