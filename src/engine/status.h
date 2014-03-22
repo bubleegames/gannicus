@@ -14,7 +14,7 @@ class instance;
 class action;
 struct cooldownTracker {
 	action *move;
-	unsigned int duration;
+	int duration;
 };
 
 struct status{

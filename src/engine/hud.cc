@@ -1,5 +1,6 @@
 #include "hud.h"
 #include "interface.h"
+#include "menu.h"
 HUDElement::HUDElement()
 {
 	R = 0, G = 0, B = 0, A = 0;

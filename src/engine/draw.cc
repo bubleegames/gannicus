@@ -12,6 +12,7 @@
 #include <vector>
 #include "window.h"
 #include "shader.h"
+#include "menu.h"
 
 using std::to_string;
 
@@ -24,7 +25,7 @@ void SaltAndBone::draw()
 		if(!select[0] || !select[1]) drawCSelect();
 		else drawGame();
 		if(rMenu != 0) drawRematchMenu();
-		else if(pMenu != 0) drawPauseMenu();
+		else if(pauseMenu != 0) pauseMenu.draw();
 	glPopMatrix();
 	SDL_GL_SwapBuffers();
 }
@@ -37,7 +38,7 @@ void SaltAndBone::drawCSelect()
 
 	for(int i = 0; i < 2; i++){
 		if(configMenu[i]) drawConfigMenu(i);
-		else if (menu[i]) drawMainMenu(i);
+		else if (mMenu[i]) drawMainMenu(i);
 	}
 	glEnable( GL_TEXTURE_2D );
 
@@ -58,7 +59,7 @@ void SaltAndBone::drawCSelect()
 	glEnd();
 
 	for(int i = 0; i < 2; i++){
-		if(!menu[i]){
+		if(!mMenu[i]){
 			x = ((float)env.screenWidth/2.0 + ((float)env.screenHeight/3.0) * cos(((M_PI*2.0)/(float)numChars)*(float)selection[i]+M_PI/4.0+M_PI/2.0)) - 100.0;
 			y = ((float)env.screenHeight/2.0 + ((float)env.screenHeight/3.0) * sin(((M_PI*2.0)/(float)numChars)*(float)selection[i]+M_PI/4.0+M_PI/2.0));
 			glColor4f(0.0, 0.3+i*0.3, 0.3+(1-i)*0.3, 1.0-select[i]*0.5);
@@ -76,36 +77,36 @@ void SaltAndBone::drawMainMenu(int ID)
 	glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
 	glRectf(0.0f + 800.0 * ID, 0.0, (env.screenWidth/2*ID) + (GLfloat)env.screenWidth/2.0, (GLfloat)env.screenHeight);
 	glEnable( GL_TEXTURE_2D );
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 1)*0.4);
+	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(mMenu[ID] == 1)*0.4);
 	if(analytics)
 		drawGlyph("Replay", 20 + 1260*ID, 300, 270, 40, 2*ID);
 	else
 		drawGlyph("No Replay", 20 + 1260*ID, 300, 270, 40, 2*ID);
 
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 2)*0.4);
+	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(mMenu[ID] == 2)*0.4);
 	drawGlyph("Key Config", 20 + 1260*ID, 300, 310, 40, 2*ID);
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 3)*0.4);
+	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(mMenu[ID] == 3)*0.4);
 	drawGlyph("Exit Menu", 20 + 1260*ID, 300, 350, 40, 2*ID);
 
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 4)*0.4);
+	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(mMenu[ID] == 4)*0.4);
 	if(shortcut)
 		drawGlyph("Rematch", 20 + 1260*ID, 300, 390, 40, 2*ID);
 	else
 		drawGlyph("Reselect", 20 + 1260*ID, 300, 390, 40, 2*ID);
 
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 5)*0.4);
+	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(mMenu[ID] == 5)*0.4);
 	if(scripting)
 		drawGlyph("Scripts On", 20 + 1260*ID, 300, 430, 40, 2*ID);
 	else
 		drawGlyph("Scripts Off", 20 + 1260*ID, 300, 430, 40, 2*ID);
 
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 6)*0.4);
+	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(mMenu[ID] == 6)*0.4);
 	if(pauseEnabled) 
 		drawGlyph("Pause on", 20 + 1260*ID, 300, 470, 40, 2*ID);
 	else 
 		drawGlyph("Pause off", 20 + 1260*ID, 300, 470, 40, 2*ID);
 
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 7)*0.4);
+	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(mMenu[ID] == 7)*0.4);
 	if(P[ID]->boxen && P[ID]->sprite) 
 		drawGlyph("Both", 20 + 1260*ID, 300, 510, 40, 2*ID);
 	else if(P[ID]->boxen) 
@@ -113,12 +114,12 @@ void SaltAndBone::drawMainMenu(int ID)
 	else
 		drawGlyph("Sprites", 20 + 1260*ID, 300, 510, 40, 2*ID);
 
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 8)*0.4);
+	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(mMenu[ID] == 8)*0.4);
 	if(killTimer)
 		drawGlyph("Training", 20 + 1260*ID, 300, 550, 40, 2*ID);
 	else
 		drawGlyph("Match", 20 + 1260*ID, 300, 550, 40, 2*ID);
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(menu[ID] == 9)*0.4);
+	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(mMenu[ID] == 9)*0.4);
 	drawGlyph("Quit Game", 20 + 1260*ID, 300, 590, 40, 2*ID);
 	glDisable( GL_TEXTURE_2D );
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
@@ -367,8 +368,7 @@ void SaltAndBone::drawHUD()
 		}
 	}
 	glPushMatrix();
-		glScalef(env.screenWidth, env.screenHeight, 1.0);
-		globalAnnounce.draw(glyph);
+	globalAnnounce.draw(this);
 	glPopMatrix();
 	drawMeters();
 }
@@ -402,17 +402,17 @@ void fightingGame::drawMeters()
 	glEnable( GL_TEXTURE_2D );
 }
 
-void SaltAndBone::drawPauseMenu()
+void menu::draw()
 {
 	glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
-	glRectf(0.0, 0.0, (GLfloat)env.screenWidth, (GLfloat)env.screenHeight);
+	glRectf(0.0, 0.0, (GLfloat)game->env.screenWidth, (GLfloat)game->env.screenHeight);
 	glEnable( GL_TEXTURE_2D );
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(pMenu == 1)*0.4);
-	drawGlyph("Unpause", 0, env.screenWidth, 360, 60, 1);
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(pMenu == 2)*0.4);
-	drawGlyph("Character Select", 0, env.screenWidth, 420, 60, 1);
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(pMenu == 3)*0.4);
-	drawGlyph("Quit Game", 0, env.screenWidth, 480, 60, 1);
+	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(cursor == 1)*0.4);
+	game->drawGlyph("Unpause", 0, game->env.screenWidth, 360, 60, 1);
+	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(cursor == 2)*0.4);
+	game->drawGlyph("Character Select", 0, game->env.screenWidth, 420, 60, 1);
+	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(cursor == 3)*0.4);
+	game->drawGlyph("Quit Game", 0, game->env.screenWidth, 480, 60, 1);
 	glDisable( GL_TEXTURE_2D );
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
 }
@@ -608,40 +608,10 @@ void avatar::draw(status &current, GLint p)
 	glUseProgram(0);
 }
 
-void words::draw(vector<GLuint> glyph)
+void words::draw(fightingGame* game)
 {
-	if(text.empty()) return;
-	glTranslatef(x, y, 0.0);
-	if(align)
-		glTranslatef((w - (double)(text.size()) * h * .6) * (align == 1 ? .5 : 1.0), 0, 0);
-	glPushMatrix();
-		glScalef(h * .6, h, 1);
-		glPushMatrix();
-			for(unsigned int i = 0; i < text.size(); i++){
-				if(text[i] == ' ') glTranslatef(1.0, 0.0, 0.0);
-				else if(text[i] == '\0');
-				else{
-					glBindTexture(GL_TEXTURE_2D,glyph[toupper(text[i])]);
-					glBegin(GL_QUADS);
-
-					glTexCoord2i(0, 0);
-					glVertex3f(0, 0, 0);
-
-					glTexCoord2i(1, 0);
-					glVertex3f(1, 0, 0);
-
-					glTexCoord2i(1, 1);
-					glVertex3f(1, 1, 0);
-
-					glTexCoord2i(0, 1);
-					glVertex3f(0, 1, 0);
-
-					glEnd();
-					glTranslatef(1.0, 0.0, 0.0);
-				}
-			}
-		glPopMatrix();
-	glPopMatrix();
+	float sw = game->env.screenWidth, sh = game->env.screenHeight;
+	game->drawGlyph(text, x*sw, w*sw, y*sh, h*sh, align);
 }
 
 void fightingGame::drawGlyph(string s, int x, int totalSpace, int y, int height, int just)
