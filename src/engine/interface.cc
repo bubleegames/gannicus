@@ -13,7 +13,7 @@ using std::max;
 using std::min;
 using std::to_string;
 
-SaltAndBone::SaltAndBone()
+SaltAndBone::SaltAndBone() : pauseMenu(this)
 {
 	stats = nullptr;
 	initCharacters();
@@ -118,7 +118,7 @@ void SaltAndBone::createPlayers()
 		counterHit.push_back(0);
 		punish.push_back(0);
 		illegit.push_back(false);
-		menu[i] = 0;
+		mMenu[i] = 0;
 		configMenu[i] = 0;
 		things.push_back(P[i]);
 		P[i]->boxen = true;
@@ -263,7 +263,7 @@ void SaltAndBone::matchInit()
 	for(player* i:P){
 		i->rounds = 0;
 	}
-	pMenu = 0;
+	pauseMenu.cursor = 0;
 	if(!select[0] || !select[1]){
 		Mix_VolumeMusic(musicVolume);
 		Mix_PlayMusic(menuMusic, -1);
@@ -411,14 +411,13 @@ void SaltAndBone::resolve()
 {
 	if(!select[0] || !select[1]) cSelectMenu();
 	else if(rMenu) rematchMenu();
-	else if(pMenu) pauseMenu();
+	else if(pauseMenu.cursor) pauseMenu();
 	else {
 		resolveInputs();
 		for(instance *i:things) i->updateRects();
 		resolveThrows();
 		doSuperFreeze();
 		for(instance *i:things) i->updateRects();
-		//resolveCollision();
 		resolvePhysics();
 		resolveCamera();
 		resolveCollision();
@@ -570,7 +569,7 @@ void SaltAndBone::resolvePhysics()
 
 void SaltAndBone::cleanup()
 {
-	if(select[0] && select[1] && !pMenu){
+	if(select[0] && select[1] && !pauseMenu.cursor){
 		for(instance *i:things){
 			i->cleanup();
 			if(i->current.posX > env.bg.w + 300 || i->current.posX < -300 || i->current.posY < -300 || i->current.posY > env.bg.h){
@@ -596,8 +595,8 @@ void SaltAndBone::cleanup()
 	for(unsigned int i = 0; i < currentFrame.size(); i++){
 		if(currentFrame[i].n.raw.Start == 1 && counter[i] <= 0){
 			if(pauseEnabled && !roundEnd){
-				if(pMenu) pMenu = 0;
-				else pMenu = 1;
+				if(pauseMenu.cursor) pauseMenu.cursor = 0;
+				else pauseMenu.cursor = 1;
 				counter[i] = 10;
 			}
 		}
@@ -867,7 +866,7 @@ void SaltAndBone::cSelectMenu()
 			select[i] = 1;
 			selection[i] = 1;
 		} else {
-			if(!menu[i]){
+			if(!mMenu[i]){
 				if(currentFrame[i].axis[2] && !select[i] && counter[i] == 0){
 					selection[i]--;
 					if(selection[i] < 1) selection[i] = numChars;
@@ -885,7 +884,7 @@ void SaltAndBone::cSelectMenu()
 					}
 				}
 				if(currentFrame[i].n.raw.Start){
-					if(!select[i]) menu[i] = 3;
+					if(!select[i]) mMenu[i] = 3;
 					else {
 						select[i] = 0;
 					}
@@ -897,7 +896,7 @@ void SaltAndBone::cSelectMenu()
 
 	for(unsigned int i = 0; i < P.size(); i++){
 		if(configMenu[i] > 0) keyConfig(i);
-		else if(menu[i] > 0) mainMenu(i);
+		else if(mMenu[i] > 0) mainMenu(i);
 	}
 
 	if(select[0] && select[1]){
@@ -967,17 +966,17 @@ void SaltAndBone::loadAssets()
 void SaltAndBone::mainMenu(int ID)
 {
 	if(currentFrame[ID].axis[0] && !counter[ID]){
-		menu[ID]--;
+		mMenu[ID]--;
 		counter[ID] = 10;
 	} else if(currentFrame[ID].axis[1] && !counter[ID]){
-		menu[ID]++;
+		mMenu[ID]++;
 		counter[ID] = 10;
 	}
-	if(menu[ID] > 8) menu[ID] = 1;
-	else if(menu[ID] < 1) menu[ID] = 8;
+	if(mMenu[ID] > 8) mMenu[ID] = 1;
+	else if(mMenu[ID] < 1) mMenu[ID] = 8;
 	for(unsigned int i = 0; i < currentFrame[ID].buttons.size()-1; i++){
 		if(currentFrame[ID].buttons[i] == 1 && !counter[ID]){
-			switch(menu[ID]){
+			switch(mMenu[ID]){
 			case 1:
 				analytics = !analytics;
 				break;
@@ -985,7 +984,7 @@ void SaltAndBone::mainMenu(int ID)
 				configMenu[ID] = 7;
 				break;
 			case 3:
-				menu[ID] = 0;
+				mMenu[ID] = 0;
 				break;
 			case 4:
 				shortcut = !shortcut;
@@ -1025,7 +1024,7 @@ void SaltAndBone::mainMenu(int ID)
 	}
 	if(currentFrame[ID].n.raw.Start && !counter[ID]){ 
 		counter[ID] = 10;
-		menu[ID] = 0;
+		mMenu[ID] = 0;
 	}
 }
 
@@ -1051,7 +1050,7 @@ void SaltAndBone::keyConfig(int ID)
 				break;
 			case 7:
 				configMenu[ID] = 0;
-				menu[ID] = 2;
+				mMenu[ID] = 2;
 				p[ID]->writeConfig(ID+1);
 				break;
 			}
@@ -1061,7 +1060,7 @@ void SaltAndBone::keyConfig(int ID)
 	if(currentFrame[ID].n.raw.Start == 1 && !counter[ID]){ 
 		counter[ID] = 10;
 		configMenu[ID] = 0;
-		menu[ID] = 0;
+		mMenu[ID] = 0;
 		p[ID]->writeConfig(ID+1);
 	}
 }
@@ -1071,49 +1070,6 @@ void SaltAndBone::dragBG(int dx)
 	env.bg.x += dx;
 	if(env.bg.x < 0) env.bg.x = 0;
 	else if(env.bg.x > env.bg.w - env.screenWidth) env.bg.x = env.bg.w - env.screenWidth;
-}
-
-void SaltAndBone::pauseMenu()
-{
-	for(unsigned int j = 0; j < p.size(); j++){
-		if(currentFrame[j].axis[0] && !counter[j]){
-			pMenu--;
-			counter[j] = 10;
-		} else if(currentFrame[j].axis[1] && !counter[j]){ 
-			pMenu++;
-			counter[j] = 10;
-		}
-		if(pMenu > 3) pMenu = 1;
-		else if(pMenu < 1) pMenu = 3;
-		for(unsigned int i = 0; i < currentFrame[j].buttons.size()-1; i++){
-			if(currentFrame[j].buttons[i] == 1){
-				switch(pMenu){
-				case 1:
-					pMenu = 0;
-					break;
-				case 2:
-					for(unsigned int i = 0; i < P.size(); i++){
-						P[i]->characterSelect(nullptr);
-						select[i] = 0;
-						things[i]->current.meter.clear();
-					}
-					Mix_HaltMusic();
-					Mix_FreeMusic(matchMusic);
-					//Mix_PlayChannel(3, announceSelect, 0);
-					matchInit();
-					break;
-				case 3:
-					Mix_HaltMusic();
-					Mix_FreeMusic(matchMusic);
-					gameover = 1;
-					break;
-				}
-				j = 2;
-				break;
-			}
-		}
-		if(currentFrame[j].n.raw.Start && !counter[j]) pMenu = 0;
-	}
 }
 
 void SaltAndBone::rematchMenu()

@@ -7,6 +7,7 @@
 using std::vector;
 using std::cout;
 using std::string;
+class fightingGame;
 class HUDElement{
 public:
 	HUDElement();
@@ -45,7 +46,7 @@ public:
 	words(string);
 	words(const words&);
 	virtual void draw() {}
-	virtual void draw(vector<GLuint>);
+	virtual void draw(fightingGame*);
 	virtual string operator()();
 	virtual string operator()(string);
 	virtual void clear();

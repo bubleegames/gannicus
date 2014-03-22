@@ -4,6 +4,7 @@
 #include "opera.h"
 #include "environment.h"
 #include "force.h"
+#include "menu.h"
 #include <map>
 #ifndef ___SaltAndBone
 #define ___SaltAndBone
@@ -26,6 +27,8 @@ public:
 	virtual void unitCollision(instance*, instance*);
 	virtual void genInput();
 	virtual void drawGlyph(string, int, int, int, int, int);
+	virtual void roundInit() {}
+	virtual void matchInit() {}
 	script *oldReplay;
 	unsigned int replayIterator;
 	virtual void print();
@@ -43,6 +46,7 @@ public:
 	character * generateCharacter(int);
 	int numRounds;
 	int numChars;
+	Mix_Music *matchMusic;
 	environment env;
 };
 
@@ -54,6 +58,8 @@ public:
 	void loadMisc();
 	void initCharacters();
 	void initCharTable();
+	virtual void roundInit();
+	virtual void matchInit();
 	virtual void initShaders();
 	virtual void loadAssets();
 	virtual void handleArgs(vector<string>);
@@ -88,14 +94,11 @@ public:
 	void drawPauseMenu();
 	void cleanup();
 	void runTimer();
-	void roundInit();
-	void matchInit();
 	void cSelectMenu();
 	character * generateCharacter(int);
 	void mainMenu(int);
 	void keyConfig(int);
 	void rematchMenu();
-	void pauseMenu();
 	void checkWin();
 	void dragBG(int);
 	void doSuperFreeze();
@@ -104,8 +107,8 @@ public:
 	void writeImage(string, int, action*);
 
 	sample call[2];
-	int menu[2];
 	int configMenu[2];
+	int mMenu[2];
 	int rMenu;
 	int pMenu;
 	bool firstFrame:1;
@@ -113,10 +116,10 @@ public:
 	bool continuous:1;
 	bool single:1;
 	bool analytics:1;
+	menu pauseMenu;
 	chart *stats;
 
 	int musicVolume;
-	Mix_Music *matchMusic;
 	Mix_Music *menuMusic;
 	Mix_Chunk **announceWinner;
 	Mix_Chunk *announceRound[3];
