@@ -13,6 +13,7 @@ using std::max;
 using std::min;
 using std::to_string;
 
+void resolvePauseMenu(menu*);
 SaltAndBone::SaltAndBone() : pauseMenu(this)
 {
 	stats = nullptr;
@@ -60,6 +61,12 @@ SaltAndBone::SaltAndBone() : pauseMenu(this)
 	oldReplay = nullptr;
 	replayIterator = 0;
 	replay = nullptr;
+
+	pauseMenu.resolve = resolvePauseMenu;
+
+	pauseMenu.labels.push_back("Unpause");
+	pauseMenu.labels.push_back("Select Characters");
+	pauseMenu.labels.push_back("Quit Game");
 }
 
 void SaltAndBone::handleArgs(vector<string> args)
@@ -263,7 +270,7 @@ void SaltAndBone::matchInit()
 	for(player* i:P){
 		i->rounds = 0;
 	}
-	pauseMenu.cursor = 0;
+	pauseMenu.on = 0;
 	if(!select[0] || !select[1]){
 		Mix_VolumeMusic(musicVolume);
 		Mix_PlayMusic(menuMusic, -1);
@@ -410,8 +417,8 @@ void fightingGame::print()
 void SaltAndBone::resolve()
 {
 	if(!select[0] || !select[1]) cSelectMenu();
-	else if(rMenu) rematchMenu();
-	else if(pauseMenu.cursor) pauseMenu();
+	else if(rMenu) doRematchMenu();
+	else if(pauseMenu) doMenu(pauseMenu);
 	else {
 		resolveInputs();
 		for(instance *i:things) i->updateRects();
@@ -567,9 +574,60 @@ void SaltAndBone::resolvePhysics()
 	}
 }
 
+void resolvePauseMenu(menu* m)
+{
+	switch(m->cursor){
+	case 0:
+		m->toggle();
+		break;
+	case 1:
+		for(unsigned int i = 0; i < m->game->P.size(); i++){
+			m->game->P[i]->characterSelect(nullptr);
+			m->game->select[i] = 0;
+			m->game->things[i]->current.meter.clear();
+		}
+		Mix_HaltMusic();
+		Mix_FreeMusic(m->game->matchMusic);
+		//Mix_PlayChannel(3, announceSelect, 0);
+		m->game->matchInit();
+		break;
+	case 2:
+		Mix_HaltMusic();
+		Mix_FreeMusic(m->game->matchMusic);
+		m->game->gameover = 1;
+		break;
+	}
+}
+
+void SaltAndBone::doMenu(menu& m)
+{
+	for(unsigned int j = 0; j < p.size(); j++){
+		if(currentFrame[j].axis[0] && !counter[j]){
+			m.cursor--;
+			counter[j] = 10;
+		} else if(currentFrame[j].axis[1] && !counter[j]){ 
+			m.cursor++;
+			counter[j] = 10;
+		}
+		if(m.cursor < 0) m.cursor = m.labels.size() - 1;
+		else if((unsigned int)m.cursor >= m.labels.size()) m.cursor = 0;
+		for(unsigned int i = 0; i < currentFrame[j].buttons.size()-1; i++){
+			if(currentFrame[j].buttons[i] == 1){
+				m();
+				j = 2;
+				break;
+			}
+		}
+		if(currentFrame[j].n.raw.Start && !counter[j]){
+			m.toggle();
+			counter[j] = 10;
+		}
+	}
+}
+
 void SaltAndBone::cleanup()
 {
-	if(select[0] && select[1] && !pauseMenu.cursor){
+	if(select[0] && select[1] && !pauseMenu){
 		for(instance *i:things){
 			i->cleanup();
 			if(i->current.posX > env.bg.w + 300 || i->current.posX < -300 || i->current.posY < -300 || i->current.posY > env.bg.h){
@@ -595,8 +653,7 @@ void SaltAndBone::cleanup()
 	for(unsigned int i = 0; i < currentFrame.size(); i++){
 		if(currentFrame[i].n.raw.Start == 1 && counter[i] <= 0){
 			if(pauseEnabled && !roundEnd){
-				if(pauseMenu.cursor) pauseMenu.cursor = 0;
-				else pauseMenu.cursor = 1;
+				pauseMenu.toggle();
 				counter[i] = 10;
 			}
 		}
@@ -1072,7 +1129,7 @@ void SaltAndBone::dragBG(int dx)
 	else if(env.bg.x > env.bg.w - env.screenWidth) env.bg.x = env.bg.w - env.screenWidth;
 }
 
-void SaltAndBone::rematchMenu()
+void SaltAndBone::doRematchMenu()
 {
 	for(unsigned int j = 0; j < P.size(); j++){
 		if(currentFrame[j].axis[0] && !counter[j]){

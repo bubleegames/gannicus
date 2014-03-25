@@ -11,11 +11,13 @@ public:
 	menu() {}
 	menu(fightingGame*);
 	void associate(fightingGame*);
-	void pauseMenu();
+	void (*resolve)(menu*);
 	void draw();
+	void toggle();
 	vector<string> labels;
 	fightingGame * game;
 	int cursor;
+	bool on;
 	void operator()();
 	operator bool() const;
 };

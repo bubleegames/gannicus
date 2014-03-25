@@ -98,7 +98,8 @@ public:
 	character * generateCharacter(int);
 	void mainMenu(int);
 	void keyConfig(int);
-	void rematchMenu();
+	void doRematchMenu();
+	void doMenu(menu&);
 	void checkWin();
 	void dragBG(int);
 	void doSuperFreeze();

@@ -407,12 +407,10 @@ void menu::draw()
 	glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
 	glRectf(0.0, 0.0, (GLfloat)game->env.screenWidth, (GLfloat)game->env.screenHeight);
 	glEnable( GL_TEXTURE_2D );
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(cursor == 1)*0.4);
-	game->drawGlyph("Unpause", 0, game->env.screenWidth, 360, 60, 1);
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(cursor == 2)*0.4);
-	game->drawGlyph("Character Select", 0, game->env.screenWidth, 420, 60, 1);
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(cursor == 3)*0.4);
-	game->drawGlyph("Quit Game", 0, game->env.screenWidth, 480, 60, 1);
+	for(unsigned int i = 0; i < labels.size(); i++){
+		glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(cursor == i)*0.4);
+		game->drawGlyph(labels[i], 0, game->env.screenWidth, game->env.screenHeight/2 - ((float)labels.size()/2.0) * 60 + 60*i, 60, 1);
+	}
 	glDisable( GL_TEXTURE_2D );
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
 }
