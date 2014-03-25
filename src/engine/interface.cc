@@ -1035,8 +1035,8 @@ void SaltAndBone::mainMenu(int ID)
 		mMenu[ID]++;
 		counter[ID] = 10;
 	}
-	if(mMenu[ID] > 8) mMenu[ID] = 1;
-	else if(mMenu[ID] < 1) mMenu[ID] = 8;
+	if(mMenu[ID] > 9) mMenu[ID] = 1;
+	else if(mMenu[ID] < 1) mMenu[ID] = 9;
 	for(unsigned int i = 0; i < currentFrame[ID].buttons.size()-1; i++){
 		if(currentFrame[ID].buttons[i] == 1 && !counter[ID]){
 			switch(mMenu[ID]){
