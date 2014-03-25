@@ -110,14 +110,13 @@ public:
 	sample call[2];
 	int configMenu[2];
 	int mMenu[2];
-	int rMenu;
-	int pMenu;
 	bool firstFrame:1;
 	bool shortcut:1;
 	bool continuous:1;
 	bool single:1;
 	bool analytics:1;
 	menu pauseMenu;
+	menu rematchMenu;
 	chart *stats;
 
 	int musicVolume;

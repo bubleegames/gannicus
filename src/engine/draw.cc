@@ -24,8 +24,8 @@ void SaltAndBone::draw()
 		glViewport(0, 0, env.screenWidth*scalingFactor, env.screenHeight*scalingFactor);
 		if(!select[0] || !select[1]) drawCSelect();
 		else drawGame();
-		if(rMenu != 0) drawRematchMenu();
-		else if(pauseMenu != 0) pauseMenu.draw();
+		if(rematchMenu) rematchMenu.draw();
+		else if(pauseMenu) pauseMenu.draw();
 	glPopMatrix();
 	SDL_GL_SwapBuffers();
 }
@@ -408,24 +408,9 @@ void menu::draw()
 	glRectf(0.0, 0.0, (GLfloat)game->env.screenWidth, (GLfloat)game->env.screenHeight);
 	glEnable( GL_TEXTURE_2D );
 	for(unsigned int i = 0; i < labels.size(); i++){
-		glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(cursor == i)*0.4);
+		glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(cursor == (int)i)*0.4);
 		game->drawGlyph(labels[i], 0, game->env.screenWidth, game->env.screenHeight/2 - ((float)labels.size()/2.0) * 60 + 60*i, 60, 1);
 	}
-	glDisable( GL_TEXTURE_2D );
-	glColor4f(1.0, 1.0, 1.0, 1.0f);
-}
-
-void SaltAndBone::drawRematchMenu()
-{
-	glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
-	glRectf(0.0, 0.0, (GLfloat)env.screenWidth, (GLfloat)env.screenHeight);
-	glEnable( GL_TEXTURE_2D );
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(rMenu == 1)*0.4);
-	drawGlyph("Rematch", 0, env.screenWidth, 360, 60, 1);
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(rMenu == 2)*0.4);
-	drawGlyph("Character Select", 0, env.screenWidth, 420, 60, 1);
-	glColor4f(0.0, 0.0, 1.0, 0.4 + (float)(rMenu == 3)*0.4);
-	drawGlyph("Quit Game", 0, env.screenWidth, 480, 60, 1);
 	glDisable( GL_TEXTURE_2D );
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
 }

@@ -13,8 +13,9 @@ using std::max;
 using std::min;
 using std::to_string;
 
+void resolveRematchMenu(menu*);
 void resolvePauseMenu(menu*);
-SaltAndBone::SaltAndBone() : pauseMenu(this)
+SaltAndBone::SaltAndBone() : pauseMenu(this), rematchMenu(this)
 {
 	stats = nullptr;
 	initCharacters();
@@ -63,10 +64,14 @@ SaltAndBone::SaltAndBone() : pauseMenu(this)
 	replay = nullptr;
 
 	pauseMenu.resolve = resolvePauseMenu;
-
 	pauseMenu.labels.push_back("Unpause");
 	pauseMenu.labels.push_back("Select Characters");
 	pauseMenu.labels.push_back("Quit Game");
+	
+	rematchMenu.resolve = resolveRematchMenu;
+	rematchMenu.labels.push_back("Rematch");
+	rematchMenu.labels.push_back("Select Characters");
+	rematchMenu.labels.push_back("Quit Game");
 }
 
 void SaltAndBone::handleArgs(vector<string> args)
@@ -266,7 +271,7 @@ void fightingGame::initialConfig(int ID)
 void SaltAndBone::matchInit()
 {
 	SDL_Event event;
-	rMenu = 0;
+	rematchMenu.on = 0;
 	for(player* i:P){
 		i->rounds = 0;
 	}
@@ -357,7 +362,7 @@ void SaltAndBone::runTimer()
 					}
 					//printf("Matchup: %f\n", stats->matchup(selection[0], selection[1]));
 				}
-				if(shortcut) rMenu = 1;
+				if(shortcut) rematchMenu.on = 1;
 				else{
 					if(!continuous){
 						for(unsigned int i = 0; i < P.size(); i++){
@@ -417,8 +422,8 @@ void fightingGame::print()
 void SaltAndBone::resolve()
 {
 	if(!select[0] || !select[1]) cSelectMenu();
-	else if(rMenu) doRematchMenu();
-	else if(pauseMenu) doMenu(pauseMenu);
+	else if(rematchMenu) rematchMenu();
+	else if(pauseMenu) pauseMenu();
 	else {
 		resolveInputs();
 		for(instance *i:things) i->updateRects();
@@ -574,6 +579,33 @@ void SaltAndBone::resolvePhysics()
 	}
 }
 
+void resolveRematchMenu(menu* m)
+{
+	switch(m->cursor){
+	case 0:
+		Mix_HaltMusic();
+		m->toggle();
+		m->game->matchInit();
+		break;
+	case 1:
+		for(unsigned int k = 0; k < m->game->P.size(); k++){
+			m->game->P[k]->characterSelect(nullptr);
+			m->game->select[k] = 0;
+			m->game->things[k]->current.meter.clear();
+		}
+		Mix_HaltMusic();
+		Mix_FreeMusic(m->game->matchMusic);
+		//Mix_PlayChannel(3, announceSelect, 0);
+		m->game->matchInit();
+		break;
+	case 2:
+		Mix_HaltMusic();
+		Mix_FreeMusic(m->game->matchMusic);
+		m->game->gameover = 1;
+		break;
+	}
+}
+
 void resolvePauseMenu(menu* m)
 {
 	switch(m->cursor){
@@ -599,32 +631,6 @@ void resolvePauseMenu(menu* m)
 	}
 }
 
-void SaltAndBone::doMenu(menu& m)
-{
-	for(unsigned int j = 0; j < p.size(); j++){
-		if(currentFrame[j].axis[0] && !counter[j]){
-			m.cursor--;
-			counter[j] = 10;
-		} else if(currentFrame[j].axis[1] && !counter[j]){ 
-			m.cursor++;
-			counter[j] = 10;
-		}
-		if(m.cursor < 0) m.cursor = m.labels.size() - 1;
-		else if((unsigned int)m.cursor >= m.labels.size()) m.cursor = 0;
-		for(unsigned int i = 0; i < currentFrame[j].buttons.size()-1; i++){
-			if(currentFrame[j].buttons[i] == 1){
-				m();
-				j = 2;
-				break;
-			}
-		}
-		if(currentFrame[j].n.raw.Start && !counter[j]){
-			m.toggle();
-			counter[j] = 10;
-		}
-	}
-}
-
 void SaltAndBone::cleanup()
 {
 	if(select[0] && select[1] && !pauseMenu){
@@ -634,7 +640,7 @@ void SaltAndBone::cleanup()
 				i->outOfBounds();
 			}
 		}
-		if(!rMenu && select[0] && select[1]){
+		if(!rematchMenu && select[0] && select[1]){
 			for(instance *i:things) i->step();
 			for(unsigned int i = 0; i < things.size(); i++){
 				if(i > 1 && things[i]->current.dead){ 
@@ -1127,50 +1133,6 @@ void SaltAndBone::dragBG(int dx)
 	env.bg.x += dx;
 	if(env.bg.x < 0) env.bg.x = 0;
 	else if(env.bg.x > env.bg.w - env.screenWidth) env.bg.x = env.bg.w - env.screenWidth;
-}
-
-void SaltAndBone::doRematchMenu()
-{
-	for(unsigned int j = 0; j < P.size(); j++){
-		if(currentFrame[j].axis[0] && !counter[j]){
-			rMenu--;
-			counter[j] = 10;
-		} else if(currentFrame[j].axis[1] && !counter[j]){ 
-			rMenu++;
-			counter[j] = 10;
-		}
-		if(rMenu > 3) rMenu = 1;
-		else if(rMenu < 1) rMenu = 3;
-		for(unsigned int i = 0; i < currentFrame[j].buttons.size(); i++){
-			if(currentFrame[j].buttons[i] == 1){
-				switch(rMenu){
-				case 1:
-					Mix_HaltMusic();
-					rMenu = 0;
-					matchInit();
-					break;
-				case 2:
-					for(unsigned int k = 0; k < P.size(); k++){
-						P[k]->characterSelect(nullptr);
-						select[k] = 0;
-						things[k]->current.meter.clear();
-					}
-					Mix_HaltMusic();
-					Mix_FreeMusic(matchMusic);
-					//Mix_PlayChannel(3, announceSelect, 0);
-					matchInit();
-					break;
-				case 3:
-					Mix_HaltMusic();
-					Mix_FreeMusic(matchMusic);
-					gameover = 1;
-					break;
-				}
-				j = P.size();
-				break;
-			}
-		}
-	}
 }
 
 SaltAndBone::~SaltAndBone()

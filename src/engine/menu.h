@@ -5,7 +5,6 @@
 using std::vector;
 using std::string;
 class fightingGame;
-
 class menu {
 public:
 	menu() {}
