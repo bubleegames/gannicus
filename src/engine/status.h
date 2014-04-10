@@ -27,6 +27,7 @@ struct status{
 	int mode;
 	int posX, posY;
 	int age;
+	int delay;
 	int facing;
 	int comboState;
 	int deltaX, deltaY; 

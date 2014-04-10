@@ -4,6 +4,7 @@ status::status()
 {
 	deltaX = 0;
 	deltaY = 0;
+	delay = 0;
 	lCorner = 0;
 	rCorner = 0;
 	frame = 0;
@@ -60,6 +61,7 @@ status::status(const status & o)
 	elasticY = o.elasticY;
 	slide = o.slide;
 	stick = o.stick;
+	delay = o.delay;
 	rebound = o.rebound;
 	hover = o.hover;
 	opponent = o.opponent;
