@@ -91,16 +91,17 @@ void avatar::prepHooks(status &current, deque<int> inputBuffer, vector<int> butt
 			current.bufferedMove = nullptr;
 		} else getReversal(current, inputBuffer, buttons);
 	}
+	bool triggerDelay = false;
 	if (current.move->delayFrame == current.frame && current.delay < current.move->delayMax){
 		for(unsigned int i = 0; i < buttons.size(); i++){
 			if(current.move->delayCheck & (1 << i)){
 				if(buttons[i] > 0){
-					current.delay++;
-					break;
+					triggerDelay = true;
 				}
 			}
 		}
 	}
+	current.delay = triggerDelay ? current.delay + 1 : 0;
 	if(ret){
 		current.reversalFlag = false;
 		if(!ret->freezeAgnostic && current.freeze > 0){

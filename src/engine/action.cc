@@ -948,7 +948,7 @@ void action::step(status &current)
 		else current.meter[1].value = 300;
 	}
 	if(current.delay > 0){
-		if(current.delay >= delayMax){
+		if(delayMax && current.delay >= delayMax){
 			current.delay = 0;
 			current.frame++;
 		}
