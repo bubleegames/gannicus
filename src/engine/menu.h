@@ -10,7 +10,7 @@ public:
 	menu() {}
 	menu(fightingGame*);
 	void associate(fightingGame*);
-	void (*resolve)(menu*);
+	void (*runResolver)(menu*);
 	void draw();
 	void toggle();
 	vector<string> labels;

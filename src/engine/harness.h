@@ -14,12 +14,14 @@ class harness{
 public:
 	harness();
 	virtual void init();
-	virtual void readInput();
 	virtual void processInput(SDL_Event&);
 	virtual void runMacro();
+	virtual void readInput();
+	virtual void cleanup();
 	bool gameover;
 	bool console;
 	string macro;
+	vector<SDL_Event> events;
 	vector<controller*> p;
 };
 
