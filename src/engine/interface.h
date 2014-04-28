@@ -46,6 +46,8 @@ public:
 	character * generateCharacter(int);
 	int numRounds;
 	int numChars;
+	bool demo:1;
+	bool screenShot:1;
 	Mix_Music *matchMusic;
 	environment env;
 };
@@ -65,7 +67,7 @@ public:
 	virtual void handleArgs(vector<string>);
 	virtual void comboScaling(hStat&, int);
 	void processInput(SDL_Event&);
-	void createPlayers();
+	void createPlayers(int);
 	void createPlayers(string);
 	void startGame();
 	void loadMatchBackground();

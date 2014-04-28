@@ -22,11 +22,15 @@ void SaltAndBone::draw()
 	glPushMatrix();
 		glScalef(scalingFactor, scalingFactor, 0.0f);
 		glViewport(0, 0, env.screenWidth*scalingFactor, env.screenHeight*scalingFactor);
-		if(!select[0] || !select[1]) drawCSelect();
+		if(P.size() > 1 && (!select[0] || !select.back())) drawCSelect();
 		else drawGame();
 		if(rematchMenu) rematchMenu.draw();
 		else if(pauseMenu) pauseMenu.draw();
 	glPopMatrix();
+	if(screenShot){
+		glReadPixels(0, 0, w, h, GL_RGBA, ___gufg_tex_mode, image->pixels);
+	}
+
 	SDL_GL_SwapBuffers();
 }
 
@@ -227,13 +231,23 @@ void environment::draw()
 
 void SaltAndBone::drawGame()
 {
-	env.draw();
-	drawHUD();
+	if(!demo){
+		env.draw();
+		drawHUD();
+	} else {
+		glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+		glRectf(0, 0, env.bg.w, env.bg.h);
+	}
 	glPushMatrix();
 		glTranslatef(-env.bg.x, (env.bg.y+env.bg.h), 0);
-		for(instance *i:things){ 
-			i->draw(prog());
+		if(demo){
+			P[0]->draw(prog());
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		} else {
+			for(instance *i:things){ 
+				i->draw(prog());
+				glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+			}
 		}
 		for(player *i:P) i->drawHitParticle();
 		glEnable( GL_TEXTURE_2D );
@@ -452,7 +466,8 @@ vector<HUDMeter<int>> character::drawMeters(int ID, status &current)
 
 void instance::drawBoxen()
 {
-	glColor4f(current.throwInvuln == 0, current.throwInvuln == 0, current.throwInvuln == 0, 0.7f);
+	float tColor = (current.throwInvuln == 0) * .6 + .4;
+	glColor4f(tColor, tColor, tColor, 0.7f);
 	glPushMatrix();
 		glTranslatef(current.collision.x, -current.collision.y, 0);
 		glRectf(0.0f, 0.0f, (GLfloat)(current.collision.w), (GLfloat)(-current.collision.h));
@@ -696,7 +711,6 @@ void SaltAndBone::writeImage(string movename, int frame, action * move)
 {
 	int Y = 0;
 	int X = 0;
-	SDL_Surface * image = nullptr;
 	int maxY = move->collision[frame].y + move->collision[frame].h,
 	    maxX = move->collision[frame].x + move->collision[frame].w;
 	for(unsigned int i = 0; i < move->hitreg[frame].size(); i++){
@@ -731,20 +745,7 @@ void SaltAndBone::writeImage(string movename, int frame, action * move)
 		w -= X;
 		x = -X;
 	}
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-	Uint32 rmask = 0xff000000;
-	Uint32 gmask = 0x00ff0000;
-	Uint32 bmask = 0x0000ff00;
-	Uint32 amask = 0x000000ff;
-#else
-	Uint32 rmask = 0x000000ff;
-	Uint32 gmask = 0x0000ff00;
-	Uint32 bmask = 0x00ff0000;
-	Uint32 amask = 0xff000000;
-#endif
-	image = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32,
-				 rmask, gmask, bmask, amask);
-	screenInit(w, h);
+screenInit(w, h);
 
 
 
@@ -756,12 +757,6 @@ void SaltAndBone::writeImage(string movename, int frame, action * move)
 		move->drawBoxen(frame);
 	glPopMatrix();
 
-	glReadPixels(0, 0, w, h, GL_RGBA, ___gufg_tex_mode, image->pixels);
-
-	SDL_GL_SwapBuffers();
-
-	string f("dump/"+movename+"#"+to_string(frame)+".bmp");
-	if(SDL_SaveBMP(image, f.c_str())) printf("You dun fucked up\n");
 }
 
 void action::drawBoxen(int frame){

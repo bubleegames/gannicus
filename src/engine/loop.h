@@ -20,7 +20,7 @@ template <typename Engine, size_t FPS, size_t Rounds>
 loop<Engine, FPS, Rounds>::loop()
 {
 	game.screenInit();
-	game.createPlayers();
+	game.createPlayers(2);
 	game.loadMisc();
 	game.startGame();
 	game.numRounds = Rounds;

@@ -27,6 +27,7 @@ DB = hDB h63214D
 DBcancel = hDB
 jDBcancel = aDB
 A = hA
+A2 = h6A
 B = hB
 C = hC
 D = hD

@@ -17,6 +17,7 @@ void resolveRematchMenu(menu*);
 void resolvePauseMenu(menu*);
 SaltAndBone::SaltAndBone() : pauseMenu(this), rematchMenu(this)
 {
+	demo = false;
 	stats = nullptr;
 	initCharacters();
 	displayMode = 0;
@@ -81,6 +82,10 @@ void SaltAndBone::handleArgs(vector<string> args)
 			killTimer = true;
 			pauseEnabled = true;
 		}
+		if(i == "demo"){
+			killTimer = true;
+			demo = true;
+		}
 	}
 }
 
@@ -97,12 +102,12 @@ void SaltAndBone::initShaders()
 void SaltAndBone::createPlayers(string rep)
 {
 	oldReplay = new script(rep);
-	createPlayers();
 	if(oldReplay->selection.size() != 2){
 		printf("Invalid Replay\n");
 		delete oldReplay;
 		oldReplay = nullptr;
 	} else {
+		createPlayers(2);
 		single = true;
 		analytics = false;
 		for(int i = 0; i < 2; i++){
@@ -115,14 +120,14 @@ void SaltAndBone::createPlayers(string rep)
 	}
 }
 
-void SaltAndBone::createPlayers()
+void SaltAndBone::createPlayers(int n)
 {
 	/*Initialize players.*/
-	for(int i = 0; i < 2; i++){
+	for(int i = 0; i < n; i++){
 		P.push_back(new player(i+1));
 		p.push_back(P[i]);
 		select.push_back(false);
-		selection.push_back(1+i);
+		selection.push_back((i%numChars)+1);
 		combo.push_back(0);
 		knockdown.push_back(0);
 		damage.push_back(0);
@@ -136,8 +141,8 @@ void SaltAndBone::createPlayers()
 		P[i]->boxen = true;
 		P[i]->sprite = false;
 	}
-	for(int i = 0; i < 2; i++){
-		P[i]->current.opponent = P[(i+1)%2];
+	for(int i = 0; i < n; i++){
+		P[i]->current.opponent = P[(i+1)%n];
 	}
 }
 
@@ -180,7 +185,7 @@ void SaltAndBone::startGame()
 	/*Start a match*/
 	//Mix_PlayChannel(3, announceSelect, 0);
 	matchInit();
-	if(select[0] && select[1]){ 
+	if(select[0] && select.back()){ 
 		roundInit();
 	}
 }
@@ -276,7 +281,7 @@ void SaltAndBone::matchInit()
 		i->rounds = 0;
 	}
 	pauseMenu.on = 0;
-	if(!select[0] || !select[1]){
+	if(!select[0] || !select.back()){
 		Mix_VolumeMusic(musicVolume);
 		Mix_PlayMusic(menuMusic, -1);
 		//printf("\n");
@@ -309,7 +314,7 @@ void SaltAndBone::roundInit()
 		blockFail[i] = 0;
 	}
 
-	timer = 60 * 101;
+	timer = 60 * (demo ? 99 : 101);
 	endTimer = 60 * 5;
 	freeze = 0;
 }
@@ -343,8 +348,8 @@ void SaltAndBone::runTimer()
 		 */
 		if(endTimer > 0) endTimer--;
 		else{
-			things[0]->current.momentum.clear();
-			things[1]->current.momentum.clear();
+			P[0]->current.momentum.clear();
+			P.back()->current.momentum.clear();
 			if(P[0]->rounds == numRounds || P[1]->rounds == numRounds){
 				if(!oldReplay){
 					if(P[0]->rounds == P[1]->rounds);
@@ -393,7 +398,7 @@ void SaltAndBone::runTimer()
 					if(single) gameover = true;
 					else{
 						matchInit();
-						if(select[0] && select[1]){
+						if(select[0] && select.back()){
 							if(analytics){
 								replay = new script;
 								replay->init(selection);
@@ -421,7 +426,7 @@ void fightingGame::print()
 /*Main function for a frame. This resolves character spritions, env.background scrolling, and current.hitboxes*/
 void SaltAndBone::resolve()
 {
-	if(!select[0] || !select[1]) cSelectMenu();
+	if(!select[0] || !select.back()) cSelectMenu();
 	else if(rematchMenu) rematchMenu();
 	else if(pauseMenu) pauseMenu();
 	else {
@@ -507,12 +512,13 @@ void SaltAndBone::resolveCamera()
 	/*Really rudimentary camera logic. Really just scrolls the env.background (Which characters are drawn relative to)
 	 *appropriately, attempting to adjust to approximately be looking at the point in the middle of the two characters.
 	 */
-	int dx = things[1]->dragBG(env.bg.x + env.wall, env.bg.x + env.screenWidth - env.wall) + things[0]->dragBG(env.bg.x + env.wall, env.bg.x + env.screenWidth - env.wall);
+	int dx = 0;
+	for(player *i:P) dx += i->dragBG(env.bg.x + env.wall, env.bg.x + env.screenWidth - env.wall);
 	int dy = env.screenHeight;
 
 	/*If a character leaves the camera boundaries, follow them immediately*/
 	if(!dx){
-		dx = -(((env.bg.x + env.screenWidth/2) - things[0]->current.posX) + ((env.bg.x + env.screenWidth/2) - things[1]->current.posX));
+		dx = -(((env.bg.x + env.screenWidth/2) - things[0]->current.posX) + ((env.bg.x + env.screenWidth/2) - things.back()->current.posX));
 		dx /= 10;
 		/*Otherwise follow the middle at a rate of (disparity from middle view)/10.
 		 *Chosen by trial and error, this rate feels most natural
@@ -633,14 +639,14 @@ void resolvePauseMenu(menu* m)
 
 void SaltAndBone::cleanup()
 {
-	if(select[0] && select[1] && !pauseMenu){
+	if(select[0] && select.back() && !pauseMenu){
 		for(instance *i:things){
 			i->cleanup();
 			if(i->current.posX > env.bg.w + 300 || i->current.posX < -300 || i->current.posY < -300 || i->current.posY > env.bg.h){
 				i->outOfBounds();
 			}
 		}
-		if(!rematchMenu && select[0] && select[1]){
+		if(!rematchMenu && select[0] && select.back()){
 			for(instance *i:things) i->step();
 			for(unsigned int i = 0; i < things.size(); i++){
 				if(i > 1 && things[i]->current.dead){ 
@@ -850,7 +856,7 @@ void SaltAndBone::readInput()
 		events.push_back(event);
 		processInput(event);
 	}
-	if(select[0] && select[1]){
+	if(select[0] && select.back()){
 		if(scripting){
 			for(player* i:P){
 				for(unsigned int j = 0; j < events.size(); j++){
@@ -962,7 +968,7 @@ void SaltAndBone::cSelectMenu()
 		else if(mMenu[i] > 0) mainMenu(i);
 	}
 
-	if(select[0] && select[1]){
+	if(select[0] && select.back()){
 		//cout << "2 6\n" << selection[0] << " " << selection[1] << '\n';
 		if(selection[0] == selection[1] && P[0]->selectedPalette == P[1]->selectedPalette){ 
 			P[1]->selectedPalette = (P[1]->selectedPalette + 1) % 5;
