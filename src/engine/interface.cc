@@ -64,12 +64,12 @@ SaltAndBone::SaltAndBone() : pauseMenu(this), rematchMenu(this)
 	replayIterator = 0;
 	replay = nullptr;
 
-	pauseMenu.resolve = resolvePauseMenu;
+	pauseMenu.runResolver = resolvePauseMenu;
 	pauseMenu.labels.push_back("Unpause");
 	pauseMenu.labels.push_back("Select Characters");
 	pauseMenu.labels.push_back("Quit Game");
 	
-	rematchMenu.resolve = resolveRematchMenu;
+	rematchMenu.runResolver = resolveRematchMenu;
 	rematchMenu.labels.push_back("Rematch");
 	rematchMenu.labels.push_back("Select Characters");
 	rematchMenu.labels.push_back("Quit Game");
@@ -426,6 +426,7 @@ void fightingGame::print()
 /*Main function for a frame. This resolves character spritions, env.background scrolling, and current.hitboxes*/
 void SaltAndBone::resolve()
 {
+	for(SDL_Event i:events) processInput(i);
 	if(!select[0] || !select.back()) cSelectMenu();
 	else if(rematchMenu) rematchMenu();
 	else if(pauseMenu) pauseMenu();
@@ -679,6 +680,8 @@ void SaltAndBone::cleanup()
 		currentFrame[i].buttons[5] = 0;
 		if(counter[i] > 0) counter[i]--;
 	}
+
+	harness::cleanup();
 }
 
 void SaltAndBone::resolveSummons()
@@ -850,20 +853,15 @@ void SaltAndBone::processInput(SDL_Event &event)
 
 void SaltAndBone::readInput()
 {
-	vector<SDL_Event> events;
-	SDL_Event event;
-	while(SDL_PollEvent(&event)){
-		events.push_back(event);
-		processInput(event);
-	}
+	harness::readInput();
 	if(select[0] && select.back()){
 		if(scripting){
 			for(player* i:P){
-				for(unsigned int j = 0; j < events.size(); j++){
+				for(SDL_Event j:events){
 					if(!oldReplay){
 						bool r = false;
 						if(i->record) r = true;
-						i->macroCheck(events[j]);
+						i->macroCheck(j);
 						if(i->record){
 							i->search = false;
 							if(!r) break;
@@ -873,9 +871,9 @@ void SaltAndBone::readInput()
 				if(i->search){
 					for(unsigned int j = 0; j < events.size(); j++){
 						if((i->currentMacro = i->patternMatch(abs(i->tap(events[j]))))){
-							j = events.size();
 							i->search = false;
 							i->iterator = 0;
+							break;
 						}
 					}
 				}

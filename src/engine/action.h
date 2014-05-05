@@ -126,6 +126,7 @@ public:
 	int cooldown;
 	int flip;
 	int armorStart, armorLength;
+	int delayFrame, delayMax, delayCheck;
 	int armorHits, armorCounter;
 	int guardStart, guardLength, guardType, 
 		stunMin, stunMax;
@@ -177,8 +178,7 @@ public:
 	action * riposte;
 
 	status basis;
-	int holdFrame;
-	int holdCheck;
+	int holdFrame, holdCheck;
 
 	shared_ptr<force> distortion;
 	int distortSpawn;

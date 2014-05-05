@@ -11,6 +11,10 @@
 using std::string;
 using std::vector;
 using std::map;
+class resolver {
+	virtual void resolve() = 0;
+	virtual void inputTransform() = 0;
+};
 
 class fightingGame : public window, public arcadeHarness, public HUD, public soundScape {
 public:

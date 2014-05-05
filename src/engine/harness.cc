@@ -89,13 +89,14 @@ void arcadeHarness::runMacro()
 
 void harness::readInput()
 {
-	/*Make our dummy event for polls*/
 	SDL_Event event;
-	for(int i = 0; i < 20; i++){
-		if (SDL_PollEvent(&event)){
-			processInput(event);
-		}
-	}
+	while(SDL_PollEvent(&event)) events.push_back(event);
+	/*Make our dummy event for polls*/
+}
+
+void harness::cleanup()
+{
+	events.clear();
 }
 
 void arcadeHarness::initContainers()

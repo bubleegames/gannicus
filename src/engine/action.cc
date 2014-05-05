@@ -29,6 +29,9 @@ void action::zero()
 	hits = 0;
 	unique = false;
 	freezesProjectiles = false;
+	delayFrame = -1;
+	delayMax = -1;
+	delayCheck = 0;
 	resetJumpOptions = false;
 	requiresFreeze = false;
 	subsumedFreeze = false;
@@ -285,6 +288,22 @@ bool action::setParameter(string param)
 	} else if (t.current() == "Hold") {
 		minHold = stoi(t("\t: \n-"));
 		maxHold = stoi(t());
+		return true;
+	} else if (t.current() == "Delayable") {
+		delayCheck = 0;
+		for(char c : t()){
+			switch(c){
+			case 'A':
+			case 'B':
+			case 'C':
+			case 'D':
+			case 'E':
+				delayCheck += 1 << (c - 'A');
+				break;
+			}
+		}
+		delayFrame = stoi(t("\t: \n-"));
+		delayMax = stoi(t()) - delayFrame;
 		return true;
 	} else if (t.current() == "Properties") {
 		parseProperties(param, false);
@@ -928,7 +947,12 @@ void action::step(status &current)
 		if(current.meter[1].value + gain[0] < 300) current.meter[1].value += gain[0];
 		else current.meter[1].value = 300;
 	}
-	current.frame++;
+	if(current.delay > 0){
+		if(delayMax && current.delay >= delayMax){
+			current.delay = 0;
+			current.frame++;
+		}
+	} else current.frame++;
 	if(modifier && basis.move){
 		basis.frame++;
 		if(basis.move && basis.frame >= basis.move->frames){

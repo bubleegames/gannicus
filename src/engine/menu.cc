@@ -24,7 +24,7 @@ void menu::operator()()
 		else if((unsigned int)cursor >= labels.size()) cursor = 0;
 		for(unsigned int i = 0; i < game->currentFrame[j].buttons.size()-1; i++){
 			if(game->currentFrame[j].buttons[i] == 1){
-				resolve(this);
+				runResolver(this);
 				j = 2;
 				break;
 			}
