@@ -17,6 +17,7 @@ void resolveRematchMenu(menu*);
 void resolvePauseMenu(menu*);
 SaltAndBone::SaltAndBone() : pauseMenu(this), rematchMenu(this)
 {
+	title = "Fighting Game";
 	stats = nullptr;
 	initCharacters();
 	displayMode = 0;
@@ -220,15 +221,9 @@ void SaltAndBone::loadMisc()
 /*Initialize SDL and openGL, creating a window, among other things*/
 bool fightingGame::screenInit()
 {
-	w = env.screenWidth*sf; h = env.screenHeight*sf;
-	if(screen){
-		SDL_FreeSurface(screen);
-		screen = nullptr;
-	}
 	bool ret = window::screenInit();
 	glDisable(GL_DEPTH_TEST);
 	glDisable (GL_LIGHTING);
-	SDL_WM_SetCaption("GUFG", "GUFG");
 	Mix_OpenAudio(44100, AUDIO_S16, 2, 2048);
 	SDL_ShowCursor(SDL_DISABLE);
 
@@ -236,6 +231,12 @@ bool fightingGame::screenInit()
 	init();
 	initd = ret;
 	return ret;
+}
+
+bool fightingGame::screenInit(int width, int height)
+{
+	w = width; h = height;
+	return screenInit();
 }
 
 void fightingGame::init()
@@ -916,7 +917,7 @@ void SaltAndBone::cSelectMenu()
 		write << musicVolume << '\n';
 		write.close();
 		scalingFactor = sf;
-		assert(screenInit() != false);
+		assert(screenInit(env.screenWidth*sf, env.screenHeight*sf) != false);
 	}
 
 	for(unsigned int i = 0; i < P.size(); i++){

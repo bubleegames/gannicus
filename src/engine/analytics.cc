@@ -94,8 +94,8 @@ void script::write(string name)
 	if(name.size()) scribe.open(name);
 	else{
 		time_t now = time(0);
-		tm* lT = localtime(&now);
-		scribe.open(string(".data/replays/"+string(asctime(lT))));
+		tm* LT = localtime(&now);
+		scribe.open(string(".data/replays/"+string(asctime(LT))));
 	}
 	if(command[0].size() == 0){
 		scribe.close();

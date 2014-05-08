@@ -696,7 +696,7 @@ void SaltAndBone::writeImage(string movename, int frame, action * move)
 {
 	int Y = 0;
 	int X = 0;
-	SDL_Surface * image = nullptr;
+	image = nullptr;
 	int maxY = move->collision[frame].y + move->collision[frame].h,
 	    maxX = move->collision[frame].x + move->collision[frame].w;
 	for(unsigned int i = 0; i < move->hitreg[frame].size(); i++){
@@ -746,8 +746,6 @@ void SaltAndBone::writeImage(string movename, int frame, action * move)
 				 rmask, gmask, bmask, amask);
 	screenInit(w, h);
 
-
-
 	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 	glRectf(0.0f, 0.0f, (GLfloat)w, (GLfloat)h);
 
@@ -756,15 +754,11 @@ void SaltAndBone::writeImage(string movename, int frame, action * move)
 		move->drawBoxen(frame);
 	glPopMatrix();
 
-	glReadPixels(0, 0, w, h, GL_RGBA, ___gufg_tex_mode, image->pixels);
-
-	SDL_GL_SwapBuffers();
-
-	string f("dump/"+movename+"#"+to_string(frame)+".bmp");
-	if(SDL_SaveBMP(image, f.c_str())) printf("You dun fucked up\n");
+	screenshot("dump/"+movename+"#"+to_string(frame)+".bmp");
 }
 
-void action::drawBoxen(int frame){
+void action::drawBoxen(int frame)
+{
 	glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 	glRectf((GLfloat)(collision[frame].x), (GLfloat)(collision[frame].y), (GLfloat)(collision[frame].x + collision[frame].w), (GLfloat)(collision[frame].y + collision[frame].h));
 	for(unsigned int i = 0; i < hitreg[frame].size(); i++){
@@ -778,47 +772,6 @@ void action::drawBoxen(int frame){
 		glRectf((GLfloat)(hitbox[frame][i].x), (GLfloat)(hitbox[frame][i].y), (GLfloat)(hitbox[frame][i].x + hitbox[frame][i].w), (GLfloat)(hitbox[frame][i].y + hitbox[frame][i].h));
 	}
 	glFlush();
-}
-
-bool fightingGame::screenInit(int w, int h)
-{
-	/*Initialize SDL*/
-	if(SDL_Init(SDL_INIT_EVERYTHING) < 0) return false;
-	/*WM stuff*/
-	if(window::screen){ 
-		SDL_FreeSurface(screen);
-		screen = nullptr;
-	}
-	SDL_WM_SetCaption("GUFG", "GUFG");
-	if((screen = SDL_SetVideoMode(w, h, 32, SDL_OPENGL)) == nullptr)
-		return false;
-	SDL_ShowCursor(SDL_DISABLE);
-
-	/*Set up input buffers and joysticks*/
-	for(int i = 0; i < SDL_NumJoysticks(); i++)
-		SDL_JoystickOpen(i);
-//	glDisable (GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glEnable (GL_BLEND);
-	glEnable (GL_POINT_SMOOTH);
-	glEnable (GL_LINE_SMOOTH);
-	glEnable (GL_POLYGON_SMOOTH);
-
-	glHint (GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-
-	glClearColor(0, 0, 0, 0);
-	glClearDepth(1.0f);
-	glViewport(0, 0, w, h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, w, h, 0, 1, -1);
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	initd = true;
-	return true;
 }
 
 void session::draw(model & object)

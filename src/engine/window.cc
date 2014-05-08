@@ -4,25 +4,45 @@
 #include "auxil.h"
 #include <SDL/SDL_opengl.h>
 #include <iostream>
+#include <ctime>
 
 window::window()
 {
 	screen = nullptr;
 	h = 450, w = 800;
+	title = "downtop";
 }
 
 void window::initShaders()
 {
 }
 
+void window::screenshot()
+{
+	time_t now = time(0);
+	tm* LT = localtime(&now);
+	screenshot("screenshot-"+title+"-"+string(asctime(LT)));
+}
+
+void window::screenshot(string filename)
+{
+	glReadPixels(0, 0, w, h, GL_RGBA, ___gufg_tex_mode, image->pixels);
+	SDL_GL_SwapBuffers();
+	if(SDL_SaveBMP(image, filename.c_str())) printf("You dun fucked up\n");
+}
+
 bool window::screenInit()
 {
+	if(screen){
+		SDL_FreeSurface(screen);
+		screen = nullptr;
+	}
 	/*Initialize SDL*/
 	if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
 		return false;
 	}
 	/*WM stuff*/
-	SDL_WM_SetCaption("downtop", "downtop");
+	SDL_WM_SetCaption(title.c_str(), title.c_str());
 	if((screen = SDL_SetVideoMode(w, h, 32, SDL_OPENGL | (displayMode ? (displayMode == 2 ? SDL_NOFRAME : SDL_FULLSCREEN) : false))) == nullptr)
 		return false;
 	SDL_ShowCursor(SDL_DISABLE);
