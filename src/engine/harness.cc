@@ -40,6 +40,11 @@ void harness::init()
 		SDL_JoystickOpen(i);
 }
 
+void harness::processInput()
+{
+	for(SDL_Event i:events) processInput(i);
+}
+
 void harness::processInput(SDL_Event &event)
 {
 	/*Do stuff with event*/

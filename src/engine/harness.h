@@ -15,6 +15,7 @@ public:
 	harness();
 	virtual void init();
 	virtual void processInput(SDL_Event&);
+	virtual void processInput();
 	virtual void runMacro();
 	virtual void readInput();
 	virtual void cleanup();

@@ -421,7 +421,7 @@ void fightingGame::print()
 /*Main function for a frame. This resolves character spritions, env.background scrolling, and current.hitboxes*/
 void SaltAndBone::resolve()
 {
-	for(SDL_Event i:events) processInput(i);
+	harness::processInput();
 	if(!select[0] || !select[1]) cSelectMenu();
 	else if(rematchMenu) rematchMenu();
 	else if(pauseMenu) pauseMenu();
@@ -830,6 +830,8 @@ void SaltAndBone::processInput(SDL_Event &event)
 {
 	/*Do stuff with event*/
 	for(unsigned int i = 0; i < p.size(); i++){
+		for(unsigned int j = 0; j < p.size(); j++)
+			if(!P[j]->currentMacro) P[j]->readEvent(event, currentFrame[j]);
 		int t = p[i]->tap(event);
 		if(t == 0) t = p[(i+1)%2]->tap(event);
 		if((t < 1 || t > 8) && (t < 512) && event.type != SDL_JOYHATMOTION){
@@ -879,11 +881,6 @@ void SaltAndBone::readInput()
 		}
 	}
 	if(scripting || oldReplay) genInput();
-	for(SDL_Event i:events){
-		for(unsigned int j = 0; j < p.size(); j++){
-			if(!P[j]->currentMacro) P[j]->readEvent(i, currentFrame[j]);
-		}
-	}
 }
 
 void fightingGame::processInput(SDL_Event &event)
