@@ -23,6 +23,7 @@ int main(int argc, char* argv[])
 		mv = m();
 		action * a = new action(ch, mv);
 
+		z.screenInit(z.env.screenWidth, z.env.screenHeight);
 		for(int i = 0; i < a->frames; i++){
 			z.writeImage(mv, i, a);
 		}

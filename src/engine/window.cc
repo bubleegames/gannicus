@@ -26,8 +26,8 @@ void window::screenshot()
 
 void window::screenshot(string filename)
 {
-	glReadPixels(0, 0, w, h, GL_RGBA, ___gufg_tex_mode, image->pixels);
 	SDL_GL_SwapBuffers();
+	glReadPixels(0, 0, w, h, GL_RGBA, ___gufg_tex_mode, image->pixels);
 	if(SDL_SaveBMP(image, filename.c_str())) printf("You dun fucked up\n");
 }
 
@@ -37,6 +37,20 @@ bool window::screenInit()
 		SDL_FreeSurface(screen);
 		screen = nullptr;
 	}
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	Uint32 rmask = 0xff000000;
+	Uint32 gmask = 0x00ff0000;
+	Uint32 bmask = 0x0000ff00;
+	Uint32 amask = 0x000000ff;
+#else
+	Uint32 rmask = 0x000000ff;
+	Uint32 gmask = 0x0000ff00;
+	Uint32 bmask = 0x00ff0000;
+	Uint32 amask = 0xff000000;
+#endif
+	image = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32,
+				 rmask, gmask, bmask, amask);
+
 	/*Initialize SDL*/
 	if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
 		return false;

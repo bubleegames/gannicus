@@ -694,64 +694,18 @@ bool action::spriteCheck(int f)
 
 void SaltAndBone::writeImage(string movename, int frame, action * move)
 {
-	int Y = 0;
-	int X = 0;
-	image = nullptr;
-	int maxY = move->collision[frame].y + move->collision[frame].h,
-	    maxX = move->collision[frame].x + move->collision[frame].w;
-	for(unsigned int i = 0; i < move->hitreg[frame].size(); i++){
-		if(move->hitreg[frame][i].y < Y)
-			Y = move->hitreg[frame][i].y;
-		if(move->hitreg[frame][i].x < X)
-			X = move->hitreg[frame][i].x;
-		if(move->hitreg[frame][i].x + move->hitreg[frame][i].w > maxX)
-			maxX = move->hitreg[frame][i].x + move->hitreg[frame][i].w;
-		if(move->hitreg[frame][i].y + move->hitreg[frame][i].h > maxY)
-			maxY = move->hitreg[frame][i].y + move->hitreg[frame][i].h;
-	}
-	for(unsigned int i = 0; i < move->hitbox[frame].size(); i++){
-		if(move->hitbox[frame][i].y < Y) 
-			Y = move->hitbox[frame][i].y;
-		if(move->hitbox[frame][i].x < X) 
-			X = move->hitbox[frame][i].x;
-		if(move->hitbox[frame][i].x + move->hitbox[frame][i].w > maxX)
-			maxX = move->hitbox[frame][i].x + move->hitbox[frame][i].w;
-		if(move->hitbox[frame][i].y + move->hitbox[frame][i].h > maxY)
-			maxY = move->hitbox[frame][i].y + move->hitbox[frame][i].h;
-	}
-	int w = maxX + X;
-	int h = maxY + Y;
-	int x = 0;
-	int y = 0;
-	if(Y < 0){ 
-		h -= Y;
-		y = -Y;
-	}
-	if(X < 0){
-		w -= X;
-		x = -X;
-	}
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-	Uint32 rmask = 0xff000000;
-	Uint32 gmask = 0x00ff0000;
-	Uint32 bmask = 0x0000ff00;
-	Uint32 amask = 0x000000ff;
-#else
-	Uint32 rmask = 0x000000ff;
-	Uint32 gmask = 0x0000ff00;
-	Uint32 bmask = 0x00ff0000;
-	Uint32 amask = 0xff000000;
-#endif
-	image = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32,
-				 rmask, gmask, bmask, amask);
-	screenInit(w, h);
-
 	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 	glRectf(0.0f, 0.0f, (GLfloat)w, (GLfloat)h);
 
 	glPushMatrix();
-		glTranslatef(-x, -y, 0.0);
-		move->drawBoxen(frame);
+		glTranslatef(400, 700, 0.0);
+		glPushMatrix();
+			glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+			glRectf(-5.0f, -1.0f, 5.0, 1.0);
+			glRectf(-1.0f, -5.0f, 1.0, 5.0);
+			glScalef(1.0, -1.0, 0.0);
+			move->drawBoxen(frame);
+		glPopMatrix();
 	glPopMatrix();
 
 	screenshot("dump/"+movename+"#"+to_string(frame)+".bmp");
