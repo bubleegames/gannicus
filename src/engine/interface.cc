@@ -54,6 +54,7 @@ SaltAndBone::SaltAndBone() : pauseMenu(this), rematchMenu(this)
 	}
 	read.close();
 	sf = scalingFactor;
+	w = env.screenWidth*sf; h = env.screenHeight*sf;
 
 	/*Game and round end conditions*/
 	gameover = 0;
