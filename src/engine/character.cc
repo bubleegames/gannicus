@@ -50,6 +50,7 @@ void avatar::getReversal(status &current, deque<int> inputBuffer, vector<int> bu
 {
 	status temp = current;
 	temp.move = neutralize(temp);
+	if(temp.bufferedMove) temp.move = temp.bufferedMove;
 	temp.reversalFlag = current.reversalFlag;
 	temp.connect = 0;
 	temp.hit = 0;
