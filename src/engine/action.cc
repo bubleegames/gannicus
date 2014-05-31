@@ -42,6 +42,7 @@ void action::zero()
 	collision.clear();
 	hitbox.clear();
 	hitreg.clear();
+	visibleBox.clear();
 	delta.clear();
 	tempNext.clear();
 	tempFollowup.clear();
@@ -198,6 +199,7 @@ void action::build(string dir, string n)
 		if(hitbox.size() < (unsigned int)i+1) hitbox.push_back(vector<SDL_Rect>(0));
 		if(hitreg.size() < (unsigned int)i+1) hitreg.push_back(vector<SDL_Rect>(0));
 		if(delta.size() < (unsigned int)i+1) delta.push_back(vector<SDL_Rect>(0));
+		if(visibleBox.size() < (unsigned int)i+1) visibleBox.push_back(vector<SDL_Rect>(0));
 		if(collision.size() < (unsigned int)i+1){ 
 			SDL_Rect a;
 			collision.push_back(a);
@@ -220,6 +222,9 @@ bool action::parseRect(string buffer)
 		return 1;
 	case 'A':
 		hitbox.push_back(aux::defineRectArray(buffer.substr(2)));
+		return 1;
+	case 'V':
+		visibleBox.push_back(aux::defineRectArray(buffer.substr(2)));
 		return 1;
 	}
 	return 0;

@@ -194,7 +194,7 @@ public:
 	string tempOnHold;
 
 	vector<SDL_Rect> collision;   //This will be an array of rects that are the collision boxes for the action per frame
-	vector<vector<SDL_Rect> > hitreg, hitbox, delta;       //Same but for position on the screen.
+	vector<vector<SDL_Rect> > hitreg, hitbox, delta, visibleBox;       //Same but for position on the screen.
 
 	vector<int> width, height;
 	vector<GLuint> sprite;

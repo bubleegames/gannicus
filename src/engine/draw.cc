@@ -474,6 +474,14 @@ void instance::drawBoxen()
 			glRectf(0.0f, 0.0f, (GLfloat)(current.move->hitbox[current.frame][i].w*current.facing), (GLfloat)(-(current.move->hitbox[current.frame][i].h)));
 		glPopMatrix();
 	}
+	for(unsigned int i = 0; i < current.move->visibleBox[current.frame].size(); i++){
+		glFlush();
+		glColor4f(0.0f, ID == 2 ? 1.0 : 0.0, 1.0, 0.7f);
+		glPushMatrix();
+			glTranslatef(current.move->visibleBox[current.frame][i].x*current.facing + current.posX, -(current.move->visibleBox[current.frame][i].y + current.posY), 0);
+			glRectf(0.0f, 0.0f, (GLfloat)(current.move->visibleBox[current.frame][i].w*current.facing), (GLfloat)(-(current.move->visibleBox[current.frame][i].h)));
+		glPopMatrix();
+	}
 	glFlush();
 	glDisable( GL_TEXTURE_2D );
 }
@@ -715,15 +723,20 @@ void action::drawBoxen(int frame)
 {
 	glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 	glRectf((GLfloat)(collision[frame].x), (GLfloat)(collision[frame].y), (GLfloat)(collision[frame].x + collision[frame].w), (GLfloat)(collision[frame].y + collision[frame].h));
-	for(unsigned int i = 0; i < hitreg[frame].size(); i++){
+	for(SDL_Rect i:hitreg[frame]){
 		glFlush();
 		glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
-		glRectf((GLfloat)(hitreg[frame][i].x), (GLfloat)(hitreg[frame][i].y), (GLfloat)(hitreg[frame][i].x + hitreg[frame][i].w), (GLfloat)(hitreg[frame][i].y + hitreg[frame][i].h));
+		glRectf((GLfloat)(i.x), (GLfloat)(i.y), (GLfloat)(i.x + i.w), (GLfloat)(i.y + i.h));
 	}
-	for(unsigned int i = 0; i < hitbox[frame].size(); i++){
+	for(SDL_Rect i:hitbox[frame]){
 		glFlush();
 		glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
-		glRectf((GLfloat)(hitbox[frame][i].x), (GLfloat)(hitbox[frame][i].y), (GLfloat)(hitbox[frame][i].x + hitbox[frame][i].w), (GLfloat)(hitbox[frame][i].y + hitbox[frame][i].h));
+		glRectf((GLfloat)(i.x), (GLfloat)(i.y), (GLfloat)(i.x + i.w), (GLfloat)(i.y + i.h));
+	}
+	for(SDL_Rect i:visibleBox[frame]){
+		glFlush();
+		glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
+		glRectf((GLfloat)(i.x), (GLfloat)(i.y), (GLfloat)(i.x + i.w), (GLfloat)(i.y + i.h));
 	}
 	glFlush();
 }
