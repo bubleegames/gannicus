@@ -914,6 +914,7 @@ int instance::takeHit(hStat & s)
 		}
 	}
 	current.reversal = nullptr;
+	current.bufferedMove = nullptr;
 	return pick()->takeHit(current, s, blockType, particleType);
 }
 
