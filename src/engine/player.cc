@@ -783,8 +783,7 @@ void instance::pullVolition()
 				current.momentum.clear();
 		}
 	}
-	int dx = current.move->displace(current.posX, current.posY, current.frame);
-	setPosition(current.posX + current.facing*dx, current.posY);
+	displace();
 	if(current.freeze < 1){
 		if(current.frame < current.move->frames){
 			vector<SDL_Rect> temp = current.move->pollDelta(current.frame);
@@ -797,6 +796,16 @@ void instance::pullVolition()
 				}
 			}
 		}
+	}
+}
+
+void instance::displace()
+{
+	if(current.move->displace(current)){
+		setPosition(current.posX + current.facing*current.move->displaceX, current.posY + current.move->displaceY);
+	} else if(current.opponent->current.frame == current.opponent->current.move->snapToFrame){
+		setPosition(current.opponent->current.posX + current.opponent->current.facing * current.opponent->current.move->snapToX,
+				current.opponent->current.posY + current.opponent->current.move->snapToY);
 	}
 }
 

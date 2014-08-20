@@ -89,10 +89,13 @@ void action::zero()
 	armorCounter = 0;
 	distortSpawn = -1;
 	distortion = nullptr;
+	hidesMeter = 0;
 	displaceFrame = -1;
 	displaceX = 0;
 	displaceY = 0;
-	hidesMeter = 0;
+	snapToFrame = -1;
+	snapToX = 0;
+	snapToY = 0;
 	soundClip = nullptr;
 	countersProjectile = true;
 	next = nullptr;
@@ -271,6 +274,11 @@ bool action::setParameter(string param)
 		return true;
 	} else if (t.current() == "TimeDilation") {
 		timeDilation = stoi(t("\t:\n"));
+		return true;
+	} else if (t.current() == "SnapTo") {
+		snapToFrame = stoi(t("\t:\n"));
+		snapToX = stoi(t());
+		snapToY = stoi(t());
 		return true;
 	} else if (t.current() == "Displace") {
 		displaceFrame = stoi(t("\t:\n"));
@@ -864,15 +872,9 @@ vector<SDL_Rect> action::pollDelta(int f)
 	return ret;
 }
 
-int action::displace(int x, int &y, int f)
+bool action::displace(status &current)
 {
-	int dx = 0;
-	if(modifier && basis.move) dx += basis.move->displace(x, y, basis.frame);
-	if(f == displaceFrame){
-		y += displaceY;
-		dx += displaceX;
-	}
-	return dx;
+	return current.frame == displaceFrame;
 }
 
 hStat action::pollStats(int f, bool CH)

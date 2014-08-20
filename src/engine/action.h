@@ -84,7 +84,7 @@ public:
 	//Return the relevant information needed for interface::resolve(), then step to the next frame.
 	virtual void pollRects(status&, SDL_Rect&, vector<SDL_Rect>&, vector<SDL_Rect>&);
 	virtual vector<SDL_Rect> pollDelta(int);
-	virtual int displace(int, int&, int);
+	virtual bool displace(status&);
 	virtual hStat pollStats(int, bool);
 	virtual bool cancel(const status&); //Cancel allowed patternMatch. Essentially: is action Lvalue allowed given the current state of action Rvalue?
 	virtual void step(status&); //Step forward one frame. This only happens if we're not in freeze state
@@ -186,6 +186,7 @@ public:
 	span<int> followupSpan;
 	span<int> attemptSpan;
 	int displaceX, displaceY, displaceFrame;
+	int snapToX, snapToY, snapToFrame;
 
 	string tempNext;
 	vector<string> tempFollowup;

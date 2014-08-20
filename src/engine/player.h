@@ -58,6 +58,7 @@ public:
 	virtual void land();
 	virtual void cleanup();
 	virtual void encounterWall(bool, int);
+	virtual void displace();
 	int middle();
 	void flip();
 	void print();
