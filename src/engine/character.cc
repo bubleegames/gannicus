@@ -537,18 +537,31 @@ hStat avatar::pollStats(status &current)
 
 int character::assessStun(status &current, hStat &s)
 {
-	if(current.move->armor(current)) return 0;
-	else if(current.aerial){
-		current.move = untech->execute(current);
-		resetAirOptions(current.meter);
-		return -(s.stun+s.untech);
-	} else if((!s.forceStand && current.move->crouch) || s.forceCrouch) {
-		current.move = crouchReel->execute(current);
-		return -(s.stun + s.stun/5);
-	} else {
-		current.move = reel->execute(current);
-		return -(s.stun);
+	int stun = 0;
+	if(!current.move->armor(current)){
+		if(s.launch){
+			if(!current.aerial) stun -= s.initialLaunch;
+			current.aerial = true;
+		}
+
+		if(current.aerial){
+			stun -= s.stun+s.untech;
+		} else if(current.move->crouch) {
+			stun -= s.stun + s.stun/5;
+		} else {
+			stun -= s.stun;
+		}
+
+		if(current.aerial){
+			current.move = untech->execute(current);
+			resetAirOptions(current.meter);
+		} else if((!s.forceStand && current.move->crouch) || s.forceCrouch) {
+			current.move = crouchReel->execute(current);
+		} else {
+			current.move = reel->execute(current);
+		}
 	}
+	return stun;
 }
 
 int character::takeHit(status &current, hStat &s, int blockType, int &hitType)
@@ -579,10 +592,6 @@ int character::takeHit(status &current, hStat &s, int blockType, int &hitType)
 		current.aerial = true;
 	} else if(hitType == 1) {
 		if(s.stun != 0){
-			if(s.launch){
-				if(!current.aerial) s.untech += s.initialLaunch;
-				current.aerial = true;
-			}
 			current.counter = assessStun(current, s);
 			if(current.counter < 0){
 				current.frame = 0;
