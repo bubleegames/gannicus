@@ -552,11 +552,9 @@ void SaltAndBone::resolveInputs()
 				else if(currentFrame[i].n.raw.dir % 3 == 1) flop[i] += 2; 
 			}
 		}
-		for(instance *i:things){
-			if(i){
-				i->pushInput(currentFrame[i->ID - 1].n.raw.dir + flop[i->ID -1]);
-				i->getMove(currentFrame[i->ID - 1].buttons);
-			}
+		for(player *i:P){
+			i->pushInput(currentFrame[i->ID - 1].n.raw.dir + flop[i->ID -1]);
+			i->getMove(currentFrame[i->ID - 1].buttons);
 		}
 	}
 	for(unsigned int i = 0; i < P.size(); i++){

@@ -127,6 +127,7 @@ public:
 	int flip;
 	int armorStart, armorLength;
 	int delayFrame, delayMax, delayCheck;
+	int disables;
 	int armorHits, armorCounter;
 	int guardStart, guardLength, guardType, 
 		stunMin, stunMax;

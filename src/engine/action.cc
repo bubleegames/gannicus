@@ -32,6 +32,7 @@ void action::zero()
 	delayFrame = -1;
 	delayMax = -1;
 	delayCheck = 0;
+	disables = 0;
 	resetJumpOptions = false;
 	requiresFreeze = false;
 	subsumedFreeze = false;
@@ -122,6 +123,7 @@ void action::generate(string directory, string name)
 	tokenizer t(name, "%");
 	if(name[0] == '%') payload = new pet(directory, t());
 	else payload = new projectile(directory, name);
+	if(disables) payload->captures = disables;
 	if(lifespan) payload->lifespan = lifespan;
 	if(killFlags) payload->killFlags = killFlags;
 }
@@ -293,6 +295,20 @@ bool action::setParameter(string param)
 	} else if (t.current() == "Hold") {
 		minHold = stoi(t("\t: \n-"));
 		maxHold = stoi(t());
+		return true;
+	} else if (t.current() == "Disables") {
+		disables = 0;
+		for(char c : t()){
+			switch(c){
+			case 'A':
+			case 'B':
+			case 'C':
+			case 'D':
+			case 'E':
+				disables += 1 << (c - 'A');
+				break;
+			}
+		}
 		return true;
 	} else if (t.current() == "Delayable") {
 		delayCheck = 0;

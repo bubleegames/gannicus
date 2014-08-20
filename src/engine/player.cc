@@ -739,6 +739,7 @@ void instance::pushInput(deque <int> i)
 
 void instance::pushInput(unsigned int i)
 {
+	for(instance *o:current.offspring) o->pushInput(i);
 	inputBuffer.push_front(i);
 	inputBuffer.pop_back();
 }
@@ -750,6 +751,11 @@ void instance::cleanup()
 
 void instance::getMove(vector<int> buttons)
 {
+	for(instance *i:current.offspring){ 
+		i->getMove(buttons);
+		for(unsigned int j = 0; j < buttons.size(); j++)
+			if(1 << j & i->pick()->captures) buttons[j] = 0;
+	}
 	checkReversal();
 	status e = current;
 	int n = current.frame;

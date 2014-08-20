@@ -233,6 +233,7 @@ action * avatar::dealWithMove(string input)
 void avatar::build(string directory, string file)
 {
 	lifespan = -1;
+	captures = 0;
 	killFlags = 0;
 	char buffer[101];
 	ifstream read;
