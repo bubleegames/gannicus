@@ -646,6 +646,7 @@ void instance::manageOffspring()
 void instance::step()
 {
 	if(!current.freeze){
+		hitLocation.clear();
 		if(current.throwInvuln > 0) current.throwInvuln--;
 		current.hover--;
 	}
@@ -949,7 +950,7 @@ int player::takeHit(hStat & s)
 		current.bufferedMove = counterAttack;
 		current.freeze = 0;
 	} else {
-		particleLife = 8;
+		particleLife = current.freeze - current.counter;
 		current.deltaX /= 6;
 		if(current.deltaY < 0) current.deltaY /= 55;
 		else current.deltaY /= 6;

@@ -572,7 +572,7 @@ void player::drawHitParticle()
 			glTranslatef(current.posX, 0.0f, 0.0f);
 			glPushMatrix();
 				glTranslatef(0.0f, -current.collision.y, 0.0f);
-				glRectf((GLfloat)(-10*current.facing), (GLfloat)(-current.collision.h), (GLfloat)(50 * current.facing), (GLfloat)(-current.collision.h - 40));
+				glRectf((GLfloat)(-(10 + 10 * particleLife)) * current.facing, (GLfloat)(-current.collision.h), (GLfloat)(50 + 10 * particleLife) * current.facing, (GLfloat)(-current.collision.h - 40));
 			glPopMatrix();
 			for(SDL_Rect i:hitLocation){
 				glPushMatrix();
