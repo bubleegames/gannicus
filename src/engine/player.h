@@ -77,6 +77,7 @@ protected:
 class player : public instance, public controller{
 public:
 	player();
+	virtual void step();
 	player(int);
 	~player();
 	virtual bool isDead();
@@ -108,6 +109,7 @@ public:
 	string name;
 
 	int particleLife;
+	int highLow;
 
 	/*Helper functions for "resolve" tick*/
 	virtual void checkBlocking();

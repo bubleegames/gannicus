@@ -675,6 +675,16 @@ void instance::step()
 		current.reversal = nullptr;
 }
 
+void player::step()
+{
+	instance::step();
+	if(current.move->state[0].i & 1){
+		particleLife = 1;
+		highLow = 0;
+		particleType = 100;
+	}
+}
+
 void instance::neutralize()
 {
 	current.move = pick()->neutralize(current);
@@ -950,7 +960,6 @@ int player::takeHit(hStat & s)
 		current.bufferedMove = counterAttack;
 		current.freeze = 0;
 	} else {
-		particleLife = current.freeze - current.counter;
 		current.deltaX /= 6;
 		if(current.deltaY < 0) current.deltaY /= 55;
 		else current.deltaY /= 6;
@@ -984,6 +993,8 @@ int player::takeHit(hStat & s)
 		if(s.ceilingBounce) current.rebound = true;
 		if(current.aerial && s.stick) current.stick = true;
 		else current.stick = false;
+		particleLife = current.freeze - current.counter;
+		highLow = s.blockMask.i;
 	}
 	if(current.move == pick()->die){
 		current.bufferedMove = nullptr;

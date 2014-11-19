@@ -459,7 +459,8 @@ void instance::drawBoxen()
 	glPopMatrix();
 	for(unsigned int i = 0; i < current.hitreg.size(); i++){
 		glFlush();
-		glColor4f(CHState() ? 1.0f : 0.0f, ID == 2 ? 0.0f : 1.0f, ID == 2 ? 1.0f : 0.0f, 0.7f);
+		if(particleType == -2) glColor4f(0.5, 0.5, 1.0, 0.7);
+		else glColor4f(CHState() ? 1.0f : 0.0f, ID == 2 && CHState() ? 0.0f : 1.0f, ID == 2 ? 1.0f : 0.0f, 0.7f);
 		glNormal3f(1.0f, 0.0f, 1.0f);
 		glPushMatrix();
 			glTranslatef(current.hitreg[i].x, -current.hitreg[i].y, 1);
@@ -476,7 +477,7 @@ void instance::drawBoxen()
 	}
 	for(unsigned int i = 0; i < current.move->visibleBox[current.frame].size(); i++){
 		glFlush();
-		glColor4f(0.0f, ID == 2 ? 1.0 : 0.0, 1.0, 0.7f);
+		glColor4f(ID == 2 ? 1.0 : 0.0, 0.0, 1.0, 0.7);
 		glPushMatrix();
 			glTranslatef(current.move->visibleBox[current.frame][i].x*current.facing + current.posX, -(current.move->visibleBox[current.frame][i].y + current.posY), 0);
 			glRectf(0.0f, 0.0f, (GLfloat)(current.move->visibleBox[current.frame][i].w*current.facing), (GLfloat)(-(current.move->visibleBox[current.frame][i].h)));
@@ -549,30 +550,38 @@ void instance::draw(GLint p)
 
 void player::drawHitParticle()
 {
-	/*Stand-in for now, just to indicate block type*/
+	glDisable( GL_TEXTURE_2D );
 	if(particleLife > 0){
 		switch (particleType){
+		case 100:
+			glColor4f(0.2, 1.0, 0.2, 0.7);
+			break;
 		case 1:
-			if(current.opponent->current.counter == 1) glColor4f(1.0f, 0.5f, 0.0f, 0.7f);
+			if(current.opponent->current.counter == 1) glColor4f(1.0, 0.5, 0.0, 0.7);
 			else glColor4f(1.0f, 0.0f, 0.0f, 0.7f);
 			break;
 		case 0:
 			glColor4f(0.0f, 0.0f, 0.0f, 0.7f);
 			break;
 		case -1:
-			glColor4f(1.0f, 1.0f, 1.0f, 0.7f);
+			glColor4f(1.0, 1.0, 1.0, 0.7);
 			break;
 		case -2:
-			glColor4f(1.0f, 1.0f, 0.0f, 0.7f);
+			glColor4f(0.15, 0.3, 1.0, 0.7);
 			break;
 		case -5:
 			glColor4f(0.4f, 0.4f, 0.4f, 0.5f);
+			break;
 		}
 		glPushMatrix();
 			glTranslatef(current.posX, 0.0f, 0.0f);
 			glPushMatrix();
-				glTranslatef(0.0f, -current.collision.y, 0.0f);
-				glRectf((GLfloat)(-(10 + 10 * particleLife)) * current.facing, (GLfloat)(-current.collision.h), (GLfloat)(50 + 10 * particleLife) * current.facing, (GLfloat)(-current.collision.h - 40));
+				float n = 3.0;
+				if(highLow & 1) n -= 2.0;
+				if(highLow & 2) n += 2.0;
+				float y = -current.collision.h * (n / 5.0);
+				glTranslatef(-50 * current.facing, -current.collision.y, 0.0f);
+				glRectf((GLfloat)(-(10 * particleLife)) * current.facing, y, (GLfloat)(40 + 10 * particleLife) * current.facing, y - 40.0);
 			glPopMatrix();
 			for(SDL_Rect i:hitLocation){
 				glPushMatrix();
