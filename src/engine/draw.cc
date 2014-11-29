@@ -487,7 +487,7 @@ void instance::drawBoxen()
 	}
 	for(unsigned int i = 0; i < n.move->visibleBox[n.frame].size(); i++){
 		glFlush();
-		glColor4f(ID == 2 ? 1.0 : 0.0, 0.0, 1.0, 0.7);
+		glColor4f(ID == 2 ? 1.0 : 0.0, ID == 2 ? 0.3 : 0.0, ID == 2 ? 0.0 : 1.0, 0.7);
 		glPushMatrix();
 			glTranslatef(n.move->visibleBox[n.frame][i].x*n.facing + n.posX, -(n.move->visibleBox[n.frame][i].y + n.posY), 0);
 			glRectf(0.0f, 0.0f, (GLfloat)(n.move->visibleBox[n.frame][i].w*n.facing), (GLfloat)(-(n.move->visibleBox[n.frame][i].h)));
