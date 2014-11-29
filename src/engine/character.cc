@@ -539,26 +539,24 @@ int character::assessStun(status &current, hStat &s)
 {
 	int stun = 0;
 	if(!current.move->armor(current)){
-		if(s.launch){
-			if(!current.aerial) stun -= s.initialLaunch;
-			current.aerial = true;
-		}
-
+		stun -= s.stun;
 		if(current.aerial){
-			stun -= s.stun+s.untech;
-		} else if(current.move->crouch) {
-			stun -= s.stun + s.stun/5;
-		} else {
-			stun -= s.stun;
-		}
-
-		if(current.aerial){
+			stun -= s.untech;
 			current.move = untech->execute(current);
 			resetAirOptions(current.meter);
-		} else if((!s.forceStand && current.move->crouch) || s.forceCrouch) {
-			current.move = crouchReel->execute(current);
 		} else {
-			current.move = reel->execute(current);
+			if(s.launch){
+				stun -= s.stun + s.untech + s.initialLaunch;
+				current.bufferedMove = untech;
+				current.aerial = true;
+			} else if(current.move->crouch)
+				stun -= s.stun/5;
+
+			if((!s.forceStand && current.move->crouch) || s.forceCrouch) {
+				current.move = crouchReel->execute(current);
+			} else {
+				current.move = reel->execute(current);
+			}
 		}
 	}
 	return stun;

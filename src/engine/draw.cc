@@ -452,35 +452,36 @@ vector<HUDMeter<int>> character::drawMeters(int ID, status &current)
 
 void instance::drawBoxen()
 {
-	glColor4f(current.throwInvuln == 0, current.throwInvuln == 0, current.throwInvuln == 0, 0.7f);
+	status n = current.freeze ? save : current;
+	glColor4f(n.throwInvuln == 0, n.throwInvuln == 0, n.throwInvuln == 0, 0.7f);
 	glPushMatrix();
-		glTranslatef(current.collision.x, -current.collision.y, 0);
-		glRectf(0.0f, 0.0f, (GLfloat)(current.collision.w), (GLfloat)(-current.collision.h));
+		glTranslatef(n.collision.x, -n.collision.y, 0);
+		glRectf(0.0f, 0.0f, (GLfloat)(n.collision.w), (GLfloat)(-n.collision.h));
 	glPopMatrix();
-	for(unsigned int i = 0; i < current.hitreg.size(); i++){
+	for(unsigned int i = 0; i < n.hitreg.size(); i++){
 		glFlush();
 		if(particleType == -2) glColor4f(0.5, 0.5, 1.0, 0.7);
 		else glColor4f(CHState() ? 1.0f : 0.0f, ID == 2 && CHState() ? 0.0f : 1.0f, ID == 2 ? 1.0f : 0.0f, 0.7f);
 		glNormal3f(1.0f, 0.0f, 1.0f);
 		glPushMatrix();
-			glTranslatef(current.hitreg[i].x, -current.hitreg[i].y, 1);
-			glRectf(0.0f, 0.0f, (GLfloat)(current.hitreg[i].w), (GLfloat)(-current.hitreg[i].h));
+			glTranslatef(n.hitreg[i].x, -n.hitreg[i].y, 1);
+			glRectf(0.0f, 0.0f, (GLfloat)(n.hitreg[i].w), (GLfloat)(-n.hitreg[i].h));
 		glPopMatrix();
 	}
-	for(unsigned int i = 0; i < current.move->hitbox[current.frame].size(); i++){
+	for(unsigned int i = 0; i < n.move->hitbox[n.frame].size(); i++){
 		glFlush();
 		glColor4f(1.0f, ID == 2 ? 1.0 : 0.0, 0.0, 0.7f);
 		glPushMatrix();
-			glTranslatef(current.move->hitbox[current.frame][i].x*current.facing + current.posX, -(current.move->hitbox[current.frame][i].y + current.posY), 0);
-			glRectf(0.0f, 0.0f, (GLfloat)(current.move->hitbox[current.frame][i].w*current.facing), (GLfloat)(-(current.move->hitbox[current.frame][i].h)));
+			glTranslatef(n.move->hitbox[n.frame][i].x*n.facing + n.posX, -(n.move->hitbox[n.frame][i].y + n.posY), 0);
+			glRectf(0.0f, 0.0f, (GLfloat)(n.move->hitbox[n.frame][i].w*n.facing), (GLfloat)(-(n.move->hitbox[n.frame][i].h)));
 		glPopMatrix();
 	}
-	for(unsigned int i = 0; i < current.move->visibleBox[current.frame].size(); i++){
+	for(unsigned int i = 0; i < n.move->visibleBox[n.frame].size(); i++){
 		glFlush();
 		glColor4f(ID == 2 ? 1.0 : 0.0, 0.0, 1.0, 0.7);
 		glPushMatrix();
-			glTranslatef(current.move->visibleBox[current.frame][i].x*current.facing + current.posX, -(current.move->visibleBox[current.frame][i].y + current.posY), 0);
-			glRectf(0.0f, 0.0f, (GLfloat)(current.move->visibleBox[current.frame][i].w*current.facing), (GLfloat)(-(current.move->visibleBox[current.frame][i].h)));
+			glTranslatef(n.move->visibleBox[n.frame][i].x*n.facing + n.posX, -(n.move->visibleBox[n.frame][i].y + n.posY), 0);
+			glRectf(0.0f, 0.0f, (GLfloat)(n.move->visibleBox[n.frame][i].w*n.facing), (GLfloat)(-(n.move->visibleBox[n.frame][i].h)));
 		glPopMatrix();
 	}
 	glFlush();
