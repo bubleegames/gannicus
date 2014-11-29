@@ -66,7 +66,6 @@ public:
 	status current;
 	status save;
 
-	int particleType;
 	int blockType;
 	bool boxen:1;
 	bool sprite:1;

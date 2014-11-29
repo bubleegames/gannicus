@@ -177,7 +177,7 @@ void player::roundInit()
 	current.hover = 0;
 	current.throwInvuln = 0;
 	particleLife = 0;
-	particleType = 0;
+	current.particleType = 0;
 	search = 0;
 	current.facing = ID == 1 ? 1 : -1;
 	current.cooldowns.clear();
@@ -682,7 +682,7 @@ void player::step()
 	if(current.move->state[0].i & 1){
 		particleLife = 1;
 		highLow = 0;
-		particleType = 100;
+		current.particleType = 100;
 	}
 }
 
@@ -942,7 +942,7 @@ int instance::takeHit(hStat & s)
 	}
 	current.reversal = nullptr;
 	current.bufferedMove = nullptr;
-	return pick()->takeHit(current, s, blockType, particleType);
+	return pick()->takeHit(current, s, blockType, current.particleType);
 }
 
 int player::takeHit(hStat & s)
@@ -954,7 +954,7 @@ int player::takeHit(hStat & s)
 	if(current.slide) s.lift += 15 - abs(s.lift)/4;
 	f = instance::takeHit(s);
 	current.freeze = f;
-	if(particleType != 1){
+	if(current.particleType != 1){
 		counterAttack = current.move->blockSuccess(s.stun, s.isProjectile);
 	}
 	if(counterAttack && counterAttack != current.move && counterAttack->check(current)){
@@ -970,11 +970,11 @@ int player::takeHit(hStat & s)
 		if(current.aerial) v.x = -(s.push/5 + s.blowback);
 		else v.x = -s.push;
 		v.x *= current.facing;
-		if(particleType == -1){ 
+		if(current.particleType == -1){ 
 			v.x /= 5;
 			v.y /= 5;
 		}
-		if(particleType <= -2){
+		if(current.particleType <= -2){
 			v.x = 0;
 			v.y = 0;
 			current.freeze = 0;
@@ -1000,10 +1000,10 @@ int player::takeHit(hStat & s)
 	if(current.move == pick()->die){
 		current.bufferedMove = nullptr;
 	}
-	for(instance *i:current.offspring) i->passSignal(particleType);
+	for(instance *i:current.offspring) i->passSignal(current.particleType);
 	updateRects();
 	if(s.ghostHit) return 0;
-	else if(particleType == 1) return particleType;
+	else if(current.particleType == 1) return current.particleType;
 	else {
 		return -1;
 	}
@@ -1062,7 +1062,7 @@ void player::getThrown(action *toss, int x, int y)
 	dummy.ghostHit = 1;
 	setPosition(toss->arbitraryPoll(27, current.frame)*xSign + abs(x), toss->arbitraryPoll(26, current.frame) + y);
 	neutralize();
-	pick()->takeHit(current, dummy, 0, particleType);
+	pick()->takeHit(current, dummy, 0, current.particleType);
 	current.counter = -5;
 }
 

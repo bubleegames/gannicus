@@ -427,17 +427,26 @@ vector<HUDMeter<int>> character::drawMeters(int ID, status &current)
 	if(hidden) ret[4].value = 0;
 	ret[4].x = ret[1].x + ret[1].w * (double)ret[1].value / (double)ret[1].maximum;
 
-	ret[1].R = ret[1].value < ret[1].maximum / 2 ? 0.7 : 0;
-	ret[1].G = ret[1].value == ret[1].maximum ? 1.0 : 1.0 * ((ret[1].value / (ret[1].maximum / 4) % 2));
-	ret[1].B = ret[1].value < ret[1].maximum ? 1.0 : 0.0;
+	ret[2] = ret[0];
+	if(current.particleType == -1 && current.freeze){
+		ret[1].R = 1.0;
+		ret[1].G = 1.0;
+		ret[1].B = 1.0;
+		ret[0].R = 1.0;
+		ret[0].G = 1.0;
+		ret[0].B = 1.0;
+	} else {
+		ret[1].R = ret[1].value < ret[1].maximum / 2 ? 0.7 : 0;
+		ret[1].G = ret[1].value == ret[1].maximum ? 1.0 : 1.0 * ((ret[1].value / (ret[1].maximum / 4) % 2));
+		ret[1].B = ret[1].value < ret[1].maximum ? 1.0 : 0.0;
+		ret[0].R = 0.0;
+		ret[0].G = 0.0;
+		ret[0].B = 0.0;
+	}
 	ret[4].R = ret[1].R;
 	ret[4].G = ret[1].G;
 	ret[4].B = ret[1].B;
 
-	ret[2] = ret[0];
-	ret[0].R = 0;
-	ret[0].G = 0;
-	ret[0].B = 0;
 	ret[0].A = .4;
 	ret[0].value = ret[0].maximum;
 
@@ -460,7 +469,7 @@ void instance::drawBoxen()
 	glPopMatrix();
 	for(unsigned int i = 0; i < n.hitreg.size(); i++){
 		glFlush();
-		if(particleType == -2) glColor4f(0.5, 0.5, 1.0, 0.7);
+		if(current.particleType == -2) glColor4f(0.5, 0.5, 1.0, 0.7);
 		else glColor4f(CHState() ? 1.0f : 0.0f, ID == 2 && CHState() ? 0.0f : 1.0f, ID == 2 ? 1.0f : 0.0f, 0.7f);
 		glNormal3f(1.0f, 0.0f, 1.0f);
 		glPushMatrix();
@@ -492,7 +501,7 @@ void instance::draw(GLint p)
 {
 	bool sCheck = spriteCheck();
 	status * n;
-	if(save.facing && particleType == 1 && current.freeze && current.counter) n = &save;
+	if(save.facing && current.particleType == 1 && current.freeze && current.counter) n = &save;
 	else n = &current;
 
 	if(n == &current){
@@ -553,7 +562,7 @@ void player::drawHitParticle()
 {
 	glDisable( GL_TEXTURE_2D );
 	if(particleLife > 0){
-		switch (particleType){
+		switch (current.particleType){
 		case 100:
 			glColor4f(0.2, 1.0, 0.2, 0.7);
 			break;

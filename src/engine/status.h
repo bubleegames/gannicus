@@ -33,6 +33,7 @@ struct status{
 	int deltaX, deltaY; 
 	int frame;
 	int freeze;
+	int particleType;
 	int absorbedHits;
 	bool aerial;
 	bool rCorner, lCorner;

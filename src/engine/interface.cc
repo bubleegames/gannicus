@@ -1361,7 +1361,7 @@ void SaltAndBone::resolveHits()
 					}
 					if(combo[(i+1)%2] < 0) combo[(i+1)%2] = 0;
 				}
-				if(things[i]->particleType == -2){
+				if(things[i]->current.particleType == -2){
 					hStat parryHit = P[i]->generateParry(s[hitBy[i]]);
 					damage[i] += parryHit.damage;
 					P[things[hitBy[i]]->ID-1]->takeHit(parryHit);
@@ -1412,7 +1412,7 @@ void SaltAndBone::resolveHits()
 					residual.x -= 2;
 				} else {
 					if(combo[i] > 1) residual.x = -3*(abs(combo[i]-1));
-					if(P[i]->current.opponent->particleType == -2) residual.x -= push[i];
+					if(P[i]->current.opponent->current.particleType == -2) residual.x -= push[i];
 					else if(P[i]->current.opponent->current.rCorner || P[i]->current.opponent->current.lCorner){
 						residual.x -= 2;
 						residual.x -= s[i].push/2;

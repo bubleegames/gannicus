@@ -8,6 +8,7 @@ status::status()
 	lCorner = 0;
 	rCorner = 0;
 	frame = 0;
+	particleType = 0;
 	connect = 0;
 	counter = 0;
 	comboState = 0;
@@ -31,6 +32,7 @@ status::status()
 
 status::status(const status & o) 
 {
+	particleType = o.particleType;
 	posX = o.posX; posY = o.posY;
 	drawX = o.drawX; drawY = o.drawY;
 	facing = o.facing;
