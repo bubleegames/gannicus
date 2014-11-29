@@ -81,7 +81,8 @@ void environment::cleanup()
 	for(unsigned int i = 0; i < physics.size(); i++){
 		if(physics[i]->origin){
 			if(physics[i]->origin->current.move != physics[i]->check ||
-			   physics[i]->origin->current.frame == physics[i]->check->distortSpawn){
+			   physics[i]->origin->current.frame == physics[i]->check->distortSpawn ||
+			   physics[i]->origin->current.dead){
 				if(physics[i]->length < 0){ 
 					physics[i]->origin = nullptr;
 					physics[i]->length = -physics[i]->length;
@@ -94,7 +95,7 @@ void environment::cleanup()
 			if (!physics[i]->length) {
 				physics.erase(physics.begin()+i);
 				i--;
-			} else if (physics[i]->length > -1) physics[i]->length--;
+			} else if (physics[i]->length > 0) physics[i]->length--;
 		}
 	}
 }
