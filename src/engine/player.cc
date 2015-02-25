@@ -760,35 +760,37 @@ void instance::directionalInfluence()
 {
 	for(instance *i:current.offspring) i->directionalInfluence();
 	unsigned int i = inputBuffer[0];
-	switch(i){
-		case 1:
-			current.posX -= current.move->DIB / 2 * current.facing;
-			current.posY -= current.move->DID / 2;
-			break;
-		case 2:
-			current.posY -= current.move->DID;
-			break;
-		case 3:
-			current.posX += current.move->DIF / 2 * current.facing;
-			current.posY -= current.move->DID / 2;
-			break;
-		case 4:
-			current.posX -= current.move->DIB * current.facing;
-			break;
-		case 6:
-			current.posX += current.move->DIF * current.facing;
-			break;
-		case 7:
-			current.posX -= current.move->DIB / 2 * current.facing;
-			current.posY += current.move->DIU / 2;
-			break;
-		case 8:
-			current.posY += current.move->DIU;
-			break;
-		case 9:
-			current.posX += current.move->DIF / 2 * current.facing;
-			current.posY += current.move->DIU / 2;
-			break;
+	if(current.move){
+		switch(i){
+			case 1:
+				current.posX -= current.move->DIB / 2 * current.facing;
+				current.posY -= current.move->DID / 2;
+				break;
+			case 2:
+				current.posY -= current.move->DID;
+				break;
+			case 3:
+				current.posX += current.move->DIF / 2 * current.facing;
+				current.posY -= current.move->DID / 2;
+				break;
+			case 4:
+				current.posX -= current.move->DIB * current.facing;
+				break;
+			case 6:
+				current.posX += current.move->DIF * current.facing;
+				break;
+			case 7:
+				current.posX -= current.move->DIB / 2 * current.facing;
+				current.posY += current.move->DIU / 2;
+				break;
+			case 8:
+				current.posY += current.move->DIU;
+				break;
+			case 9:
+				current.posX += current.move->DIF / 2 * current.facing;
+				current.posY += current.move->DIU / 2;
+				break;
+		}
 	}
 }
 
