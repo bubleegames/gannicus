@@ -758,7 +758,7 @@ void instance::pushInput(unsigned int i)
 
 void instance::directionalInfluence()
 {
-	for(instance *i:offspring) i->directionalInfluence();
+	for(instance *i:current.offspring) i->directionalInfluence();
 	unsigned int i = inputBuffer[0];
 	switch(i){
 		case 1:
