@@ -554,6 +554,7 @@ void SaltAndBone::resolveInputs()
 		}
 		for(player *i:P){
 			i->pushInput(currentFrame[i->ID - 1].n.raw.dir + flop[i->ID -1]);
+			i->directionalInfluence();
 			i->getMove(currentFrame[i->ID - 1].buttons);
 		}
 	}

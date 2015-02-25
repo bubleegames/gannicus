@@ -135,6 +135,7 @@ public:
 	int followStart, followEnd;
 	int followXRate, followYRate;
 	int offX, offY;
+	int DIB, DIF, DIU, DID;
 
 	//Properties of a hit. These will only exist for actions that hit.
 	

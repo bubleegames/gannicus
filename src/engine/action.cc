@@ -33,6 +33,7 @@ void action::zero()
 	delayMax = -1;
 	delayCheck = 0;
 	disables = 0;
+	DIB = 0; DIF = 0; DIU = 0; DID = 0;
 	resetJumpOptions = false;
 	requiresFreeze = false;
 	subsumedFreeze = false;
@@ -295,6 +296,12 @@ bool action::setParameter(string param)
 		return true;
 	} else if (t.current() == "Cooldown") {
 		cooldown = stoi(t("\t: \n"));
+		return true;
+	} else if (t.current() == "DirectionalInfluence") {
+		DIU = stoi(t("\t: \n"));
+		DID = stoi(t());
+		DIB = stoi(t());
+		DIF = stoi(t());
 		return true;
 	} else if (t.current() == "Offset") {
 		offX = stoi(t("\t: \n"));

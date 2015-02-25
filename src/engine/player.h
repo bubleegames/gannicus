@@ -48,6 +48,7 @@ public:
 	virtual void connect(hStat&);
 	virtual void checkBlocking() {}
 	virtual void pushInput(unsigned int);
+	virtual void directionalInfluence();
 	virtual void pushInput(deque<int>);
 	virtual void passSignal(int);
 	virtual int dragBG(int, int);
