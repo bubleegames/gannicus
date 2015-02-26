@@ -410,10 +410,15 @@ bool action::setParameter(string param)
 		flip = stoi(t("\t: \n"));
 		return true;
 	} else if (t.current() == "Attempt") {
-		int s = stoi(t("\t: \n-")); 
-		int e = stoi(t());
+		int s = stoi(t("\t: \n-")),
+		    e = stoi(t());
 		attemptSpan = span<int> (s,e);
 		tempAttempt = t();
+		return true;
+	} else if (t.current() == "Reflector") {
+		int s = stoi(t("\t: \n-")),
+		    e = stoi(t());
+		reflectorSpan = span<int> (s,e);
 		return true;
 	} else if (t.current() == "Connect") {
 		int x = stoi(t("\t: \n"));

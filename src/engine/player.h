@@ -62,6 +62,7 @@ public:
 	virtual void displace();
 	int middle();
 	void flip();
+	void turnX();
 	void print();
 
 	status current;

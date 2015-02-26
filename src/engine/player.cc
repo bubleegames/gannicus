@@ -968,16 +968,20 @@ void instance::connect(hStat & s)
 	if(current.bufferedMove == current.move) current.bufferedMove = nullptr;
 }
 
+void instance::turnX()
+{
+	if(pick()->turn(ID)){
+		flip();
+		invertVectors(1);
+		current.deltaX = -current.deltaX;
+		current.freeze = 0;
+	}
+}
+
 int instance::takeHit(hStat & s)
 {
-	if(s.turnsProjectile){
-		if(pick()->turn(ID)){ 
-			flip();
-			invertVectors(1);
-			current.deltaX = -current.deltaX;
-			current.freeze = 0;
-		}
-	}
+	if(s.turnsProjectile)
+		turnX();
 	current.reversal = nullptr;
 	current.bufferedMove = nullptr;
 	return pick()->takeHit(current, s, blockType, current.particleType);

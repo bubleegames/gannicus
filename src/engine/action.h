@@ -186,6 +186,7 @@ public:
 	int distortSpawn;
 	span<int> followupSpan;
 	span<int> attemptSpan;
+	span<int> reflectorSpan;
 	int displaceX, displaceY, displaceFrame;
 	int snapToX, snapToY, snapToFrame;
 
