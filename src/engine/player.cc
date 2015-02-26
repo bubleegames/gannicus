@@ -970,17 +970,15 @@ void instance::connect(hStat & s)
 
 void instance::turnX()
 {
-	if(pick()->turn(ID)){
-		flip();
-		invertVectors(1);
-		current.deltaX = -current.deltaX;
-		current.freeze = 0;
-	}
+	flip();
+	invertVectors(1);
+	current.deltaX = -current.deltaX;
+	current.freeze = 0;
 }
 
 int instance::takeHit(hStat & s)
 {
-	if(s.turnsProjectile)
+	if(s.turnsProjectile && pick()->turn(ID))
 		turnX();
 	current.reversal = nullptr;
 	current.bufferedMove = nullptr;

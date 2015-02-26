@@ -1352,7 +1352,7 @@ void SaltAndBone::resolveHits()
 			int health = things[things[i]->ID-1]->current.meter[0].value;
 			action * b = things[i]->current.move;
 			bool wasair = things[i]->current.aerial;
-			if(things[i]->current.move->reflectorSpan == things[i]->current.frame)
+			if(things[i]->current.move->reflectorSpan == things[i]->current.frame && things[hitBy[i]]->pick()->turn(things[hitBy[i]]->ID))
 				things[hitBy[i]]->turnX();
 			else hit[hitBy[i]] = things[i]->takeHit(s[hitBy[i]]);
 			if(i < P.size()){
