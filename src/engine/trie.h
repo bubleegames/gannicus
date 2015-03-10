@@ -8,6 +8,7 @@ class actionHandle{
 public:
 	actionHandle() : target(nullptr), pattern(0) {}
 	actionHandle(action* t, int p) { target = t; pattern = p; }
+	bool operator==(const action*);
 	unsigned int patternMatch(int[], bool[]);
 	action * target;
 	int pattern;
@@ -24,8 +25,10 @@ public:
 	deque<actionHandle> fish;
 	actionTrie * insert(int);
 	actionTrie * insert(int, action*);
+	actionTrie * search(int);
 	void insert(action *, int);
 	void insert(action *, string);
+	void remove(action *);
 private:
 	vector<int> pattern;
 };

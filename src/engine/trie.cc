@@ -1,5 +1,4 @@
 #include "trie.h"
-
 actionTrie::actionTrie()
 {
 	for(int i = 0; i < 10; i++)
@@ -13,11 +12,36 @@ actionTrie::actionTrie(action * a, int p)
 	fish.push_back(actionHandle(a,p));
 }
 
+bool actionHandle::operator==(const action *a)
+{
+	return a == target;
+}
+
 actionTrie::actionTrie(action * a)
 {
 	for(int i = 0; i < 10; i++)
 		child[i] = nullptr;
 	fish.push_back(actionHandle(a, 0));
+}
+
+actionTrie * actionTrie::search(int s)
+{
+	if(child[s%10]){
+		if(s < 10) return child[s%10];
+		else return child[s%10]->search(s/10);
+	} else return nullptr;
+}
+
+void actionTrie::remove(action *s)
+{
+	for(unsigned int i = 0; i < fish.size(); i++){
+		if(fish[i] == s){
+			fish.erase(fish.begin()+i);
+			i--;
+		}
+	}
+	for(actionTrie *i:child)
+		if(i) i->remove(s);
 }
 
 void actionTrie::insert(action * b, string p)

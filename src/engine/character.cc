@@ -256,6 +256,7 @@ void avatar::build(string directory, string file)
 
 void avatar::sortMove(action * m, string key)
 {
+	head->remove(m);
 	tokenizer t(key, " \t=~>-&?@%$_!\n");
 	t();
 	while (t().size()){
@@ -281,6 +282,9 @@ void avatar::loadAssets(int pal)
 
 void character::sortMove(action * m, string key)
 {
+	head->remove(m);
+	airHead->remove(m);
+//	bool first = true;
 	if(m->null) return;
 	tokenizer t(key, " \t=>-&?@%$_!\n");
         t();
