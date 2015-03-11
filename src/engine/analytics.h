@@ -65,6 +65,7 @@ public:
 	vector<instance *> things;
 	vector<int> combo;
 	vector<int> damage;
+	vector<int> initialHealth;
 	vector<bool> illegit;
 	vector<int> punish;
 	vector<int> counterHit;

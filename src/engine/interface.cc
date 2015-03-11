@@ -129,6 +129,7 @@ void SaltAndBone::createPlayers()
 		knockdown.push_back(0);
 		damage.push_back(0);
 		blockFail.push_back(0);
+		initialHealth.push_back(0);
 		counterHit.push_back(0);
 		punish.push_back(0);
 		illegit.push_back(false);
@@ -491,6 +492,7 @@ void SaltAndBone::resolveCombos()
 				knockdown[(i+1)%2] = 0;
 				combo[(i+1)%2] = 0;
 				damage[(i+1)%2] = 0;
+				initialHealth[i] = P[i]->current.meter[0].value;
 				prorate[(i+1)%2] = 1.0;
 				P[i]->current.elasticX = 0;
 				P[i]->current.elasticY = 0;
@@ -1292,6 +1294,7 @@ void SaltAndBone::comboScaling(hStat &d, int ID)
 {
 	bool actuallyDoesDamage = (d.damage > 0);
 	d.untech -= combo[ID];
+	d.damage *= damage[ID] > 0 ? 1.0 - (float)damage[ID] / initialHealth[(ID + 1) % 2] : 1.0;
 	d.damage *= prorate[ID];
 	if(actuallyDoesDamage){
 		d.damage -= combo[ID];
@@ -1375,7 +1378,9 @@ void SaltAndBone::resolveHits()
 			env.enforceBounds(things[i]->current.opponent);
 			env.checkCorners(things[i]->current.opponent);
 			if(things[i]->current.facing * things[hitBy[i]]->current.facing == 1) things[i]->invertVectors(1);
-			if(i < P.size()) damage[(i+1)%2] += health - P[i]->current.meter[0].value;
+			if(i < P.size()){ 
+				damage[(i+1)%2] += health - P[i]->current.meter[0].value;
+			}
 		}
 	}
 
