@@ -16,7 +16,7 @@ class resolver {
 	virtual void inputTransform() = 0;
 };
 
-class fightingGame : public window, public arcadeHarness, public HUD, public soundScape {
+class fightingGame : public window, public arcadeHarness, public HUD {
 public:
 	virtual void resolve() = 0;
 	virtual void handleArgs(vector<string>) {}
@@ -111,7 +111,7 @@ public:
 	void writeMatchupChart();
 	void writeImage(string, int, action*);
 
-	sample call[2];
+	//sample call[2];
 	int configMenu[2];
 	int mMenu[2];
 	bool firstFrame:1;

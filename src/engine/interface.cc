@@ -242,7 +242,7 @@ bool fightingGame::screenInit(int width, int height)
 
 void fightingGame::init()
 {
-	soundScape::init();
+	//soundScape::init();
 	harness::init();
 }
 
@@ -1013,8 +1013,8 @@ void SaltAndBone::loadAssets()
 	for(int i = 0; i < 2; i++){
 		string temp = "content/sound/";
 		temp += P[i]->pick()->name + ".wav";
-		call[i] = sample(temp);
-		alSourcei(source[i], AL_BUFFER, call[i]());
+		//call[i] = sample(temp);
+		//alSourcei(source[i], AL_BUFFER, call[i]());
 	}
 	if(b != 0){
 		for(player *i:P) i->loadAssets();

@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-std=c++11 -g -O2 -DGL_GLEXT_PROTOTYPES -Wall
-LINKER=-lGL -lSDL_image -lSDL_mixer -lalut -lopenal -lGLU -lglut -lSDL
+LINKER=-lGL -lSDL_image -lSDL_mixer -lopenal -lGLU -lSDL
 default: salt
 all: bmpout salt 
 salt: gannicus characters src/game.cc

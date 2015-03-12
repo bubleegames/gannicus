@@ -9,7 +9,7 @@
 #ifndef ___mac_osx
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <GL/glut.h>
+//#include <GL/glut.h>
 #include <GL/glext.h>
 #define ___gufg_tex_mode GL_UNSIGNED_BYTE
 #endif

@@ -1,6 +1,6 @@
 #include <AL/al.h>
 #include <AL/alc.h>
-#include <AL/alut.h>
+//#include <AL/alut.h>
 #include <string>
 #include <vector>
 #include <array>
@@ -11,7 +11,7 @@ using std::vector;
 
 #ifndef OPERA_INCLUDED
 #define OPERA_INCLUDED
-
+/*
 const int sampleRate = 60 * 128; //Hella numerical simplicity. I am experimenting to see if we really need more samples than this, but I am not finding things that degrade in a bad/non-interesting way yet.
 
 class sample {
@@ -65,5 +65,5 @@ public:
 	virtual void init();
 	virtual ~soundScape();
 };
-
+*/
 #endif

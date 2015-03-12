@@ -1,6 +1,6 @@
 #include "opera.h"
 #include <iostream>
-using std::cout;
+/*using std::cout;
 void soundScape::init()
 {
 	alutInit(0, nullptr);
@@ -33,4 +33,4 @@ soundScape::~soundScape()
 	//alDeleteSources(NUM_SOURCES, source);
 	//alDeleteBuffers(NUM_BUFFERS, buffers);
 	alutExit();
-}
+}*/
