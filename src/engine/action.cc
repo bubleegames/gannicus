@@ -28,7 +28,7 @@ void action::zero()
 	frames = 0;
 	hits = 0;
 	unique = false;
-	freezesProjectiles = false;
+	freezesProjectiles = true;
 	delayFrame = -1;
 	delayMax = -1;
 	delayCheck = 0;
@@ -677,7 +677,7 @@ void action::parseProperties(string properties, bool counter)
 	for(; i < properties.size(); i++){
 		switch(properties[i]){
 		case '8':
-			freezesProjectiles = true;
+			freezesProjectiles = false;
 			break;
 		case 'x':
 			requiresFreeze = true;
