@@ -14,7 +14,7 @@ void hitstun::step(status &current)
 	}
 }
 
-bool hitstun::canGuard(int f)
+bool hitstun::canGuard(status &current)
 {
 	return (blockState.i & 7) ? true : false;
 }

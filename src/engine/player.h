@@ -92,6 +92,7 @@ public:
 	virtual bool stuck();
 	virtual bool validate(int, int);
 	virtual void drawHitParticle();
+	virtual void drawShield();
 	hStat generateParry(hStat&);
 
 	virtual void readEvent(SDL_Event &, frame &);

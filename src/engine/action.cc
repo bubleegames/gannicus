@@ -1118,9 +1118,9 @@ bool action::operator==(const string &o)
 	return fileName == o;
 }
 
-bool action::canGuard(int f)
+bool action::canGuard(status &current)
 {
-	if(f >= guardStart && f <= guardStart + guardLength && blockState.i & 7) return true;
+	if(current.frame >= guardStart && current.frame <= guardStart + guardLength && blockState.i & 7) return true;
 	else return false;
 }
 
@@ -1135,7 +1135,7 @@ int action::takeHit(hStat & s, int blockType, status &current)
 	else {
 		if(!stunMin || s.stun >= stunMin){
 			if(!stunMax || s.stun <= stunMax){
-				if(s.blockMask.i & blockState.i && canGuard(current.frame)){
+				if(s.blockMask.i & blockState.i && canGuard(current)){
 					if(riposte != nullptr){
 						if(!s.isProjectile || countersProjectile) return -5;
 					}

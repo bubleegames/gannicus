@@ -235,7 +235,10 @@ void SaltAndBone::drawGame()
 			i->draw(prog());
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		}
-		for(player *i:P) i->drawHitParticle();
+		for(player *i:P){ 
+			i->drawShield();
+			i->drawHitParticle();
+		}
 		glEnable( GL_TEXTURE_2D );
 		glDisable( GL_TEXTURE_2D );
 	glPopMatrix();
@@ -556,6 +559,71 @@ void instance::draw(GLint p)
 			glPopMatrix();
 		} else drawBoxen();
 	}
+}
+
+void player::drawShield()
+{
+	bool abort = true;
+	float y = 0.0, h = -current.collision.h;
+	glDisable( GL_TEXTURE_2D );
+	if(current.move->armor(current)){
+		abort = false;
+		glColor4f(1.0, 0.0, 0.0, 0.7);
+	} else if(current.move->canGuard(current)){
+		abort = false;
+		if(current.counter){
+			switch(current.particleType){
+			case 0:
+				glColor4f(0.0, 0.0, 0.0, 0.7);
+				break;
+			case -1:
+				glColor4f(1.0, 1.0, 1.0, 0.7);
+				break;
+			case -2:
+				glColor4f(0.0, 0.0, 1.0, 0.7);
+				break;
+			case -5:
+				glColor4f(0.4, 0.4, 0.4, 0.5);
+				break;
+			}
+		} else {
+			switch(current.move->guardType){
+			case 0:
+				glColor4f(0.0, 0.0, 0.0, 0.7);
+				break;
+			case -1:
+				glColor4f(1.0, 1.0, 1.0, 0.7);
+				break;
+			case -2:
+				glColor4f(0.0, 0.0, 1.0, 0.7);
+				break;
+			case -5:
+				glColor4f(0.4, 0.4, 0.4, 0.5);
+				break;
+			}
+		}
+		if(!current.aerial){
+			if(current.move->blockState.i & 2){
+				if (!(current.move->blockState.i & 1)){
+					h *= 2.0/3.0;
+					y -= current.collision.h;
+				}
+			} else if (current.move->blockState.i & 1) {
+				h *= 2.0/3.0;
+			}
+		}
+	}
+
+	if(!abort){
+		glPushMatrix();
+			glTranslatef(current.collision.x, 0.0f, 0.0f);
+			glPushMatrix();
+				glTranslatef(30 * current.facing + (current.facing == 1 ? current.collision.w : 0), -current.collision.y, 0.0f);
+				glRectf(0.0, y, 40.0 * current.facing, h);
+			glPopMatrix();
+		glPopMatrix();
+	}
+
 }
 
 void player::drawHitParticle()

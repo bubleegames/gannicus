@@ -1360,7 +1360,7 @@ void SaltAndBone::resolveHits()
 			else hit[hitBy[i]] = things[i]->takeHit(s[hitBy[i]]);
 			if(i < P.size()){
 				if(hit[hitBy[i]] == 1){
-					if(b->canGuard(P[i]->current.frame)){
+					if(b->canGuard(P[i]->current)){
 						blockFail[i] = s[hitBy[i]].blockMask.i;
 						if(!blockFail[i]) blockFail[i] = 8;
 						else if(wasair && !(blockFail[i] & 4)) blockFail[i] = 12;

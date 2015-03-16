@@ -92,7 +92,7 @@ public:
 	virtual action * connect(status&);
 	virtual instance * spawn();
 	virtual int takeHit(hStat&, int, status&);
-	virtual bool canGuard(int);
+	virtual bool canGuard(status&);
 
 	virtual void feed(action *, int, int);
 	virtual string request(int, int);
@@ -238,7 +238,7 @@ public:
 	hitstun() {}
 	virtual void step(status&);
 	virtual int takeHit(hStat&, int, status&); 
-	virtual bool canGuard(int);
+	virtual bool canGuard(status&);
 	hitstun(string, string);
 };
 

@@ -497,7 +497,7 @@ void player::checkBlocking()
 {
 	if(current.cancelState() & 513){
 		blockType = -pick()->checkBlocking(current, inputBuffer);
-		if(blockType == 1) blockType = !current.move->canGuard(current.frame);
+		if(blockType == 1) blockType = !current.move->canGuard(current);
 		updateRects();
 	}
 }
