@@ -256,10 +256,14 @@ void avatar::build(string directory, string file)
 
 void avatar::sortMove(action * m, string key)
 {
-	head->remove(m);
+	bool initialized = false;
 	tokenizer t(key, " \t=~>-&?@%$_!\n");
 	t();
 	while (t().size()){
+		if(!initialized){
+			head->remove(m);
+			initialized = true;
+		}
 		switch (t.current()[0]){
 		case 'h':
 			head->insert(m, t.current());
@@ -282,13 +286,19 @@ void avatar::loadAssets(int pal)
 
 void character::sortMove(action * m, string key)
 {
-	head->remove(m);
-	airHead->remove(m);
+	bool initialized = false;
 //	bool first = true;
 	if(m->null) return;
 	tokenizer t(key, " \t=>-&?@%$_!\n");
         t();
 	while (t().size()){
+		if(!initialized){
+			head->remove(m);
+			airHead->remove(m);
+			initialized = true;
+		}
+//		if(first) first == false;
+//		else CLEntry += " OR ";
 		switch (t.current()[0]){
 		case 'h':
 			head->insert(m, t.current());
