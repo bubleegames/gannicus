@@ -605,7 +605,7 @@ void player::drawShield()
 		if(!current.aerial){
 			if(current.move->blockState.i & 2){
 				if (!(current.move->blockState.i & 1)){
-					h *= 2.0/3.0;
+					h *= 1.0/3.0;
 					y -= current.collision.h;
 				}
 			} else if (current.move->blockState.i & 1) {
