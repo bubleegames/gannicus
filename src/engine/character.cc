@@ -692,7 +692,7 @@ void avatar::land(status& current)
 
 void character::land(status& current)
 {
-	if(current.move->allowed.b.block && current.counter < 0){
+	if(current.move->stunCheck(current)){
 		current.move = standBlock;
 	} else {
 		avatar::land(current);

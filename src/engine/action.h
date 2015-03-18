@@ -205,6 +205,7 @@ public:
 
 	bool modifier:1;
 	virtual bool setParameter(string);
+	virtual bool stunCheck(status&) { return false; }
 	virtual void parseProperties(string, bool);
 	virtual void zero();
 
@@ -237,6 +238,7 @@ class hitstun : virtual public action {
 public:
 	hitstun() {}
 	virtual void step(status&);
+	virtual bool stunCheck(status&);
 	virtual int takeHit(hStat&, int, status&); 
 	virtual bool canGuard(status&);
 	hitstun(string, string);

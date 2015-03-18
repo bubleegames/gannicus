@@ -126,7 +126,6 @@ void environment::enforce(instance * a)
 void environment::enforceFloor(instance * a)
 {
 	/*Floor, or "Bottom corner"*/
-
 	if (a->current.collision.h && a->current.collision.y < floor){
 		a->land();
 		a->current.posY = floor - a->current.move->collision[a->current.frame].y;
