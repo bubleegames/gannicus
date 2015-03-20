@@ -216,24 +216,27 @@ void action::build(string dir, string n)
 
 bool action::parseRect(string buffer)
 {
-	switch(buffer[1]){
-	case 'C':
-		collision.push_back(aux::defineRectArray(buffer.substr(2))[0]);
-		return 1;
-	case 'R':
-		hitreg.push_back(aux::defineRectArray(buffer.substr(2)));
-		return 1;
-	case 'D':
-		delta.push_back(aux::defineRectArray(buffer.substr(2)));
-		return 1;
-	case 'A':
-		hitbox.push_back(aux::defineRectArray(buffer.substr(2)));
-		return 1;
-	case 'V':
-		visibleBox.push_back(aux::defineRectArray(buffer.substr(2)));
-		return 1;
+	if(buffer.size() > 2){
+		switch(buffer[1]){
+		case 'C':
+			collision.push_back(aux::defineRectArray(buffer.substr(2))[0]);
+			return 1;
+		case 'R':
+			hitreg.push_back(aux::defineRectArray(buffer.substr(2)));
+			return 1;
+		case 'D':
+			delta.push_back(aux::defineRectArray(buffer.substr(2)));
+			return 1;
+		case 'A':
+			hitbox.push_back(aux::defineRectArray(buffer.substr(2)));
+			return 1;
+		case 'V':
+			visibleBox.push_back(aux::defineRectArray(buffer.substr(2)));
+			return 1;
+		}
+		return 0;
 	}
-	return 0;
+	else return 0;
 }
 
 void action::loadMisc(string dir)
