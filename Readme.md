@@ -36,7 +36,7 @@ The current version of gannicus can be built using Boost.Build.
   (`git clone git@github.com:h-forrest-alexander/gannicus.git`) and `cd` to it.
 
 
-3. Run `bjam` or `b2` to build the game.
+3. Run `make` to build the game.
 
 ## Running the game
 
