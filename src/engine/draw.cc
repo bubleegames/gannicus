@@ -322,6 +322,9 @@ void SaltAndBone::drawHUD()
 		}
 		if(combo[(i+1)%2] < 0 || combo[i] || knockdown[i]){
 			glColor4f(1.0, 1.0-.5*illegit[i], 1.0-.5*illegit[i], 1.0);
+			string missedHits;
+			for(int j:illegitHits[i]) missedHits += to_string(j) + " ";
+			drawGlyph(missedHits, 100+800*i, 600, 350, 35, 0+2*i);
 			if(combo[i] > 1)
 				drawGlyph(to_string(combo[i]) + " hits", 100+800*i, 600, 400, 75, 0+2*i);
 			if(counterHit[i] > 0)

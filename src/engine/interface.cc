@@ -121,12 +121,14 @@ void SaltAndBone::createPlayers()
 {
 	/*Initialize players.*/
 	for(int i = 0; i < 2; i++){
+		vector<int> a;
 		P.push_back(new player(i+1));
 		p.push_back(P[i]);
 		select.push_back(false);
 		selection.push_back(1+i);
 		combo.push_back(0);
 		knockdown.push_back(0);
+		illegitHits.push_back(a);
 		damage.push_back(0);
 		blockFail.push_back(0);
 		initialHealth.push_back(0);
@@ -498,6 +500,7 @@ void SaltAndBone::resolveCombos()
 				P[i]->current.elasticY = 0;
 				P[i]->current.rebound = 0;
 				illegit[(i+1)%2] = 0;
+				illegitHits[(i+1)%2].clear();
 				counterHit[(i+1)%2] = 0;
 				punish[(i+1)%2] = 0;
 				blockFail[i] = 0;
@@ -1352,6 +1355,11 @@ void SaltAndBone::resolveHits()
 
 	for(unsigned int i = 0; i < things.size(); i++){ 
 		if(taken[i]){
+			if(i < 2){
+				if(P[i]->comboState() == -2){
+					illegitHits[(i+1)%2].push_back(combo[(i+1)%2]);
+				}
+			}
 			int health = things[things[i]->ID-1]->current.meter[0].value;
 			action * b = things[i]->current.move;
 			bool wasair = things[i]->current.aerial;
@@ -1372,7 +1380,10 @@ void SaltAndBone::resolveHits()
 					damage[i] += parryHit.damage;
 					P[things[hitBy[i]]->ID-1]->takeHit(parryHit);
 				}
-				if(s[hitBy[i]].stun) combo[(i+1)%2] += hit[hitBy[i]];
+				if(s[hitBy[i]].stun){ 
+					
+					combo[(i+1)%2] += hit[hitBy[i]];
+				}
 			}
 			env.enforceFloor(things[i]->current.opponent);
 			env.enforceBounds(things[i]->current.opponent);

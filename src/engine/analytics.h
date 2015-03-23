@@ -67,6 +67,7 @@ public:
 	vector<int> damage;
 	vector<int> initialHealth;
 	vector<bool> illegit;
+	vector<vector<int>> illegitHits;
 	vector<int> punish;
 	vector<int> counterHit;
 	vector<int> blockFail;
